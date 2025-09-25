@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    internal class Service
+    public class Service
     {
+        public int IdService { get; set; }
+        public string ServiceName { get; set; } = null!;
+        public string ServiceDetails { get; set; } = null!;
+        public decimal Price { get; set; }
+        public int state { get; set; }
+        public string img_url { get; set; } = null!;
+        public DateTimeOffset CreatedAt { get; set;  }
+        public DateTimeOffset UpdatedAt { get; set; }
     }
 }

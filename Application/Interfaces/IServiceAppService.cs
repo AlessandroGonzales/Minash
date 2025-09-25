@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.DTO;
 
 namespace Application.Interfaces
 {
-    internal interface IServiceAppService
+    public interface IServiceAppService
     {
+        Task<IEnumerable<ServiceDto>> GetAllServicesAsync();
+        Task<ServiceDto?> GetServiceByIdAsync(int id);
+        Task<ServiceDto> AddServiceAsync(ServiceDto serviceDto);
+        Task UpdateServiceAsync(ServiceDto serviceDto);
+        Task DeleteServiceAsync(int id);
     }
 }
