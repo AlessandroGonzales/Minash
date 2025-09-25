@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
-namespace Infrastructure
+public class MinashDbContextFactory : IDesignTimeDbContextFactory<MinashDbContext>
 {
-    internal class MinashDbContextFactory
+    public MinashDbContext CreateDbContext(string[] args)
     {
+        var optionsBuilder = new DbContextOptionsBuilder<MinashDbContext>();
+        // Cadena de ejemplo: reemplaza por tu conexión local o usa variable de entorno
+        optionsBuilder.UseNpgsql("Host=localhost;Database=minash;Username=postgres;Password=Jamancapiero85.");
+
+        return new MinashDbContext(optionsBuilder.Options);
     }
 }
