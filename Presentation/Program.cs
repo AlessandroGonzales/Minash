@@ -1,4 +1,11 @@
+using Application.DependencyInjection;
+using Infrastructure.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
+
+#region
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+#endregion
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
