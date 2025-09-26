@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             ServiceName = efService.ServiceName,
             ServiceDetails = efService.ServiceDetails,
             Price = efService.Price,
-            img_url = efService.ImageUrl ?? string.Empty,
+            ImageUrl = efService.ImageUrl ?? string.Empty,
             CreatedAt = efService.CreatedAt.HasValue ? DateTime.SpecifyKind(efService.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
             UpdatedAt = efService.UpdatedAt.HasValue ? DateTime.SpecifyKind(efService.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
         };
@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
             ServiceName = d.ServiceName,
             ServiceDetails = d.ServiceDetails,
             Price = d.Price,
-            ImageUrl = d.img_url,
+            ImageUrl = d.ImageUrl,
         };
 
         public async Task<IEnumerable<Service>> GetAllServicesAsync()
@@ -45,6 +45,13 @@ namespace Infrastructure.Repositories
             return efService == null ? null : MapToDomain(efService);
         }
 
+        public async Task<IEnumerable<Service>> GetServicesByNameAsync(string name)
+        {
+            var list = await _db.Services
+                .Where(s => s.ServiceName.Replace(" ", "").ToLower().Contains(name))
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
         public async Task<Service> AddServiceAsync(Service service)
         { 
             var efService = MaptoEf(service);

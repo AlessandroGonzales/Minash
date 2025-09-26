@@ -30,6 +30,14 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(service);
         }
+
+        [HttpGet("name")]
+        public async Task<IActionResult> GetServiceByName([FromQuery] string name)
+        {
+            var services = await _service.GetServiceByNameAsync(name);
+            return Ok(services);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateService([FromBody] ServiceDto serviceDto)
         {
@@ -43,7 +51,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(int id)
         {
             await _service.DeleteServiceAsync(id);

@@ -10,6 +10,7 @@ namespace Application.DependencyInjection
         {
             // Register application services here
             services.AddScoped<IServiceAppService, ServiceAppService>();
+            services.AddScoped<IGarmentAppService, GarmentAppService>();
             return services;
         }
     }

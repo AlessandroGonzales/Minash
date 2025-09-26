@@ -6,8 +6,8 @@
         public string ServiceName { get; set; } = null!;
         public string ServiceDetails { get; set; } = null!;
         public decimal Price { get; set; }
-        public int state { get; set; }
-        public string img_url { get; set; } = null!;
+        public int State { get; set; }
+        public string ImageUrl { get; set; } = null!;
         public DateTimeOffset CreatedAt { get; set;  }
         public DateTimeOffset UpdatedAt { get; set; }
     }

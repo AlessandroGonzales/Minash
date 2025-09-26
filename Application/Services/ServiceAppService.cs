@@ -19,8 +19,8 @@ namespace Application.Services
             ServiceName = d.ServiceName,
             ServiceDetails = d.ServiceDetails,
             Price = d.Price,
-            img_url = d.img_url,
-        };
+            ImageUrl = d.ImageUrl,
+        };  
 
         private static Service MaptoDomain(ServiceDto dto) => new Service
         {
@@ -28,7 +28,7 @@ namespace Application.Services
             ServiceName = dto.ServiceName,
             ServiceDetails = dto.ServiceDetails,
             Price = dto.Price,
-            img_url = dto.img_url,
+            ImageUrl = dto.ImageUrl,
         };
 
         public async Task<IEnumerable<ServiceDto>> GetAllServicesAsync()
@@ -43,6 +43,14 @@ namespace Application.Services
             return service == null ? null : MaptoDto(service);
         }
 
+        public async Task<IEnumerable<ServiceDto>> GetServiceByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return Enumerable.Empty<ServiceDto>();
+
+            var normalizedName = name.Replace(" ", "").ToLower();
+            var list = await _repo.GetServicesByNameAsync(normalizedName);
+            return list.Select(MaptoDto);
+        }
         public async Task<ServiceDto> AddServiceAsync(ServiceDto service)
         {
             var domainService = MaptoDomain(service);
