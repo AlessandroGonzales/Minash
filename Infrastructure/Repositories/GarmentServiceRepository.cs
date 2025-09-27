@@ -17,10 +17,9 @@ namespace Infrastructure.Repositories
             _db = db;
         }
 
-        // Helper para mapear Garment (extrae para reutilizar)
         private static Garment MapToDomainGarment(EfGarment efGarment)
         {
-            if (efGarment == null) return null!; // O lanza excepción si requerido
+            if (efGarment == null) return null!;
 
             return new Garment
             {
@@ -28,7 +27,7 @@ namespace Infrastructure.Repositories
                 GarmentName = efGarment.GarmentName,
                 GarmentDetails = efGarment.GarmentDetails,
                 ImageUrl = efGarment.ImageUrl ?? string.Empty,
-                CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow, // Usa UtcNow como fallback
+                CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow, 
                 UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             };
         }
@@ -70,7 +69,7 @@ namespace Infrastructure.Repositories
         {
             return new EfGarmentService
             {
-                IdGarmentService = domain.IdGarmentService, // Para updates
+                IdGarmentService = domain.IdGarmentService, 
                 AdditionalPrice = domain.AdditionalPrice,
                 ImageUrl = domain.ImageUrl,
                 CreatedAt = domain.CreatedAt,
@@ -102,7 +101,7 @@ namespace Infrastructure.Repositories
             return ef == null ? null : MapToDomain(ef);
         }
 
-        public async Task<IEnumerable<GarmentService>> GetGarmentsServiceByGarmentIdAsync(int garmentId) // Corregí el typo
+        public async Task<IEnumerable<GarmentService>> GetGarmentsServiceByGarmentIdAsync(int garmentId) 
         {
             var list = await GetQueryableWithIncludes()
                 .Where(gs => gs.IdGarment == garmentId)
@@ -120,7 +119,6 @@ namespace Infrastructure.Repositories
 
         public async Task<GarmentService> AddGarmentServiceAsync(GarmentService garmentService)
         {
-            // Valida FKs en dominio si no lo haces ya
             if (garmentService.IdGarment <= 0 || garmentService.IdService <= 0)
                 throw new ArgumentException("IDs de Garment y Service deben ser válidos.");
 
@@ -138,16 +136,13 @@ namespace Infrastructure.Repositories
             var ef = await _db.GarmentServices.FindAsync(garmentService.IdGarmentService);
             if (ef == null) throw new KeyNotFoundException($"GarmentService con ID {garmentService.IdGarmentService} no encontrado.");
 
-            // Mapea solo campos actualizables (no navegaciones, ya que EF las maneja por FK)
             ef.AdditionalPrice = garmentService.AdditionalPrice;
             ef.ImageUrl = garmentService.ImageUrl;
-            ef.UpdatedAt = DateTime.UtcNow; // Actualiza timestamp
-            ef.IdGarment = garmentService.IdGarment; // Si cambias FK, EF migra la relación
+            ef.UpdatedAt = DateTime.UtcNow;
+            ef.IdGarment = garmentService.IdGarment; 
             ef.IdService = garmentService.IdService;
 
             await _db.SaveChangesAsync();
-            // Nota: No recargo aquí porque Update no devuelve la entidad en tu interfaz.
-            // Si lo necesitas, agrega un return como en Add.
         }
 
         public async Task DeleteGarmentServiceAsync(int id)
