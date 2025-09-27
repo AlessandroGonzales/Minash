@@ -11,7 +11,6 @@ namespace Infrastructure.Repositories
     public class GarmentServiceRepository : IGarmentServiceRepository
     {
         private readonly MinashDbContext _db;
-
         public GarmentServiceRepository(MinashDbContext db)
         {
             _db = db;
@@ -32,7 +31,6 @@ namespace Infrastructure.Repositories
             };
         }
 
-        // Helper para mapear Service (similar)
         private static Service MapToDomainService(EfService efService)
         {
             if (efService == null) return null!;
@@ -69,7 +67,6 @@ namespace Infrastructure.Repositories
         {
             return new EfGarmentService
             {
-                IdGarmentService = domain.IdGarmentService, 
                 AdditionalPrice = domain.AdditionalPrice,
                 ImageUrl = domain.ImageUrl,
                 CreatedAt = domain.CreatedAt,
@@ -79,7 +76,6 @@ namespace Infrastructure.Repositories
             };
         }
 
-        // Método helper para query base con Includes
         private IQueryable<EfGarmentService> GetQueryableWithIncludes(bool tracking = false)
         {
             var query = _db.GarmentServices
@@ -126,7 +122,6 @@ namespace Infrastructure.Repositories
             _db.GarmentServices.Add(ef);
             await _db.SaveChangesAsync();
 
-            // Recarga con Includes para poblar navegaciones
             var addedEf = await GetQueryableWithIncludes().FirstAsync(gs => gs.IdGarmentService == ef.IdGarmentService);
             return MapToDomain(addedEf);
         }

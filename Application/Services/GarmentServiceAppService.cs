@@ -10,7 +10,7 @@ namespace Application.Services
         private readonly IGarmentServiceRepository _repo;
         public GarmentServiceAppService(IGarmentServiceRepository repo)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _repo = repo;
         }
 
         private static GarmentServiceDto MapToDto(GarmentService d) => new GarmentServiceDto

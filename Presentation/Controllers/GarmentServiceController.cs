@@ -30,6 +30,12 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(garmentService);
         }
+        [HttpGet("by-garment/{garmentId}")]
+        public async Task<IActionResult> GetGarmentServicesByGarmentId(int garmentId)
+        {
+            var garmentServices = await _service.GetGarmentServicesByGarmentIdAsync(garmentId);
+            return Ok(garmentServices);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceDto garmentServiceDto)
         {
