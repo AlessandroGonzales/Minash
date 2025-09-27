@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
 
         private static Garment MapToDomainGarment(EfGarment efGarment)
         {
-            if (efGarment == null) return null!; 
+            if (efGarment == null) return null!;
 
             return new Garment
             {
@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories
                 GarmentName = efGarment.GarmentName,
                 GarmentDetails = efGarment.GarmentDetails,
                 ImageUrl = efGarment.ImageUrl ?? string.Empty,
-                CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow,
+                CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow, 
                 UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             };
         }
