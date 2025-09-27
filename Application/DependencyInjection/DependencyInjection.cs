@@ -13,6 +13,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IGarmentAppService, GarmentAppService>();
             services.AddScoped<IRoleAppService, RoleAppService>();
             services.AddScoped<IGarmentServiceAppService, GarmentServiceAppService>();
+            services.AddScoped<IUserAppService, UserAppService>();
             return services;
         }
     }

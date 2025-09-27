@@ -9,6 +9,5 @@
         public DateTime UpdatedAt { get; set; }
         public int IdGarment { get; set; }
         public int IdService { get; set; }
-
     }
 }

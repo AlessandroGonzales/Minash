@@ -10,7 +10,7 @@ namespace Application.Services
         private readonly IGarmentServiceRepository _repo;
         public GarmentServiceAppService(IGarmentServiceRepository repo)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _repo = repo;
         }
 
         private static GarmentServiceDto MapToDto(GarmentService d) => new GarmentServiceDto
@@ -55,7 +55,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<GarmentServiceDto>> GetGarmentServicesByGarmentIdAsync(int garmentId)
         {
-            var domainList = await _repo.GetGarmentsServiceByGarmentIdAsync(garmentId); // Nota: Corrige typo si lo tienes en repo
+            var domainList = await _repo.GetGarmentsServiceByGarmentIdAsync(garmentId); 
             return domainList.Select(MapToDto);
         }
 
@@ -67,12 +67,11 @@ namespace Application.Services
 
         public async Task<GarmentServiceDto> AddGarmentServiceAsync(GarmentServiceDto dto)
         {
-            // Validación básica (puedes expandir con FluentValidation)
             if (dto.IdGarment <= 0 || dto.IdService <= 0)
                 throw new ArgumentException("IDs de Garment y Service deben ser mayores a 0.");
 
             var domain = MapToDomain(dto);
-            domain.CreatedAt = DateTime.UtcNow; // Asegura timestamp si no viene en DTO
+            domain.CreatedAt = DateTime.UtcNow; 
             domain.UpdatedAt = DateTime.UtcNow;
 
             var addedDomain = await _repo.AddGarmentServiceAsync(domain);
@@ -85,7 +84,7 @@ namespace Application.Services
                 throw new ArgumentException("ID de GarmentService debe ser mayor a 0.");
 
             var domain = MapToDomain(dto);
-            domain.UpdatedAt = DateTime.UtcNow; // Actualiza timestamp
+            domain.UpdatedAt = DateTime.UtcNow; 
 
             await _repo.UpdateGarmentServiceAsync(domain);
         }
