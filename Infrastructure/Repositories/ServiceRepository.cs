@@ -23,7 +23,33 @@ namespace Infrastructure.Repositories
             ImageUrl = efService.ImageUrl ?? string.Empty,
             CreatedAt = efService.CreatedAt.HasValue ? DateTime.SpecifyKind(efService.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
             UpdatedAt = efService.UpdatedAt.HasValue ? DateTime.SpecifyKind(efService.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+
+            Customs = efService.Customs.Select(c => new Custom
+            {
+                IdCustom = c.IdCustom,
+                CustomerDetails = c.CustomerDetails,
+                Count = c.Count,
+                ImageUrl = c.ImageUrl,
+                CreatedAt = c.CreatedAt.HasValue ? DateTime.SpecifyKind(c.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                UpdatedAt = c.UpdatedAt.HasValue ? DateTime.SpecifyKind(c.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                IdGarment = c.IdGarment,
+                IdUser = c.IdUser,
+                IdService = c.IdService
+            }).ToList(),
+
+            GarmentServices = efService.GarmentServices.Select(gs => new GarmentService
+            { 
+                IdGarmentService = gs.IdGarmentService,
+                AdditionalPrice = gs.AdditionalPrice,
+                ImageUrl = gs.ImageUrl,
+                CreatedAt = gs.CreatedAt.HasValue ? DateTime.SpecifyKind(gs.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                UpdatedAt = gs.UpdatedAt.HasValue ? DateTime.SpecifyKind(gs.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                IdGarment = gs.IdGarment,
+                IdService = gs.IdService
+
+            }).ToList()
         };
+
 
         private static EfService MaptoEf(Service d) => new EfService
         {
@@ -35,20 +61,28 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Service>> GetAllServicesAsync()
         { 
-            var list = await _db.Services.ToListAsync();
+            var list = await _db.Services
+                .Include(s => s.Customs)
+                .Include(s => s.GarmentServices)
+                .AsNoTracking()
+                .ToListAsync();
             return list.Select(MapToDomain);
         }
 
         public async Task<Service?> GetServiceByIdAsync(int id)
         {
-            var efService = await _db.Services.FindAsync(id);
+            var efService = await _db.Services
+                .FindAsync(id);
             return efService == null ? null : MapToDomain(efService);
         }
 
         public async Task<IEnumerable<Service>> GetServicesByNameAsync(string name)
         {
             var list = await _db.Services
+                .Include(s => s.Customs)
+                .Include(s => s.GarmentServices)
                 .Where(s => s.ServiceName.Replace(" ", "").ToLower().Contains(name))
+                .AsNoTracking()
                 .ToListAsync();
             return list.Select(MapToDomain);
         }

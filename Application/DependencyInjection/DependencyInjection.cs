@@ -11,6 +11,8 @@ namespace Application.DependencyInjection
             // Register application services here
             services.AddScoped<IServiceAppService, ServiceAppService>();
             services.AddScoped<IGarmentAppService, GarmentAppService>();
+            services.AddScoped<IRoleAppService, RoleAppService>();
+            services.AddScoped<IGarmentServiceAppService, GarmentServiceAppService>();
             return services;
         }
     }

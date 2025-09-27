@@ -2,6 +2,7 @@
 
 public partial class Garment
 {
+    // Attributes
     public int IdGarment { get; set; }
 
     public string GarmentName { get; set; } = null!;
@@ -13,6 +14,9 @@ public partial class Garment
     public DateTime? UpdatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
+
+
+    // Navigation Properties
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 

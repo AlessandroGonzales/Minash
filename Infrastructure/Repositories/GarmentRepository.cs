@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Garment>> GetAllGarmentsAsync()
         {
-            var list = await _db.Garments.ToListAsync();
+            var list = await _db.Garments.AsNoTracking().ToListAsync();
             return list.Select(MapToDomain);
         }
 
@@ -48,6 +48,7 @@ namespace Infrastructure.Repositories
         {
             var list = await _db.Garments
                 .Where(g => g.GarmentName.Replace(" ", "").ToLower().Contains(name))
+                .AsNoTracking()
                 .ToListAsync();
             return list.Select(MapToDomain);
         }

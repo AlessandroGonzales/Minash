@@ -10,5 +10,8 @@
         public string ImageUrl { get; set; } = null!;
         public DateTimeOffset CreatedAt { get; set;  }
         public DateTimeOffset UpdatedAt { get; set; }
+
+        public ICollection<Custom> Customs { get; set; } = new List<Custom>();
+        public ICollection<GarmentService> GarmentServices { get; set; } = new List<GarmentService>();
     }
 }
