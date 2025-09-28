@@ -21,6 +21,30 @@ namespace Infrastructure.Repositories
             ImageUrl = efGarment.ImageUrl ?? string.Empty,
             UpdatedAt = efGarment.UpdatedAt.HasValue ? DateTime.SpecifyKind(efGarment.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
             CreatedAt = efGarment.CreatedAt.HasValue ? DateTime.SpecifyKind(efGarment.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+
+            GarmentServices = efGarment.GarmentServices.Select(gs => new GarmentService
+            {
+                IdGarmentService = gs.IdGarmentService,
+                AdditionalPrice = gs.AdditionalPrice,
+                ImageUrl = gs.ImageUrl ?? string.Empty,
+                CreatedAt = gs.CreatedAt.HasValue ? DateTime.SpecifyKind(gs.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                UpdatedAt = gs.UpdatedAt.HasValue ? DateTime.SpecifyKind(gs.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                IdGarment = gs.IdGarment,
+                IdService = gs.IdService
+            }).ToList(),
+
+            Customs = efGarment.Customs.Select(c => new Custom
+            {
+                IdCustom = c.IdCustom,
+                CustomerDetails = c.CustomerDetails,
+                Count = c.Count,
+                ImageUrl = c.ImageUrl ?? string.Empty,
+                CreatedAt = c.CreatedAt.HasValue ? DateTime.SpecifyKind(c.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                UpdatedAt = c.UpdatedAt.HasValue ? DateTime.SpecifyKind(c.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                IdGarment = c.IdGarment,
+                IdUser = c.IdUser,
+                IdService = c.IdService
+            }).ToList()
         };
 
         private static EfGarment MapToEf(Garment d) => new EfGarment

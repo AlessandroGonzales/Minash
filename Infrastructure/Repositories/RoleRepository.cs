@@ -21,6 +21,24 @@ namespace Infrastructure.Repositories
             RoleDetails = efRole.RoleDetails,
             UpdatedAt = efRole.UpdatedAt.HasValue ? DateTime.SpecifyKind(efRole.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
             CreatedAt = efRole.CreatedAt.HasValue ? DateTime.SpecifyKind(efRole.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+            
+            Users = efRole.Users.Select(u => new User
+            {
+                IdUser = u.IdUser,
+                UserName = u.UserName,
+                LastName = u.LastName,
+                Email = u.Email,
+                PasswordHash = u.PasswordHash,
+                Phone = u.Phone,
+                Address = u.Address,
+                CreatedAt = u.CreatedAt.HasValue ? DateTime.SpecifyKind(u.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                UpdatedAt = u.UpdatedAt.HasValue ? DateTime.SpecifyKind(u.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                ImageUrl = u.ImageUrl ?? string.Empty,
+                Province = u.Province ?? string.Empty,
+                City = u.City ?? string.Empty,
+                FullAddress = u.FullAddress ?? string.Empty,
+                IdRole = u.IdRole
+            }).ToList()
         };
 
         private static EfRole MapToEf(Role role) => new EfRole

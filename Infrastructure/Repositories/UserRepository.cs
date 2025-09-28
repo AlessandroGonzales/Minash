@@ -93,9 +93,7 @@ namespace Infrastructure.Repositories
         private IQueryable<EfUser> GetQueryableWithIncludes(bool tracking = false)
         {
             var query = _db.Users
-                .Include(u => u.IdRoleNavigation)
-                .Include(u => u.Orders)
-                .Include(u => u.Customs);
+                .Include(u => u.IdRoleNavigation);
             return tracking ? query : query.AsNoTracking();
         }
 

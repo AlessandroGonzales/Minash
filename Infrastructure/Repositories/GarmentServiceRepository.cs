@@ -47,21 +47,30 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static GarmentService MapToDomain(EfGarmentService ef)
+        private static GarmentService MapToDomain(EfGarmentService ef) => new GarmentService
         {
-            return new GarmentService
+            IdGarmentService = ef.IdGarmentService,
+            AdditionalPrice = ef.AdditionalPrice,
+            ImageUrl = ef.ImageUrl ?? string.Empty,
+            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
+            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
+            IdGarment = ef.IdGarment,
+            Garment = MapToDomainGarment(ef.IdGarmentNavigation),
+            IdService = ef.IdService,
+            Service = MapToDomainService(ef.IdServiceNavigation),
+
+            DetailsOrders = ef.DetailsOrders?.Select(doe => new DetailsOrder
             {
-                IdGarmentService = ef.IdGarmentService,
-                AdditionalPrice = ef.AdditionalPrice,
-                ImageUrl = ef.ImageUrl ?? string.Empty,
-                CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
-                UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
-                IdGarment = ef.IdGarment,
-                Garment = MapToDomainGarment(ef.IdGarmentNavigation),
-                IdService = ef.IdService,
-                Service = MapToDomainService(ef.IdServiceNavigation),
-            };
-        }
+                IdDetailsOrder = doe.IdDetailsOrder,
+                Count = doe.Count,
+                SubTotal = doe.SubTotal,
+                UnitPrice = doe.UnitPrice,
+                CreatedAt = doe.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = doe.UpdatedAt ?? DateTime.UtcNow,
+                IdOrder = doe.IdOrder,
+                IdGarmentService = doe.IdGarmentService
+            }).ToList() ?? new List<DetailsOrder>()
+        };
 
         private static EfGarmentService MapToEf(GarmentService domain)
         {
