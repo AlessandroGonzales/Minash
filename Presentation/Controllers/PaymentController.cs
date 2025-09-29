@@ -34,6 +34,11 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentDto payment)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);  // Esto genera el error que ves
+            }
+
             var createdPay = await _service.AddPaymentAsync(payment);
             return CreatedAtAction(nameof(GetPaymentByIdAsync), new { Id = createdPay.IdPay }, createdPay);
         }
