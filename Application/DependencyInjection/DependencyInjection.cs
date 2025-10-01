@@ -14,6 +14,9 @@ namespace Application.DependencyInjection
             services.AddScoped<IRoleAppService, RoleAppService>();
             services.AddScoped<IGarmentServiceAppService, GarmentServiceAppService>();
             services.AddScoped<IUserAppService, UserAppService>();
+            services.AddScoped<IOrderAppService, OrderAppService>();
+            services.AddScoped<IDetailsOrderAppService, DetailsOrderAppService>();
+            services.AddScoped<IPaymentAppService, PaymentAppService>();
             return services;
         }
     }

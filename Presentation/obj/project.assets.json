@@ -968,6 +968,7 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "Domain": "1.0.0",
+          "Infrastructure": "1.0.0",
           "Microsoft.Extensions.DependencyInjection": "8.0.0"
         },
         "compile": {

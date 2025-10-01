@@ -49,6 +49,12 @@ public partial class MinashDbContext : DbContext
             .HasPostgresEnum("service_state", new[] { "Activo", "Inactivo" })
             .HasPostgresEnum("user_state", new[] { "Activo", "Inactivo" });
 
+        modelBuilder.Entity<Payment>()
+            .Property(p => p.PaymentMethod)
+            .HasColumnName("payment_method");
+            
+
+
         modelBuilder.Entity<AccountingRecord>(entity =>
         {
             entity.HasKey(e => e.IdAccountingRecord).HasName("accounting_records_pkey");
