@@ -2,7 +2,6 @@
 using Domain.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using EfGarment = Infrastructure.Persistence.Entities.Garment;
 using EfService = Infrastructure.Persistence.Entities.Service;

@@ -25,6 +25,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IDetailsOrderRepository, DetailsOrderRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IAccountingRecord, AccountingRecord>();
             return services;
         }
         

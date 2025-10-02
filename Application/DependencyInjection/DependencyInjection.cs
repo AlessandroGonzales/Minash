@@ -17,6 +17,8 @@ namespace Application.DependencyInjection
             services.AddScoped<IOrderAppService, OrderAppService>();
             services.AddScoped<IDetailsOrderAppService, DetailsOrderAppService>();
             services.AddScoped<IPaymentAppService, PaymentAppService>();
+            services.AddScoped<ICustomAppService, CustomAppService>();
+            services.AddScoped<IAccountingRecordAppService, AccountingRecordAppService>();
             return services;
         }
     }
