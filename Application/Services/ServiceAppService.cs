@@ -2,6 +2,7 @@
 using Domain.Repositories;
 using Application.DTO;
 using Domain.Entities;
+using System.Collections.Generic;
 
 namespace Application.Services
 {
@@ -51,6 +52,21 @@ namespace Application.Services
             var list = await _repo.GetServicesByNameAsync(normalizedName);
             return list.Select(MaptoDto);
         }
+
+        public async Task<IEnumerable<ServiceDto>> GetServicesByQualityAsync(string quality)
+        {
+            IEnumerable<Service> services = quality switch
+            {
+                "premium" => await _repo.GetServicesByPriceAsync(500, 1000),
+                "standard" => await _repo.GetServicesByPriceAsync(100, 499),
+                "basic" => await _repo.GetServicesByPriceAsync(10, 99),
+                _ => Enumerable.Empty<Service>()
+            };
+
+            return services.Select(MaptoDto);
+
+        }
+
         public async Task<ServiceDto> AddServiceAsync(ServiceDto service)
         {
             var domainService = MaptoDomain(service);
