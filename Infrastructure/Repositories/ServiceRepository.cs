@@ -86,6 +86,16 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
             return list.Select(MapToDomain);
         }
+
+        public async Task<IEnumerable<Service>> GetServicesByPriceAsync(decimal price, decimal priceMax)
+        {
+            var list = await _db.Services
+                .AsNoTracking()
+                .Where(s => s.Price >= price && s.Price <= priceMax)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+
+        }
         public async Task<Service> AddServiceAsync(Service service)
         { 
             var efService = MaptoEf(service);

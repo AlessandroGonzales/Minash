@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
             IdOrder = ef.IdOrder,
             Order = MapToDomainOrder(ef.IdOrderNavigation),
 
-            Accountingrecords = ef.AccountingRecords?.Select(ar => new Accountingrecord
+            Accountingrecords = ef.AccountingRecords?.Select(ar => new AccountingRecord
             {
                 IdAccountingRecord = ar.IdAccountingRecord,
                 Total = ar.Total,
@@ -57,7 +57,7 @@ namespace Infrastructure.Repositories
                 CreatedAt = ar.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = ar.UpdatedAt ?? DateTime.UtcNow,
                 IdPay = ar.IdPay,
-            }).ToList() ?? new List<Accountingrecord>()
+            }).ToList() ?? new List<AccountingRecord>()
         };
 
         private static EfPayment MapToEf(Payment d) => new EfPayment

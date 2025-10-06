@@ -38,6 +38,14 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetServicesByqualityAsync([FromQuery] string quality)
+        {
+            var list = await _service.GetServicesByQualityAsync(quality);
+            return Ok(list);
+        }
+            
+
         [HttpPost]
         public async Task<IActionResult> CreateService([FromBody] ServiceDto serviceDto)
         {

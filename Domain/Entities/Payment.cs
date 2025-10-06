@@ -21,6 +21,6 @@ namespace Domain.Entities
         public string ReceiptImageUrl { get; set; } = null!;
         public string? IdempotencyKey { get; set; }
 
-        public ICollection<Accountingrecord> Accountingrecords { get; set; } = new List<Accountingrecord>();
+        public ICollection<AccountingRecord> Accountingrecords { get; set; } = new List<AccountingRecord>();
     }
 }
