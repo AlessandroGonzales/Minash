@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,13 +24,13 @@ namespace Presentation.Controllers
             return Ok(custom);
         }
         [HttpPost]
-        public async Task<IActionResult> AddCustomAsync([FromBody] CustomDto domain)
+        public async Task<IActionResult> AddCustomAsync([FromBody] CustomRequest domain)
         {
             var custom = await _service.AddCustomAsync(domain);
             return CreatedAtAction(nameof(GetCustomByIdAsync),new { Id = custom.IdCustom }, custom);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCustomAsync([FromBody] CustomDto domain)
+        public async Task<IActionResult> UpdateCustomAsync([FromBody] CustomRequest domain)
         {
             await _service.UpdateCustomAsync(domain);
             return NoContent();

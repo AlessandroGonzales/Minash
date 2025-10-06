@@ -115,6 +115,8 @@ namespace Infrastructure.Repositories
             var efOrder = MapToEf(order);
             await _db.Orders.AddAsync(efOrder);
             await _db.SaveChangesAsync();
+            order.CreatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.Now;
             order.IdOrder = efOrder.IdOrder;
             return order;
         }
@@ -123,9 +125,10 @@ namespace Infrastructure.Repositories
         {
             var efOrder = await _db.Orders.FindAsync(order.IdOrder);
             if (efOrder == null) throw new KeyNotFoundException($"Order with ID {order.IdOrder} not found.");
+
             efOrder.Total = order.Total;
             efOrder.UpdatedAt = DateTime.UtcNow;
-            efOrder.IdUser = order.IdUser;
+
             _db.Orders.Update(efOrder);
             await _db.SaveChangesAsync();
         }

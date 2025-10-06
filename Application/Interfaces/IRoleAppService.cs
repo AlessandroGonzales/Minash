@@ -1,14 +1,15 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 
 namespace Application.Interfaces
 {
     public interface IRoleAppService
     {
-        Task<IEnumerable<RoleDto>> GetAllRolesAsync();
-        Task<RoleDto?> GetRoleByIdAsync(int id);
-        Task<IEnumerable<RoleDto>> GetRolesByNameAsync(string name);
-        Task<RoleDto> AddRoleAsync(RoleDto roleDto);
-        Task UpdateRoleAsync(RoleDto roleDto);
+        Task<IEnumerable<RoleResponse>> GetAllRolesAsync();
+        Task<RoleResponse?> GetRoleByIdAsync(int id);
+        Task<IEnumerable<RoleResponse>> GetRolesByNameAsync(string name);
+        Task<RoleResponse> AddRoleAsync(RoleRequest roleDto);
+        Task UpdateRoleAsync(RoleRequest roleDto);
         Task DeleteRoleAsync(int id);
     }
 }

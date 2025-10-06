@@ -139,7 +139,6 @@ namespace Infrastructure.Repositories
             existingUser.UserName = user.UserName;
             existingUser.LastName = user.LastName;
             existingUser.Email = user.Email;
-            existingUser.PasswordHash = user.PasswordHash;
             existingUser.Phone = user.Phone;
             existingUser.Address = user.Address;
             existingUser.UpdatedAt = DateTime.UtcNow;

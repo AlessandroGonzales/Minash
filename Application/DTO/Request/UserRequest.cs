@@ -1,6 +1,6 @@
-﻿namespace Application.DTO
+﻿namespace Application.DTO.Request
 {
-    public class UserDto
+    public class UserRequest
     {
         public int IdUser { get; set; }
         public string UserName { get; set; } = null!;

@@ -1,6 +1,6 @@
-﻿namespace Application.DTO
+﻿namespace Application.DTO.Request
 {
-    public class DetailsOrderDto
+    public class DetailsOrderRequest
     {
         public int IdDetailsOrder { get; set; }
         public int Count { get; set; }

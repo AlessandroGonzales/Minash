@@ -1,13 +1,14 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 
 namespace Application.Interfaces
 {
     public interface IAccountingRecordAppService
     {
-        Task<IEnumerable<AccountingRecordDto>> GetAllAccountingRecordsAsync();
-        Task<AccountingRecordDto> GetAccountingRecordByIdAsync(int id);
-        Task<AccountingRecordDto> AddAccountingRecordAsync(AccountingRecordDto accountingRecordDto);
-        Task UpdateAccountingRecordAsync(AccountingRecordDto accountingRecordDto);
+        Task<IEnumerable<AccountingRecordResponse>> GetAllAccountingRecordsAsync();
+        Task<AccountingRecordResponse> GetAccountingRecordByIdAsync(int id);
+        Task<AccountingRecordResponse> AddAccountingRecordAsync(AccountingRecordRequest accountingRecordDto);
+        Task UpdateAccountingRecordAsync(AccountingRecordRequest accountingRecordDto);
         Task DeleteAccountingRecordAsync(int id);
     }
 }

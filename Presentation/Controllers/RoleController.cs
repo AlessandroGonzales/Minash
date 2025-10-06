@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,14 +36,14 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRole([FromBody] RoleDto roleDto)
+        public async Task<IActionResult> CreateRole([FromBody] RoleRequest roleDto)
         {
             var createdRole = await _service.AddRoleAsync(roleDto);
-            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.IdRole }, createdRole);
+            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.IdRol }, createdRole);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateRole([FromBody] RoleDto roleDto)
+        public async Task<IActionResult> UpdateRole([FromBody] RoleRequest roleDto)
         {
             await _service.UpdateRoleAsync(roleDto);
             return NoContent();

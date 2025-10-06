@@ -77,6 +77,8 @@ namespace Infrastructure.Repositories
             var ef = MapToEf(accoutingRecord);
             _db.AccountingRecords.Add(ef);
             await _db.SaveChangesAsync();
+            ef.CreatedAt = DateTime.UtcNow;
+            ef.UpdatedAt = DateTime.UtcNow;
             var creatdEf = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdPay == ef.IdAccountingRecord);
             return MapToDomain(creatdEf);
         }
@@ -87,8 +89,7 @@ namespace Infrastructure.Repositories
             ef.Details= accountingRecord.Details;
             ef.Total= accountingRecord.Total;
             ef.Total= accountingRecord.Total;
-            ef.UpdatedAt = accountingRecord.UpdatedAt;
-
+            ef.UpdatedAt = DateTime.UtcNow,
             await _db.SaveChangesAsync();
         }
 

@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -11,18 +12,18 @@ namespace Application.Services
         public CustomAppService(ICustomRepository repo) { _repo = repo; }
 
 
-        private static CustomDto MapToDto(Custom custom) => new CustomDto
+        private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
         {
             IdCustom = custom.IdCustom,
             IdService = custom.IdService,
             IdGarment = custom.IdGarment,
             IdUser = custom.IdUser,
-            CustomerDetails = custom.CustomerDetails,
+            CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
         };
 
-        private static Custom MapToDomain(CustomDto dto) => new Custom
+        private static Custom MapToDomain(CustomRequest dto) => new Custom
         {
             IdCustom = dto.IdCustom,
             IdService = dto.IdService,
@@ -33,30 +34,28 @@ namespace Application.Services
             ImageUrl = dto.ImageUrl,
         };
 
-        public async Task<IEnumerable<CustomDto>> GetAllCustomsAsync()
+        public async Task<IEnumerable<CustomResponse>> GetAllCustomsAsync()
         {
             var list = await _repo.GetAllCustomsAsync();
-            return list.Select(MapToDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<CustomDto> GetCustomByIdAsync(int id)
+        public async Task<CustomResponse> GetCustomByIdAsync(int id)
         {
             var custom = await _repo.GetCustomByIdAsync(id);
-            return MapToDto(custom);
+            return MapToResponse(custom);
         }
 
-        public async Task<CustomDto> AddCustomAsync(CustomDto custom)
+        public async Task<CustomResponse> AddCustomAsync(CustomRequest custom)
         {
             var creatCustom = MapToDomain(custom);
             var createdCustom = await _repo.AddCustomAsync(creatCustom);
-            return MapToDto(createdCustom);
+            return MapToResponse(createdCustom);
         }
 
-        public async Task UpdateCustomAsync(CustomDto custom)
+        public async Task UpdateCustomAsync(CustomRequest custom)
         {
             var UpdateCustom = MapToDomain(custom);
-            UpdateCustom.UpdatedAt = DateTime.Now;
-
             await _repo.UpdateCustomAsync(UpdateCustom);
         }
 

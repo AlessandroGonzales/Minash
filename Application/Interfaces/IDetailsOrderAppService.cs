@@ -1,14 +1,15 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 
 namespace Application.Interfaces
 {
     public interface IDetailsOrderAppService
     {
-        Task<IEnumerable<DetailsOrderDto>> GetAllDetailsOrdersAsync();
-        Task<DetailsOrderDto?> GetDetailsOrderByIdAsync(int id);
-        Task<IEnumerable<DetailsOrderDto>> GetDetailsOrdersByOrderIdAsync(int orderId);
-        Task<DetailsOrderDto> AddDetailsOrderAsync(DetailsOrderDto detailsOrderDto);
-        Task UpdateDetailsOrderAsync(DetailsOrderDto detailsOrderDto);
+        Task<IEnumerable<DetailsOrderResponse>> GetAllDetailsOrdersAsync();
+        Task<DetailsOrderResponse?> GetDetailsOrderByIdAsync(int id);
+        Task<IEnumerable<DetailsOrderResponse>> GetDetailsOrdersByOrderIdAsync(int orderId);
+        Task<DetailsOrderResponse> AddDetailsOrderAsync(DetailsOrderRequest detailsOrderDto);
+        Task UpdateDetailsOrderAsync(DetailsOrderRequest detailsOrderDto);
         Task DeleteDetailsOrderAsync(int id);
     }
 }

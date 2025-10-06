@@ -1,6 +1,6 @@
-﻿namespace Application.DTO
+﻿namespace Application.DTO.Request
 {
-    public class OrderDto
+    public class OrderRequest
     {
         public int IdOrder { get; set; }
         public decimal Total { get; set; }

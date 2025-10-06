@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
-using Application.DTO;
+using Application.DTO.Request;
+using Application.DTO.Response;
 
 namespace Presentation.Controllers
 {
@@ -47,13 +48,13 @@ namespace Presentation.Controllers
             
 
         [HttpPost]
-        public async Task<IActionResult> CreateService([FromBody] ServiceDto serviceDto)
+        public async Task<IActionResult> CreateService([FromBody] ServiceRequest serviceDto)
         {
             var createdService = await _service.AddServiceAsync(serviceDto);
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateService([FromBody] ServiceDto serviceDto)
+        public async Task<IActionResult> UpdateService([FromBody] ServiceRequest serviceDto)
         {
             await _service.UpdateServiceAsync(serviceDto);
             return NoContent();

@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTO;
+using Application.DTO.Request;
+using Application.DTO.Response;
 namespace Presentation.Controllers
 {
     [ApiController]
@@ -34,14 +35,14 @@ namespace Presentation.Controllers
             return Ok(garments);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateGarment([FromBody] GarmentDto garmentDto)
+        public async Task<IActionResult> CreateGarment([FromBody] GarmentRequest garmentDto)
         {
             var createdGarment = await _service.AddGarmentAsync(garmentDto);
             return CreatedAtAction(nameof(GetGarmentById), new { id = createdGarment.IdGarment }, createdGarment);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateGarment([FromBody] GarmentDto garmentDto)
+        public async Task<IActionResult> UpdateGarment([FromBody] GarmentRequest garmentDto)
         {
             await _service.UpdateGarmentAsync(garmentDto);
             return NoContent();

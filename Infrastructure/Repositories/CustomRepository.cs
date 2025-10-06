@@ -108,7 +108,8 @@ namespace Infrastructure.Repositories
             var creatCustom = MapToEf(custom);
             _db.Customs.Add(creatCustom);
             await _db.SaveChangesAsync();
-
+            creatCustom.CreatedAt = DateTime.Now;
+            creatCustom.UpdatedAt = DateTime.Now;
             var createdCustom = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdCustom == custom.IdCustom);
             return MapToDomain(createdCustom);
         }
@@ -116,11 +117,10 @@ namespace Infrastructure.Repositories
         public async Task UpdateCustomAsync (Custom custom)
         {
             var rCustom = await _db.Customs.FindAsync(custom.IdCustom);
+            rCustom.UpdatedAt = DateTime.UtcNow;
             rCustom.CustomerDetails = custom.CustomerDetails;
             rCustom.Count = custom.Count;
             rCustom.ImageUrl = custom.ImageUrl;
-            rCustom.IdGarment = custom.IdGarment;
-            rCustom.IdService = custom.IdService;
 
             await _db.SaveChangesAsync();
         }

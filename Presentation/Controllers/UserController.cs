@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTO;
+using Application.DTO.Request;
 namespace Presentation.Controllers
 {
     [ApiController]
@@ -45,14 +45,14 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
+        public async Task<IActionResult> CreateUser([FromBody] UserRequest userDto)
         {
             var createdUser = await _service.AddUserAsync(userDto);
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.IdUser }, createdUser);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody] UserDto userDto)
+        public async Task<IActionResult> UpdateUser([FromBody] UserRequest userDto)
         {
             await _service.UpdateUserAsync(userDto);
             return NoContent();

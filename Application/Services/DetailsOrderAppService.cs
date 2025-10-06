@@ -1,5 +1,5 @@
-﻿
-using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -14,17 +14,17 @@ namespace Application.Services
             _repo = repo;
         }
 
-        private static DetailsOrderDto MapToDto(DetailsOrder d) => new DetailsOrderDto
+        private static DetailsOrderResponse MapToResponse(DetailsOrder d) => new DetailsOrderResponse
         {
             IdDetailsOrder = d.IdDetailsOrder,
-            IdGarmentService = d.IdGarmentService,
             IdOrder = d.IdOrder,
+            IdGarmentService = d.IdGarmentService,
             UnitPrice = d.UnitPrice,
-            Subtotal = d.SubTotal,
+            SubTotal = d.SubTotal,
             Count = d.Count,
         };
 
-        private static DetailsOrder MapToDomain(DetailsOrderDto dto)
+        private static DetailsOrder MapToDomain(DetailsOrderRequest dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             return new DetailsOrder
@@ -38,32 +38,32 @@ namespace Application.Services
             };
         }
 
-        public async Task<IEnumerable<DetailsOrderDto>> GetAllDetailsOrdersAsync()
+        public async Task<IEnumerable<DetailsOrderResponse>> GetAllDetailsOrdersAsync()
         {
             var list = await _repo.GetAllDetailsOrdersAsync();
-            return list.Select(MapToDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<DetailsOrderDto?> GetDetailsOrderByIdAsync(int id)
+        public async Task<DetailsOrderResponse?> GetDetailsOrderByIdAsync(int id)
         {
             var domain = await _repo.GetDetailsOrderByIdAsync(id);
-            return domain != null ? MapToDto(domain) : null;
+            return domain != null ? MapToResponse(domain) : null;
         }
 
-        public async Task<IEnumerable<DetailsOrderDto>> GetDetailsOrdersByOrderIdAsync(int orderId)
+        public async Task<IEnumerable<DetailsOrderResponse>> GetDetailsOrdersByOrderIdAsync(int orderId)
         {
             var domainList = await _repo.GetDetailsOrdersByOrderIdAsync(orderId);
-            return domainList.Select(MapToDto);
+            return domainList.Select(MapToResponse);
         }
 
-        public async Task<DetailsOrderDto> AddDetailsOrderAsync(DetailsOrderDto dto)
+        public async Task<DetailsOrderResponse> AddDetailsOrderAsync(DetailsOrderRequest dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             var domain = MapToDomain(dto);
             var createdDomain = await _repo.AddDetailsOrderAsync(domain);
-            return MapToDto(createdDomain);
+            return MapToResponse(createdDomain);
         }
-        public async Task UpdateDetailsOrderAsync(DetailsOrderDto dto)
+        public async Task UpdateDetailsOrderAsync(DetailsOrderRequest dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             var domain = MapToDomain(dto);

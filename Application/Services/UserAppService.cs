@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -12,22 +13,21 @@ namespace Application.Services
         {
             _repo = repo;
         }
-        private static UserDto MapToDto(User d) => new UserDto
+        private static UserResponse MapToResponse(User d) => new UserResponse
         {
             IdUser = d.IdUser,
             UserName = d.UserName,
             LastName = d.LastName,
             Email = d.Email,
-            Phone = d.Phone,
             Address = d.Address,
+            PhoneNumber = d.Phone,
             ImageUrl = d.ImageUrl,
             Province = d.Province,
             City = d.City,
             FullAddress = d.FullAddress,
-            PasswordHash = d.PasswordHash,
-            IdRole = d.IdRole,
+            IdRol = d.IdRole,
         };
-        private static User MapToDomain(UserDto dto) 
+        private static User MapToDomain(UserRequest dto) 
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             return new User
@@ -46,43 +46,41 @@ namespace Application.Services
                 IdRole = dto.IdRole,
             };
         }
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
             var list = await _repo.GetAllUsersAsync();
-            return list.Select(MapToDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<UserDto?> GetUserByIdAsync(int id)
+        public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
             var domain = await _repo.GetUserByIdAsync(id);
-            return domain != null ? MapToDto(domain) : null;
+            return domain != null ? MapToResponse(domain) : null;
         }
-        public async Task<UserDto?> GetUserByEmailAsync(string email)
+        public async Task<UserResponse?> GetUserByEmailAsync(string email)
         {
             var domain = await _repo.GetUserByEmailAsync(email);
-            return domain != null ? MapToDto(domain) : null;
+            return domain != null ? MapToResponse(domain) : null;
         }
-        public async Task<IEnumerable<UserDto>> GetUsersByRolIdAsync(int roleId)
+        public async Task<IEnumerable<UserResponse>> GetUsersByRolIdAsync(int roleId)
         {
             var domainList = await _repo.GetUsersByRolIdAsync(roleId); 
-            return domainList.Select(MapToDto);
+            return domainList.Select(MapToResponse);
         }
-        public async Task<UserDto> AddUserAsync(UserDto user)
+        public async Task<UserResponse>AddUserAsync(UserRequest user)
         {
             if(user.IdRole <= 0)
                 throw new ArgumentException("Role ID must be greater than zero.");
 
             var domain = MapToDomain(user);
-            domain.CreatedAt = DateTime.UtcNow;
-            domain.UpdatedAt = DateTime.UtcNow;
             var addedDomain = await _repo.AddUserAsync(domain);
-            return MapToDto(addedDomain);
+            return MapToResponse(addedDomain);
         }
 
-        public async Task UpdateUserAsync(UserDto user)
+        public async Task UpdateUserAsync(UserRequest user)
         {
             var domain = MapToDomain(user);
-            domain.UpdatedAt = DateTime.UtcNow;
+
             await _repo.UpdateUserAsync(domain);
         }
 

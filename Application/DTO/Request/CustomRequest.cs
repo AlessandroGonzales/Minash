@@ -1,6 +1,6 @@
-﻿namespace Application.DTO
+﻿namespace Application.DTO.Request
 {
-    public class CustomDto
+    public class CustomRequest
     {
         public int IdCustom { get; set; }
         public string CustomerDetails { get; set; } = null!;

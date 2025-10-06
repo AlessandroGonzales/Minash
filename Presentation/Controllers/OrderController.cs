@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,13 +35,13 @@ namespace Presentation.Controllers
             return Ok(orders);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderDto)
         {
             var createdOrder = await _service.AddOrderAsync(orderDto);
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.IdOrder }, createdOrder);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateOrder([FromBody] OrderDto orderDto)
+        public async Task<IActionResult> UpdateOrder([FromBody] OrderRequest orderDto)
         {
             await _service.UpdateOrderAsync(orderDto);
             return NoContent();

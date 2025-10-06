@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -13,18 +14,16 @@ namespace Application.Services
             _repo = repo;
         }
 
-        private static GarmentServiceDto MapToDto(GarmentService d) => new GarmentServiceDto
+        private static GarmentServiceResponse MapToResponse(GarmentService d) => new GarmentServiceResponse
         {
             IdGarmentService = d.IdGarmentService,
-            IdGarment = d.IdGarment,
+            IdGarments = d.IdGarment,
             IdService = d.IdService,
-            AdditionalPrice = d.AdditionalPrice,
+            AddtionalPrice = d.AdditionalPrice,
             ImageUrl = d.ImageUrl,
-            CreatedAt = d.CreatedAt,
-            UpdatedAt = d.UpdatedAt,
         };
 
-        private static GarmentService MapToDomain(GarmentServiceDto dto) 
+        private static GarmentService MapToDomain(GarmentServiceRequest dto) 
         {
 
             if (dto == null) throw new ArgumentNullException(nameof(dto));
@@ -36,36 +35,34 @@ namespace Application.Services
                 IdService = dto.IdService,
                 AdditionalPrice = dto.AdditionalPrice,
                 ImageUrl = dto.ImageUrl,
-                CreatedAt = dto.CreatedAt,
-                UpdatedAt = dto.UpdatedAt,
             };
         }
 
-        public async Task<IEnumerable<GarmentServiceDto>> GetAllGarmentServicesAsync()
+        public async Task<IEnumerable<GarmentServiceResponse>> GetAllGarmentServicesAsync()
         {
             var list = await _repo.GetAllGarmentServicesAsync();
-            return list.Select(MapToDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<GarmentServiceDto?> GetGarmentServiceByIdAsync(int id)
+        public async Task<GarmentServiceResponse?> GetGarmentServiceByIdAsync(int id)
         {
             var domain = await _repo.GetGarmentServiceByIdAsync(id);
-            return domain != null ? MapToDto(domain) : null;
+            return domain != null ? MapToResponse(domain) : null;
         }
 
-        public async Task<IEnumerable<GarmentServiceDto>> GetGarmentServicesByGarmentIdAsync(int garmentId)
+        public async Task<IEnumerable<GarmentServiceResponse>> GetGarmentServicesByGarmentIdAsync(int garmentId)
         {
             var domainList = await _repo.GetGarmentsServiceByGarmentIdAsync(garmentId); 
-            return domainList.Select(MapToDto);
+            return domainList.Select(MapToResponse);
         }
 
-        public async Task<IEnumerable<GarmentServiceDto>> GetGarmentServicesByServiceIdAsync(int serviceId)
+        public async Task<IEnumerable<GarmentServiceResponse>> GetGarmentServicesByServiceIdAsync(int serviceId)
         {
             var domainList = await _repo.GetGarmentsServiceByServiceIdAsync(serviceId);
-            return domainList.Select(MapToDto);
+            return domainList.Select(MapToResponse);
         }
 
-        public async Task<GarmentServiceDto> AddGarmentServiceAsync(GarmentServiceDto dto)
+        public async Task<GarmentServiceResponse> AddGarmentServiceAsync(GarmentServiceRequest dto)
         {
             if (dto.IdGarment <= 0 || dto.IdService <= 0)
                 throw new ArgumentException("IDs de Garment y Service deben ser mayores a 0.");
@@ -75,10 +72,10 @@ namespace Application.Services
             domain.UpdatedAt = DateTime.UtcNow;
 
             var addedDomain = await _repo.AddGarmentServiceAsync(domain);
-            return MapToDto(addedDomain);
+            return MapToResponse(addedDomain);
         }
 
-        public async Task UpdateGarmentServiceAsync(GarmentServiceDto dto)
+        public async Task UpdateGarmentServiceAsync(GarmentServiceRequest dto)
         {
             if (dto.IdGarmentService <= 0)
                 throw new ArgumentException("ID de GarmentService debe ser mayor a 0.");

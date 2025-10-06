@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,13 +37,13 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceDto garmentServiceDto)
+        public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
             var createdGarmentService = await _service.AddGarmentServiceAsync(garmentServiceDto);
             return CreatedAtAction(nameof(GetGarmentServiceById), new { id = createdGarmentService.IdGarmentService }, createdGarmentService);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateGarmentService([FromBody] GarmentServiceDto garmentServiceDto)
+        public async Task<IActionResult> UpdateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
             await _service.UpdateGarmentServiceAsync(garmentServiceDto);
             return NoContent();

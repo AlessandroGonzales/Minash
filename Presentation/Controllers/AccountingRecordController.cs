@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +27,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task <IActionResult> AddAccountingRecordAsync(AccountingRecordDto accountingRecord)
+        public async Task <IActionResult> AddAccountingRecordAsync(AccountingRecordRequest accountingRecord)
         {
             var createAR = await _service.AddAccountingRecordAsync(accountingRecord);
 
@@ -36,7 +36,7 @@ namespace Presentation.Controllers
 
         [HttpPut]
 
-        public async Task<IActionResult> UpdateAccountingRecordAsync( AccountingRecordDto accountingRecord)
+        public async Task<IActionResult> UpdateAccountingRecordAsync( AccountingRecordRequest accountingRecord)
         {
             await _service.UpdateAccountingRecordAsync(accountingRecord);
             return NoContent();
