@@ -1,11 +1,17 @@
-﻿namespace Application.DTO.Request
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Application.DTO.Request
 {
     public class UserRequest
     {
         public int IdUser { get; set; }
+        [Required]
         public string UserName { get; set; } = null!;
+        [Required]
         public string LastName { get; set; } = null!;
+        [Required]
         public string Email { get; set; } = null!;
+        [Required]
         public string Phone { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;

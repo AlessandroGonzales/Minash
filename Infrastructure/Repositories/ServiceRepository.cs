@@ -105,9 +105,9 @@ namespace Infrastructure.Repositories
             return service;
         }
 
-        public async Task UpdateServiceAsync(Service service)
+        public async Task UpdateServiceAsync(int id, Service service)
         {
-            var ef = await _db.Services.FindAsync(service.IdService);
+            var ef = await _db.Services.FindAsync(id);
             if (ef == null) throw new KeyNotFoundException($"Service {service.IdService} not found.");
 
             ef.ServiceName = service.ServiceName;

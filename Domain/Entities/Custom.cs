@@ -6,8 +6,8 @@
         public string CustomerDetails { get; set; } = null!;
         public int Count { get; set; }
         public string ImageUrl { get; set; } = null!;
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         // Foreign Keys
         public int IdGarment { get; set; }

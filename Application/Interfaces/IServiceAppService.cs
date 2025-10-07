@@ -10,7 +10,7 @@ namespace Application.Interfaces
         Task<IEnumerable<ServiceResponse>> GetServiceByNameAsync(string name);
         Task<IEnumerable<ServiceResponse>> GetServicesByQualityAsync(string quality);
         Task<ServiceResponse> AddServiceAsync(ServiceRequest serviceDto);
-        Task UpdateServiceAsync(ServiceRequest serviceDto);
+        Task UpdateServiceAsync(int id, ServiceRequest serviceDto);
         Task DeleteServiceAsync(int id);
     }
 }

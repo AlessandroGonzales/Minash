@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
             ef.Details= accountingRecord.Details;
             ef.Total= accountingRecord.Total;
             ef.Total= accountingRecord.Total;
-            ef.UpdatedAt = DateTime.UtcNow,
+            ef.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
 

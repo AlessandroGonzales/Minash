@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -46,11 +47,47 @@ namespace Application.Services
                 IdRole = dto.IdRole,
             };
         }
+        private static User MapToDomain(UserPartial dto)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            return new User
+            {
+                UserName = dto.UserName,
+                Phone = dto.Phone,
+            };
+        }
+
+        private static User MapToDomain(int id, string name, string phone) => new User
+        {
+            IdUser = id,
+            UserName = name,
+            Phone = phone,
+        };
+
         public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
             var list = await _repo.GetAllUsersAsync();
             return list.Select(MapToResponse);
         }
+
+        public async Task<IEnumerable<UserResponse>> GetUsersByRolIdAsync(int roleId)
+        {
+            var domainList = await _repo.GetUsersByRolIdAsync(roleId); 
+            return domainList.Select(MapToResponse);
+        }
+
+        public async Task<IEnumerable<UserResponse>> GetUsersByCityAsync(string city)
+        {
+            var list = await _repo.GetUsersByCityAsync(city);
+            return list.Select(MapToResponse);
+        }
+
+        public async Task <UserResponse?> GetUserByNameAsync(string name)
+        {
+            var user = await _repo.GetUserByNameAsync(name);
+            return user == null ? null : MapToResponse(user);
+        }
+
 
         public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
@@ -62,11 +99,6 @@ namespace Application.Services
             var domain = await _repo.GetUserByEmailAsync(email);
             return domain != null ? MapToResponse(domain) : null;
         }
-        public async Task<IEnumerable<UserResponse>> GetUsersByRolIdAsync(int roleId)
-        {
-            var domainList = await _repo.GetUsersByRolIdAsync(roleId); 
-            return domainList.Select(MapToResponse);
-        }
         public async Task<UserResponse>AddUserAsync(UserRequest user)
         {
             if(user.IdRole <= 0)
@@ -77,11 +109,18 @@ namespace Application.Services
             return MapToResponse(addedDomain);
         }
 
-        public async Task UpdateUserAsync(UserRequest user)
+        public async Task UpdateUserAsync(int id, UserRequest user)
         {
             var domain = MapToDomain(user);
 
-            await _repo.UpdateUserAsync(domain);
+            await _repo.UpdateUserAsync(id, domain);
+        }
+
+        public async Task UpdateUserNameAndPhoneAsync(int id, UserPartial user)
+        {
+            var domain = MapToDomain(user);
+
+            await _repo.UpdateUserNameAndPhoneAsync(id, domain);
         }
 
         public async Task DeleteUserAsync(int id)

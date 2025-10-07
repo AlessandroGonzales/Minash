@@ -122,6 +122,14 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
+        public async Task<IEnumerable<GarmentService>> GetGarmentServicesByPriceAsync(decimal priceMin, decimal PriceMax)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(gs => gs.AdditionalPrice >= priceMin && gs.AdditionalPrice <= PriceMax)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task<GarmentService> AddGarmentServiceAsync(GarmentService garmentService)
         {
             if (garmentService.IdGarment <= 0 || garmentService.IdService <= 0)
@@ -143,8 +151,6 @@ namespace Infrastructure.Repositories
             ef.AdditionalPrice = garmentService.AdditionalPrice;
             ef.ImageUrl = garmentService.ImageUrl;
             ef.UpdatedAt = DateTime.UtcNow;
-            ef.IdGarment = garmentService.IdGarment; 
-            ef.IdService = garmentService.IdService;
 
             await _db.SaveChangesAsync();
         }

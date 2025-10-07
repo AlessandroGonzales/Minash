@@ -74,10 +74,10 @@ namespace Application.Services
             return MapToResponse(createdService);
         }
 
-        public async Task UpdateServiceAsync(ServiceRequest service)
+        public async Task UpdateServiceAsync(int id , ServiceRequest service)
         {
             var domainService = MapToDomain(service);
-            await _repo.UpdateServiceAsync(domainService);
+            await _repo.UpdateServiceAsync( id, domainService);
         }
 
         public async Task DeleteServiceAsync(int id)

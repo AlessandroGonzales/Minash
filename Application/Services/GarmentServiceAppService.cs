@@ -62,6 +62,18 @@ namespace Application.Services
             return domainList.Select(MapToResponse);
         }
 
+        public async Task<IEnumerable<GarmentServiceResponse>> GetGarmentServicesByQualityAsync(string quality)
+        {
+            IEnumerable<GarmentService> garmentServices = quality switch
+            {
+                "Premium" => await _repo.GetGarmentServicesByPriceAsync(500, 1000),
+                "Standard" => await _repo.GetGarmentServicesByPriceAsync(100, 499),
+                "Basic" => await _repo.GetGarmentServicesByPriceAsync(1, 99),
+                _ => Enumerable.Empty<GarmentService>(),
+            };
+
+            return garmentServices.Select(MapToResponse);
+        }
         public async Task<GarmentServiceResponse> AddGarmentServiceAsync(GarmentServiceRequest dto)
         {
             if (dto.IdGarment <= 0 || dto.IdService <= 0)

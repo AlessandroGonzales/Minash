@@ -21,7 +21,6 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentServiceById(int id)
         {
@@ -30,24 +29,42 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(garmentService);
         }
+
         [HttpGet("by-garment/{garmentId}")]
         public async Task<IActionResult> GetGarmentServicesByGarmentId(int garmentId)
         {
             var garmentServices = await _service.GetGarmentServicesByGarmentIdAsync(garmentId);
             return Ok(garmentServices);
         }
+
+        [HttpGet("By-service/{serviceId}")]
+        public async Task<IActionResult> GetGarmentServicesByServiceIdAsync(int serviceId)
+        {
+            var garmentServices = await _service.GetGarmentServicesByServiceIdAsync(serviceId);
+            return Ok(garmentServices);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetGarmentServicesByQualityAsync(string  quality)
+        {
+            var garmentServies = await _service.GetGarmentServicesByQualityAsync(quality);
+            return Ok(garmentServies);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
             var createdGarmentService = await _service.AddGarmentServiceAsync(garmentServiceDto);
             return CreatedAtAction(nameof(GetGarmentServiceById), new { id = createdGarmentService.IdGarmentService }, createdGarmentService);
         }
+
         [HttpPut]
         public async Task<IActionResult> UpdateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
             await _service.UpdateGarmentServiceAsync(garmentServiceDto);
             return NoContent();
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarmentService(int id)
         {
