@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -30,6 +31,11 @@ namespace Application.Services
             ImageUrl = dto.ImageUrl,
         };
 
+        private static Garment MapToDomain(GarmentPartial dto) => new Garment
+        {
+            GarmentDetails = dto.GarmentDetails,
+            ImageUrl = dto.ImageUrl
+        };
         public async Task<IEnumerable<GarmentResponse>> GetAllGarmentsAsync()
         {
             var list = await _repo.GetAllGarmentsAsync();
@@ -57,10 +63,17 @@ namespace Application.Services
             return MapToResponse(createdGarment);
         }
 
-        public async Task UpdateGarmentAsync(GarmentRequest garment)
+        public async Task UpdateGarmentAsync(int id, GarmentRequest garment)
         {
             var domainGarment = MaptoDomain(garment);
-            await _repo.UpdateGarmentAsync(domainGarment);
+            await _repo.UpdateGarmentAsync(id, domainGarment);
+        }
+
+        public async Task PartialUpdateGarmentAsync(int id, GarmentPartial garment)
+        {
+            var domainGarment = MapToDomain(garment);
+
+            await _repo.PartialUpdateGarmentAsync(id, domainGarment);
         }
         public async Task DeleteGarmentAsync(int id)
         {

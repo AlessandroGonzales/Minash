@@ -54,15 +54,9 @@ namespace Application.Services
             {
                 UserName = dto.UserName,
                 Phone = dto.Phone,
+                ImageUrl= dto.ImageUrl,
             };
         }
-
-        private static User MapToDomain(int id, string name, string phone) => new User
-        {
-            IdUser = id,
-            UserName = name,
-            Phone = phone,
-        };
 
         public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
@@ -116,11 +110,11 @@ namespace Application.Services
             await _repo.UpdateUserAsync(id, domain);
         }
 
-        public async Task UpdateUserNameAndPhoneAsync(int id, UserPartial user)
+        public async Task PartialUpdateUserAsync(int id, UserPartial user)
         {
             var domain = MapToDomain(user);
 
-            await _repo.UpdateUserNameAndPhoneAsync(id, domain);
+            await _repo.PartialUpdateUserAsync(id, domain);
         }
 
         public async Task DeleteUserAsync(int id)

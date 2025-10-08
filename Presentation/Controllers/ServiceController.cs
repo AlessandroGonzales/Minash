@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.DTO.Request;
 using Application.DTO.Response;
+using Application.DTO.Partial;
 
 namespace Presentation.Controllers
 {
@@ -53,10 +54,18 @@ namespace Presentation.Controllers
             var createdService = await _service.AddServiceAsync(serviceDto);
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }
-        [HttpPut("id")]
-        public async Task<IActionResult> UpdateService([FromQuery]int id, [FromBody] ServiceRequest serviceDto)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateService([FromRoute]int id, [FromBody] ServiceRequest serviceDto)
         {
             await _service.UpdateServiceAsync(id, serviceDto);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateServicePriceAsync([FromRoute] int id, [FromBody] ServicePartial serviceDto)
+        {
+            await _service.PartialUpdateServiceAsync(id, serviceDto);
             return NoContent();
         }
 

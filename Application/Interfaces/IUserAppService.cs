@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task<UserResponse?> GetUserByEmailAsync(string email);
         Task<UserResponse> AddUserAsync(UserRequest userDto);
         Task UpdateUserAsync(int id, UserRequest userDto);
-        Task UpdateUserNameAndPhoneAsync(int id, UserPartial userDto);
+        Task PartialUpdateUserAsync(int id, UserPartial userDto);
         Task DeleteUserAsync(int id);
     }
 }

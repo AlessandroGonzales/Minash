@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.DTO.Request;
 using Application.DTO.Response;
+using Application.DTO.Partial;
 namespace Presentation.Controllers
 {
     [ApiController]
@@ -42,11 +43,19 @@ namespace Presentation.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateGarment([FromBody] GarmentRequest garmentDto)
+        public async Task<IActionResult> UpdateGarment([FromRoute]int id, [FromBody] GarmentRequest garmentDto)
         {
-            await _service.UpdateGarmentAsync(garmentDto);
+            await _service.UpdateGarmentAsync(id, garmentDto);
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateGarmentAsync([FromRoute]int id, [FromBody] GarmentPartial garmentDto)
+        {
+            await _service.PartialUpdateGarmentAsync(id, garmentDto);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarment(int id)
         {

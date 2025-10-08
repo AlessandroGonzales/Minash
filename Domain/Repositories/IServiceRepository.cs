@@ -9,6 +9,7 @@ public interface IServiceRepository
     Task<IEnumerable<Service>> GetServicesByPriceAsync(decimal price, decimal priceMax);
     Task<Service> AddServiceAsync(Service service);
     Task UpdateServiceAsync(int id, Service service);
+    Task PartialUpdateServiceAsync(int id, Service service);
     Task DeleteServiceAsync(int id);
 
 }

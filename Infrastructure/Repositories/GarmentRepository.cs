@@ -1,7 +1,7 @@
-﻿using Domain.Repositories;
+﻿using Domain.Entities;
+using Domain.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
 using EfGarment = Infrastructure.Persistence.Entities.Garment;
 namespace Infrastructure.Repositories
 {
@@ -86,9 +86,9 @@ namespace Infrastructure.Repositories
             return garment;
         }
 
-        public async Task UpdateGarmentAsync(Garment garment)
+        public async Task UpdateGarmentAsync(int id, Garment garment)
         {
-            var efGarment = await _db.Garments.FindAsync(garment.IdGarment);
+            var efGarment = await _db.Garments.FindAsync(id);
             if (efGarment == null) throw new KeyNotFoundException($"Garment with ID {garment.IdGarment} not found.");
 
             efGarment.GarmentName = garment.GarmentName;
@@ -98,6 +98,19 @@ namespace Infrastructure.Repositories
 
             _db.Garments.Update(efGarment);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task PartialUpdateGarmentAsync(int id, Garment garment)
+        {
+            var efGarment = await _db.Garments.FindAsync(id);
+            if (efGarment == null) throw new KeyNotFoundException($"Garment with ID {id} not found.");
+
+            efGarment.ImageUrl = garment.ImageUrl;
+            efGarment.GarmentDetails = garment.GarmentDetails;
+
+            _db.Garments.Update(efGarment);
+            await _db.SaveChangesAsync();
+
         }
         public async Task DeleteGarmentAsync(int id)
         {

@@ -3,6 +3,7 @@ using Domain.Repositories;
 using Domain.Entities;
 using Application.DTO.Request;
 using Application.DTO.Response;
+using Application.DTO.Partial;
 
 namespace Application.Services
 {
@@ -29,6 +30,12 @@ namespace Application.Services
             ServiceName = dto.ServiceName,
             ServiceDetails = dto.ServiceDetails,
             Price = dto.Price,
+            ImageUrl = dto.ImageUrl,
+        };
+
+        private static Service MapToDomain(ServicePartial dto) => new Service
+        {
+            Price = dto.ServicePrice,
             ImageUrl = dto.ImageUrl,
         };
 
@@ -80,6 +87,12 @@ namespace Application.Services
             await _repo.UpdateServiceAsync( id, domainService);
         }
 
+        public async Task PartialUpdateServiceAsync(int id, ServicePartial service)
+        {
+            var domainService = MapToDomain(service);
+            await _repo.PartialUpdateServiceAsync(id, domainService);
+
+        }
         public async Task DeleteServiceAsync(int id)
         {
             await _repo.DeleteServiceAsync(id);

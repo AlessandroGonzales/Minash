@@ -167,7 +167,7 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateUserNameAndPhoneAsync(int id, User user)
+        public async Task PartialUpdateUserAsync(int id, User user)
         {
             var existingUser = await _db.Users.FindAsync(id);
             if (existingUser == null) throw new KeyNotFoundException($"User with ID {user.IdUser} not found.");

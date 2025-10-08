@@ -119,6 +119,16 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        public async Task PartialUpdateServiceAsync(int id, Service service)
+        {
+            var ef = await _db.Services.FindAsync(id);
+            if (ef == null) throw new KeyNotFoundException($"Service {service.IdService} not found.");
+
+            ef.Price = service.Price;
+            _db.Services.Update(ef);
+            await _db.SaveChangesAsync();
+
+        }
         public async Task DeleteServiceAsync(int id)
         {
             var efService = await _db.Services.FindAsync(id);

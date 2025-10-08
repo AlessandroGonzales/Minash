@@ -12,7 +12,7 @@ namespace Domain.Repositories
         Task<User?> GetUserByEmailAsync(string email);
         Task<User> AddUserAsync(User user);
         Task UpdateUserAsync(int id, User user);
-        Task UpdateUserNameAndPhoneAsync(int id, User user);
+        Task PartialUpdateUserAsync(int id, User user);
         Task DeleteUserAsync(int id);
     }
 }

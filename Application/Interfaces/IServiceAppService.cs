@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 
 namespace Application.Interfaces
@@ -11,6 +12,7 @@ namespace Application.Interfaces
         Task<IEnumerable<ServiceResponse>> GetServicesByQualityAsync(string quality);
         Task<ServiceResponse> AddServiceAsync(ServiceRequest serviceDto);
         Task UpdateServiceAsync(int id, ServiceRequest serviceDto);
+        Task PartialUpdateServiceAsync(int id, ServicePartial serviceDto);
         Task DeleteServiceAsync(int id);
     }
 }
