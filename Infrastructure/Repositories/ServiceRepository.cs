@@ -113,6 +113,7 @@ namespace Infrastructure.Repositories
             ef.ServiceName = service.ServiceName;
             ef.ServiceDetails = service.ServiceDetails;
             ef.Price = service.Price;
+            ef.ImageUrl = service.ImageUrl;
             ef.UpdatedAt = DateTime.UtcNow;
 
             _db.Services.Update(ef);
@@ -124,7 +125,11 @@ namespace Infrastructure.Repositories
             var ef = await _db.Services.FindAsync(id);
             if (ef == null) throw new KeyNotFoundException($"Service {service.IdService} not found.");
 
-            ef.Price = service.Price;
+            if (service.Price == 0) ef.Price = ef.Price;
+            else ef.Price = service.Price;
+
+            if (service.ImageUrl is not null)
+                ef.ImageUrl = service.ImageUrl;
             _db.Services.Update(ef);
             await _db.SaveChangesAsync();
 

@@ -79,10 +79,10 @@ namespace Infrastructure.Repositories
             return role;
         }
 
-        public async Task UpdateRoleAsync(Role role)
+        public async Task UpdateRoleAsync(int id, Role role)
         {
-            var existingRole = await _db.Roles.FindAsync(role.IdRole);
-            if (existingRole == null) throw new KeyNotFoundException($"Role with ID {role.IdRole} not found.");
+            var existingRole = await _db.Roles.FindAsync(id);
+            if (existingRole == null) throw new KeyNotFoundException($"Role with ID {id} not found.");
             existingRole.RoleName = role.RoleName;
             existingRole.RoleDetails = role.RoleDetails;
             existingRole.UpdatedAt = DateTime.UtcNow;
@@ -90,6 +90,19 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
+        public async Task PartialUpdateRoleAsync(int id, Role role)
+        {
+            var existingRole = await _db.Roles.FindAsync(id);
+            if (existingRole == null) throw new KeyNotFoundException($"Role with ID {id} not found.");
+
+            if(role.RoleName is not null)
+                existingRole.RoleName= role.RoleName;
+            if(role.RoleDetails is not null)
+                existingRole.RoleDetails= role.RoleDetails;
+
+            _db.Roles.Update(existingRole);
+            await _db.SaveChangesAsync();
+        }
         public async Task DeleteRoleAsync(int id)
         {
             var efRole = await _db.Roles.FindAsync(id);

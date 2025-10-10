@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -28,12 +29,21 @@ namespace Application.Services
             IdUser = dto.IdUser,
         };
 
+        private static Order MapToDomain(OrderPartial dto) => new Order
+        {
+            Total = dto.Total,
+        };
         public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
             var list = await _repo.GetAllOrdersAsync();
             return list.Select(MapToResponse);
         }
 
+        public async Task<IEnumerable<OrderResponse>> GetOrdersByUserNameAsync(string userName)
+        {
+            var list = await _repo.GetOrdersByUserNameAsync(userName);
+            return list.Select(MapToResponse);
+        }
         public async Task<OrderResponse?> GetOrderByIdAsync(int id)
         {
             var domain = await _repo.GetOrderByIdAsync(id);
@@ -55,14 +65,21 @@ namespace Application.Services
             return MapToResponse(createdOrder);
         }
 
-        public async Task UpdateOrderAsync(OrderRequest orderDto)
+        public async Task UpdateOrderAsync(int id, OrderRequest orderDto)
         {
             if (orderDto == null) throw new ArgumentNullException(nameof(orderDto));
             var order = MapToDomain(orderDto);
 
-            await _repo.UpdateOrderAsync(order);
+            await _repo.UpdateOrderAsync(id, order);
         }
 
+        public async Task PartialUpdateOrderAsync(int id, OrderPartial orderDto)
+        {
+            var order = MapToDomain(orderDto);
+
+            await _repo.PartialUpdateOrderAsync(id, order);
+
+        }
         public async Task DeleteOrderAsync(int id)
         {
             await _repo.DeleteOrderAsync(id);

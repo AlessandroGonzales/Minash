@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -37,6 +38,12 @@ namespace Application.Services
                 ImageUrl = dto.ImageUrl,
             };
         }
+
+        private static GarmentService MapToDomain(GarmentServicePartial dto) => new GarmentService
+        {
+            AdditionalPrice = dto.AdditionalPrice,
+            ImageUrl = dto.ImageUrl,
+        };
 
         public async Task<IEnumerable<GarmentServiceResponse>> GetAllGarmentServicesAsync()
         {
@@ -87,7 +94,7 @@ namespace Application.Services
             return MapToResponse(addedDomain);
         }
 
-        public async Task UpdateGarmentServiceAsync(GarmentServiceRequest dto)
+        public async Task UpdateGarmentServiceAsync(int id, GarmentServiceRequest dto)
         {
             if (dto.IdGarmentService <= 0)
                 throw new ArgumentException("ID de GarmentService debe ser mayor a 0.");
@@ -95,7 +102,16 @@ namespace Application.Services
             var domain = MapToDomain(dto);
             domain.UpdatedAt = DateTime.UtcNow; 
 
-            await _repo.UpdateGarmentServiceAsync(domain);
+            await _repo.UpdateGarmentServiceAsync(id, domain);
+        }
+
+        public async Task PartialUpdateGarmentServiceAsync(int id, GarmentServicePartial dto)
+        {
+           if(id <= 0)
+                throw new ArgumentException("ID de GarmentService debe ser mayor a 0.");
+
+            var domain = MapToDomain(dto);
+            await _repo.PartialUpdateGarmentServiceAsync(id, domain);
         }
 
         public async Task DeleteGarmentServiceAsync(int id)

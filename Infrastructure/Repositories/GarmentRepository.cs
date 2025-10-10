@@ -105,7 +105,8 @@ namespace Infrastructure.Repositories
             var efGarment = await _db.Garments.FindAsync(id);
             if (efGarment == null) throw new KeyNotFoundException($"Garment with ID {id} not found.");
 
-            efGarment.ImageUrl = garment.ImageUrl;
+            if (garment.ImageUrl is not null)
+                efGarment.ImageUrl = garment.ImageUrl;
             efGarment.GarmentDetails = garment.GarmentDetails;
 
             _db.Garments.Update(efGarment);

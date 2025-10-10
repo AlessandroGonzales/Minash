@@ -171,8 +171,15 @@ namespace Infrastructure.Repositories
         {
             var existingUser = await _db.Users.FindAsync(id);
             if (existingUser == null) throw new KeyNotFoundException($"User with ID {user.IdUser} not found.");
-            existingUser.UserName = user.UserName;
-            existingUser.Phone = user.Phone;
+
+            if (user.ImageUrl is not null)
+                existingUser.ImageUrl = user.ImageUrl;
+            if (user.Phone is not null)
+                existingUser.Phone = user.Phone;
+            if (user.UserName is not null)
+                existingUser.UserName = user.UserName;
+           
+            _db.Users.Update(existingUser);
             await _db.SaveChangesAsync();
         }
 

@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,10 +59,17 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetGarmentServiceById), new { id = createdGarmentService.IdGarmentService }, createdGarmentService);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGarmentService([FromRoute]int id, [FromBody] GarmentServiceRequest garmentServiceDto)
         {
-            await _service.UpdateGarmentServiceAsync(garmentServiceDto);
+            await _service.UpdateGarmentServiceAsync(id, garmentServiceDto);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateGarmentServcieAsync([FromRoute] int id, [FromBody] GarmentServicePartial garmentServiceDto)
+        {
+            await _service.PartialUpdateGarmentServiceAsync(id, garmentServiceDto);
             return NoContent();
         }
 

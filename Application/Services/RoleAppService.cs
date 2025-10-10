@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -28,6 +29,12 @@ namespace Application.Services
             RoleDetails = dto.RoleDetails,
         };
 
+        private static Role MapToDomain(RolPartial dto) => new Role
+        {
+            RoleName = dto.RolName,
+            RoleDetails = dto.RolDetails,
+        };
+
         public async Task<IEnumerable<RoleResponse>> GetAllRolesAsync()
         {
             var list = await _repo.GetAllRolesAsync();
@@ -55,10 +62,16 @@ namespace Application.Services
             return MapToResponse(CreatedRole);
         }
 
-        public async Task UpdateRoleAsync(RoleRequest role)
+        public async Task UpdateRoleAsync(int id, RoleRequest role)
         {
             var domainRole = MaptoDomain(role);
-            await _repo.UpdateRoleAsync(domainRole);
+            await _repo.UpdateRoleAsync(id, domainRole);
+        }
+        
+        public async Task PartialUpdateRoleAsync(int id, RolPartial role)
+        {
+            var domainRole = MapToDomain(role);
+            await _repo.PartialUpdateRoleAsync(id, domainRole);
         }
 
         public async Task DeleteRoleAsync(int id)
