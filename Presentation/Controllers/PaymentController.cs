@@ -1,4 +1,4 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,20 +32,19 @@ namespace Presentation.Controllers
             return Ok(pay);
         }
         [HttpPost]
-        public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentDto payment)
+        public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentRequest payment)
         {
-
             var createdPay = await _service.AddPaymentAsync(payment);
             return CreatedAtAction(nameof(GetPaymentByIdAsync), new { Id = createdPay.IdPay }, createdPay);
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdatePaymentAsync([FromBody] PaymentDto payment)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePaymentAsync([FromRoute]int id, [FromBody] PaymentRequest payment)
         {
-            await _service.UpdatePaymentAsync(payment);
+            await _service.UpdatePaymentAsync(id,payment);
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentAsync(int Id)
         {
             await _service.DeletePaymentAsync(Id);

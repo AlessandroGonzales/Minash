@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,18 +37,26 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRole([FromBody] RoleDto roleDto)
+        public async Task<IActionResult> CreateRole([FromBody] RoleRequest roleDto)
         {
             var createdRole = await _service.AddRoleAsync(roleDto);
-            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.IdRole }, createdRole);
+            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.IdRol }, createdRole);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateRole([FromBody] RoleDto roleDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRole([FromRoute]int id, [FromBody] RoleRequest roleDto)
         {
-            await _service.UpdateRoleAsync(roleDto);
+            await _service.UpdateRoleAsync(id, roleDto);
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateRoleAsync([FromRoute] int id,  [FromBody] RolPartial roleDto)
+        {
+            await _service.PartialUpdateRoleAsync(id, roleDto);
+            return NoContent();
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
@@ -55,6 +64,7 @@ namespace Presentation.Controllers
             await _service.DeleteRoleAsync(id);
             return NoContent();
         }
+
 
 
     }

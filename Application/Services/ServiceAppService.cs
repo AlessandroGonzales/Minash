@@ -1,8 +1,9 @@
 ﻿using Application.Interfaces;
 using Domain.Repositories;
-using Application.DTO;
 using Domain.Entities;
-using System.Collections.Generic;
+using Application.DTO.Request;
+using Application.DTO.Response;
+using Application.DTO.Partial;
 
 namespace Application.Services
 {
@@ -14,16 +15,16 @@ namespace Application.Services
             _repo = repo;
         }
 
-        private static ServiceDto MaptoDto(Service d) => new ServiceDto
+        private static ServiceResponse MapToResponse(Service d) => new ServiceResponse
         {
             IdService = d.IdService,
             ServiceName = d.ServiceName,
             ServiceDetails = d.ServiceDetails,
-            Price = d.Price,
+            ServicePrice = d.Price,
             ImageUrl = d.ImageUrl,
         };  
 
-        private static Service MaptoDomain(ServiceDto dto) => new Service
+        private static Service MapToDomain(ServiceRequest dto) => new Service
         {
             IdService = dto.IdService,
             ServiceName = dto.ServiceName,
@@ -32,28 +33,34 @@ namespace Application.Services
             ImageUrl = dto.ImageUrl,
         };
 
-        public async Task<IEnumerable<ServiceDto>> GetAllServicesAsync()
+        private static Service MapToDomain(ServicePartial dto) => new Service
+        {
+            Price = dto.ServicePrice,
+            ImageUrl = dto.ImageUrl,
+        };
+
+        public async Task<IEnumerable<ServiceResponse>> GetAllServicesAsync()
         {
             var list = await _repo.GetAllServicesAsync();
-            return list.Select(MaptoDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<ServiceDto?> GetServiceByIdAsync(int id)
+        public async Task<ServiceResponse?> GetServiceByIdAsync(int id)
         {
             var service = await _repo.GetServiceByIdAsync(id);
-            return service == null ? null : MaptoDto(service);
+            return service == null ? null : MapToResponse(service);
         }
 
-        public async Task<IEnumerable<ServiceDto>> GetServiceByNameAsync(string name)
+        public async Task<IEnumerable<ServiceResponse>> GetServiceByNameAsync(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return Enumerable.Empty<ServiceDto>();
+            if (string.IsNullOrWhiteSpace(name)) return Enumerable.Empty<ServiceResponse>();
 
             var normalizedName = name.Replace(" ", "").ToLower();
             var list = await _repo.GetServicesByNameAsync(normalizedName);
-            return list.Select(MaptoDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<IEnumerable<ServiceDto>> GetServicesByQualityAsync(string quality)
+        public async Task<IEnumerable<ServiceResponse>> GetServicesByQualityAsync(string quality)
         {
             IEnumerable<Service> services = quality switch
             {
@@ -63,23 +70,29 @@ namespace Application.Services
                 _ => Enumerable.Empty<Service>()
             };
 
-            return services.Select(MaptoDto);
+            return services.Select(MapToResponse);
 
         }
 
-        public async Task<ServiceDto> AddServiceAsync(ServiceDto service)
+        public async Task<ServiceResponse> AddServiceAsync(ServiceRequest service)
         {
-            var domainService = MaptoDomain(service);
+            var domainService = MapToDomain(service);
             var createdService = await _repo.AddServiceAsync(domainService);
-            return MaptoDto(createdService);
+            return MapToResponse(createdService);
         }
 
-        public async Task UpdateServiceAsync(ServiceDto service)
+        public async Task UpdateServiceAsync(int id , ServiceRequest service)
         {
-            var domainService = MaptoDomain(service);
-            await _repo.UpdateServiceAsync(domainService);
+            var domainService = MapToDomain(service);
+            await _repo.UpdateServiceAsync( id, domainService);
         }
 
+        public async Task PartialUpdateServiceAsync(int id, ServicePartial service)
+        {
+            var domainService = MapToDomain(service);
+            await _repo.PartialUpdateServiceAsync(id, domainService);
+
+        }
         public async Task DeleteServiceAsync(int id)
         {
             await _repo.DeleteServiceAsync(id);

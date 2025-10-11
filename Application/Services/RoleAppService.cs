@@ -1,4 +1,6 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -13,51 +15,63 @@ namespace Application.Services
             _repo = repo;
         }
 
-        private static RoleDto MaptoDto(Role d) => new RoleDto
+        private static RoleResponse MapToResponse(Role d) => new RoleResponse
         {
-            IdRole = d.IdRole,
+            IdRol = d.IdRole,
             RoleName = d.RoleName,
             RoleDetails = d.RoleDetails,
         };
 
-        private static Role MaptoDomain(RoleDto dto) => new Role
+        private static Role MaptoDomain(RoleRequest dto) => new Role
         {
             IdRole = dto.IdRole,
             RoleName = dto.RoleName,
             RoleDetails = dto.RoleDetails,
         };
 
-        public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
+        private static Role MapToDomain(RolPartial dto) => new Role
+        {
+            RoleName = dto.RolName,
+            RoleDetails = dto.RolDetails,
+        };
+
+        public async Task<IEnumerable<RoleResponse>> GetAllRolesAsync()
         {
             var list = await _repo.GetAllRolesAsync();
-            return list.Select(MaptoDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<RoleDto?> GetRoleByIdAsync(int id)
+        public async Task<RoleResponse?> GetRoleByIdAsync(int id)
         {
             var role = await _repo.GetRoleByIdAsync(id);
-            return role == null ? null : MaptoDto(role);
+            return role == null ? null : MapToResponse(role);
         }
 
-        public async Task<IEnumerable<RoleDto>> GetRolesByNameAsync(string name)
+        public async Task<IEnumerable<RoleResponse>> GetRolesByNameAsync(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return Enumerable.Empty<RoleDto>();
+            if (string.IsNullOrWhiteSpace(name)) return Enumerable.Empty<RoleResponse>();
             var normalizedName = name.Replace(" ", "").ToLower();
             var list = await _repo.GetRolesByNameAsync(normalizedName);
-            return list.Select(MaptoDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task<RoleDto> AddRoleAsync(RoleDto role)
+        public async Task<RoleResponse> AddRoleAsync(RoleRequest role)
         {
             var CreateRole = MaptoDomain(role);
             var CreatedRole = await _repo.AddRoleAsync(CreateRole);
-            return MaptoDto(CreatedRole);
+            return MapToResponse(CreatedRole);
         }
 
-        public async Task UpdateRoleAsync(RoleDto role)
+        public async Task UpdateRoleAsync(int id, RoleRequest role)
         {
             var domainRole = MaptoDomain(role);
-            await _repo.UpdateRoleAsync(domainRole);
+            await _repo.UpdateRoleAsync(id, domainRole);
+        }
+        
+        public async Task PartialUpdateRoleAsync(int id, RolPartial role)
+        {
+            var domainRole = MapToDomain(role);
+            await _repo.PartialUpdateRoleAsync(id, domainRole);
         }
 
         public async Task DeleteRoleAsync(int id)

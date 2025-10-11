@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,6 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentServiceById(int id)
         {
@@ -30,24 +30,49 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(garmentService);
         }
+
         [HttpGet("by-garment/{garmentId}")]
         public async Task<IActionResult> GetGarmentServicesByGarmentId(int garmentId)
         {
             var garmentServices = await _service.GetGarmentServicesByGarmentIdAsync(garmentId);
             return Ok(garmentServices);
         }
+
+        [HttpGet("By-service/{serviceId}")]
+        public async Task<IActionResult> GetGarmentServicesByServiceIdAsync(int serviceId)
+        {
+            var garmentServices = await _service.GetGarmentServicesByServiceIdAsync(serviceId);
+            return Ok(garmentServices);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetGarmentServicesByQualityAsync(string  quality)
+        {
+            var garmentServies = await _service.GetGarmentServicesByQualityAsync(quality);
+            return Ok(garmentServies);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceDto garmentServiceDto)
+        public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
             var createdGarmentService = await _service.AddGarmentServiceAsync(garmentServiceDto);
             return CreatedAtAction(nameof(GetGarmentServiceById), new { id = createdGarmentService.IdGarmentService }, createdGarmentService);
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateGarmentService([FromBody] GarmentServiceDto garmentServiceDto)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGarmentService([FromRoute]int id, [FromBody] GarmentServiceRequest garmentServiceDto)
         {
-            await _service.UpdateGarmentServiceAsync(garmentServiceDto);
+            await _service.UpdateGarmentServiceAsync(id, garmentServiceDto);
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateGarmentServcieAsync([FromRoute] int id, [FromBody] GarmentServicePartial garmentServiceDto)
+        {
+            await _service.PartialUpdateGarmentServiceAsync(id, garmentServiceDto);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarmentService(int id)
         {

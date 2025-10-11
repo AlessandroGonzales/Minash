@@ -1,7 +1,7 @@
-﻿using Domain.Repositories;
+﻿using Domain.Entities;
+using Domain.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
 using EfRole = Infrastructure.Persistence.Entities.Role;
 using EfUser = Infrastructure.Persistence.Entities.User;
 
@@ -102,16 +102,34 @@ namespace Infrastructure.Repositories
             var list = await GetQueryableWithIncludes().ToListAsync();
             return list.Select(MapToDomain);
         }
+
+        public async Task<User?> GetUserByNameAsync(string name)
+        {
+            var user = await GetQueryableWithIncludes().FirstOrDefaultAsync(u => u.UserName == name);
+
+            return user == null? null :MapToDomain(user);
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByCityAsync(string city)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(u => u.City == city)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task<User?> GetUserByIdAsync(int id)
         {
             var efUser = await GetQueryableWithIncludes().FirstOrDefaultAsync(u => u.IdUser == id);
             return efUser == null ? null : MapToDomain(efUser);
         }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             var efUser = await GetQueryableWithIncludes().FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
             return efUser == null ? null : MapToDomain(efUser);
         }
+
         public async Task<IEnumerable<User>> GetUsersByRolIdAsync(int roleId)
         {
             var list = await GetQueryableWithIncludes()
@@ -132,14 +150,13 @@ namespace Infrastructure.Repositories
             return MapToDomain(addedUser!);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(int id, User user)
         {
-            var existingUser = await _db.Users.FindAsync(user.IdUser);
+            var existingUser = await _db.Users.FindAsync(id);
             if (existingUser == null) throw new KeyNotFoundException($"User with ID {user.IdUser} not found.");
             existingUser.UserName = user.UserName;
             existingUser.LastName = user.LastName;
             existingUser.Email = user.Email;
-            existingUser.PasswordHash = user.PasswordHash;
             existingUser.Phone = user.Phone;
             existingUser.Address = user.Address;
             existingUser.UpdatedAt = DateTime.UtcNow;
@@ -147,10 +164,26 @@ namespace Infrastructure.Repositories
             existingUser.Province = user.Province;
             existingUser.City = user.City;
             existingUser.FullAddress = user.FullAddress;
-            existingUser.IdRole = user.IdRole;
             await _db.SaveChangesAsync();
         }
 
+        public async Task PartialUpdateUserAsync(int id, User user)
+        {
+            var existingUser = await _db.Users.FindAsync(id);
+            if (existingUser == null) throw new KeyNotFoundException($"User with ID {user.IdUser} not found.");
+
+            if (user.ImageUrl is not null)
+                existingUser.ImageUrl = user.ImageUrl;
+            if (user.Phone is not null)
+                existingUser.Phone = user.Phone;
+            if (user.UserName is not null)
+                existingUser.UserName = user.UserName;
+           
+            _db.Users.Update(existingUser);
+            await _db.SaveChangesAsync();
+        }
+
+      
         public async Task DeleteUserAsync(int id)
         {
             var existingUser = await _db.Users.FindAsync(id);
@@ -158,6 +191,5 @@ namespace Infrastructure.Repositories
             _db.Users.Remove(existingUser);
             await _db.SaveChangesAsync();
         }
-
     }
 }

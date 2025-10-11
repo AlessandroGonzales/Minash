@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTO;
+using Application.DTO.Request;
+using Application.DTO.Response;
+using Application.DTO.Partial;
 namespace Presentation.Controllers
 {
     [ApiController]
@@ -13,12 +15,14 @@ namespace Presentation.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllGarments()
         {
             var garments = await _service.GetAllGarmentsAsync();
             return Ok(garments);
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentById(int id)
         {
@@ -27,25 +31,35 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(garment);
         }
+
         [HttpGet("name")]
         public async Task<IActionResult> GetGarmentByName([FromQuery] string name)
         {
             var garments = await _service.GetGarmentsByNameAsync(name);
             return Ok(garments);
         }
+
         [HttpPost]
-        public async Task<IActionResult> CreateGarment([FromBody] GarmentDto garmentDto)
+        public async Task<IActionResult> CreateGarment([FromBody] GarmentRequest garmentDto)
         {
             var createdGarment = await _service.AddGarmentAsync(garmentDto);
             return CreatedAtAction(nameof(GetGarmentById), new { id = createdGarment.IdGarment }, createdGarment);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateGarment([FromBody] GarmentDto garmentDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGarment([FromRoute]int id, [FromBody] GarmentRequest garmentDto)
         {
-            await _service.UpdateGarmentAsync(garmentDto);
+            await _service.UpdateGarmentAsync(id, garmentDto);
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateGarmentAsync([FromRoute]int id, [FromBody] GarmentPartial garmentDto)
+        {
+            await _service.PartialUpdateGarmentAsync(id, garmentDto);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarment(int id)
         {

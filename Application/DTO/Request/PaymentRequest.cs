@@ -3,9 +3,9 @@ using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Application.DTO
+namespace Application.DTO.Request
 {
-    public class PaymentDto
+    public class PaymentRequest
     {
         public int IdPay { get; set; }
 

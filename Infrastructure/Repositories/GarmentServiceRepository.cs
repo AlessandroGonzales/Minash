@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
         {
             IdGarmentService = ef.IdGarmentService,
             AdditionalPrice = ef.AdditionalPrice,
-            ImageUrl = ef.ImageUrl ?? string.Empty,
+            ImageUrl = ef.ImageUrl,
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdGarment = ef.IdGarment,
@@ -122,6 +122,14 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
+        public async Task<IEnumerable<GarmentService>> GetGarmentServicesByPriceAsync(decimal priceMin, decimal PriceMax)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(gs => gs.AdditionalPrice >= priceMin && gs.AdditionalPrice <= PriceMax)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task<GarmentService> AddGarmentServiceAsync(GarmentService garmentService)
         {
             if (garmentService.IdGarment <= 0 || garmentService.IdService <= 0)
@@ -135,17 +143,31 @@ namespace Infrastructure.Repositories
             return MapToDomain(addedEf);
         }
 
-        public async Task UpdateGarmentServiceAsync(GarmentService garmentService)
+        public async Task UpdateGarmentServiceAsync(int id, GarmentService garmentService)
         {
-            var ef = await _db.GarmentServices.FindAsync(garmentService.IdGarmentService);
-            if (ef == null) throw new KeyNotFoundException($"GarmentService con ID {garmentService.IdGarmentService} no encontrado.");
+            var ef = await _db.GarmentServices.FindAsync(id);
+            if (ef == null) throw new KeyNotFoundException($"GarmentService con ID {id} no encontrado.");
 
             ef.AdditionalPrice = garmentService.AdditionalPrice;
             ef.ImageUrl = garmentService.ImageUrl;
             ef.UpdatedAt = DateTime.UtcNow;
-            ef.IdGarment = garmentService.IdGarment; 
-            ef.IdService = garmentService.IdService;
 
+            _db.GarmentServices.Update(ef);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task PartialUpdateGarmentServiceAsync(int id, GarmentService garmentService)
+        {
+            var ef = await _db.GarmentServices.FindAsync(id);
+            if (ef == null) throw new KeyNotFoundException($"GarmentService con ID {id} no encontrado.");
+
+            if (garmentService.AdditionalPrice == 0) ef.AdditionalPrice = ef.AdditionalPrice;
+            else ef.AdditionalPrice = garmentService.AdditionalPrice;
+
+            if (garmentService.ImageUrl is not null)
+                ef.ImageUrl = garmentService.ImageUrl;
+
+            _db.GarmentServices.Update(ef);
             await _db.SaveChangesAsync();
         }
 

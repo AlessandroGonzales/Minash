@@ -92,6 +92,16 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByUserNameAsync(string userName)
+        {
+            var list = await _db.Orders
+                .Include(o => o.IdUserNavigation)
+                .Where(o => o.IdUserNavigation.UserName == userName)
+                .AsNoTracking()
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             var ef = await _db.Orders
@@ -115,21 +125,34 @@ namespace Infrastructure.Repositories
             var efOrder = MapToEf(order);
             await _db.Orders.AddAsync(efOrder);
             await _db.SaveChangesAsync();
+            order.CreatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.Now;
             order.IdOrder = efOrder.IdOrder;
             return order;
         }
 
-        public async Task UpdateOrderAsync(Order order)
+        public async Task UpdateOrderAsync(int id, Order order)
         {
-            var efOrder = await _db.Orders.FindAsync(order.IdOrder);
-            if (efOrder == null) throw new KeyNotFoundException($"Order with ID {order.IdOrder} not found.");
+            var efOrder = await _db.Orders.FindAsync(id);
+            if (efOrder == null) throw new KeyNotFoundException($"Order with ID {id} not found.");
+
             efOrder.Total = order.Total;
             efOrder.UpdatedAt = DateTime.UtcNow;
-            efOrder.IdUser = order.IdUser;
+
             _db.Orders.Update(efOrder);
             await _db.SaveChangesAsync();
         }
 
+        public async Task PartialUpdateOrderAsync(int id, Order order)
+        {
+            var efOrder = await _db.Orders.FindAsync(id);
+            if (efOrder == null) throw new KeyNotFoundException($"Order with ID {id} not found.");
+
+            efOrder.Total = order.Total;
+            _db.Orders.Update(efOrder);
+            await _db.SaveChangesAsync();
+
+        }
         public async Task DeleteOrderAsync(int id)
         {
             var efOrder = await _db.Orders.FindAsync(id);

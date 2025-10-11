@@ -8,7 +8,7 @@ namespace Domain.Repositories
         Task<DetailsOrder?> GetDetailsOrderByIdAsync(int id);
         Task<IEnumerable<DetailsOrder>> GetDetailsOrdersByOrderIdAsync(int orderId);
         Task<DetailsOrder> AddDetailsOrderAsync(DetailsOrder detailsOrder);
-        Task UpdateDetailsOrderAsync(DetailsOrder detailsOrder);
+        Task UpdateDetailsOrderAsync(int id, DetailsOrder detailsOrder);
         Task DeleteDetailsOrderAsync(int id);
     }
 }

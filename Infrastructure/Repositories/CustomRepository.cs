@@ -53,6 +53,7 @@ namespace Infrastructure.Repositories
             UpdatedAt= service.UpdatedAt ?? DateTime.UtcNow,
             Price = service.Price,
         };
+
         private static Custom MapToDomain(EfCustom custom) => new Custom
         {
             IdCustom = custom.IdCustom,
@@ -88,9 +89,16 @@ namespace Infrastructure.Repositories
                 .Include(x => x.IdGarmentNavigation);
 
             return tracking ? list : list.AsNoTracking();
-
-
         }
+
+        public async Task<IEnumerable<Custom>> GetCustomsByUserNameAsync(string userName)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(o => o.IdUserNavigation.UserName == userName)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task<IEnumerable<Custom>> GetAllCustomsAsync()
         {
             var list = await GetQueryableWithIncludes().ToListAsync();
@@ -108,20 +116,33 @@ namespace Infrastructure.Repositories
             var creatCustom = MapToEf(custom);
             _db.Customs.Add(creatCustom);
             await _db.SaveChangesAsync();
-
-            var createdCustom = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdCustom == custom.IdCustom);
+            var createdCustom = await GetQueryableWithIncludes().FirstAsync(s => s.IdCustom == creatCustom.IdCustom);
             return MapToDomain(createdCustom);
         }
 
-        public async Task UpdateCustomAsync (Custom custom)
+        public async Task UpdateCustomAsync (int id, Custom custom)
         {
-            var rCustom = await _db.Customs.FindAsync(custom.IdCustom);
+            var rCustom = await _db.Customs.FindAsync(id);
+            rCustom.UpdatedAt = DateTime.UtcNow;
             rCustom.CustomerDetails = custom.CustomerDetails;
             rCustom.Count = custom.Count;
             rCustom.ImageUrl = custom.ImageUrl;
-            rCustom.IdGarment = custom.IdGarment;
-            rCustom.IdService = custom.IdService;
 
+            _db.Customs.Update(rCustom);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task PartialUpdateCustomAsync(int id, Custom custom)
+        {
+            var rCustom = await _db.Customs.FindAsync(id);
+
+            if (custom.ImageUrl is not null)
+                rCustom.ImageUrl = custom.ImageUrl;
+
+            if (custom.Count == 0) rCustom.Count = rCustom.Count;
+            else rCustom.Count = custom.Count;
+
+            _db.Customs.Update(rCustom);
             await _db.SaveChangesAsync();
         }
 

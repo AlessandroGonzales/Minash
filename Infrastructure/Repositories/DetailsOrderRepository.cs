@@ -98,24 +98,27 @@ namespace Infrastructure.Repositories
             var efDetailsOrder = MapToEf(d);
             _db.DetailsOrders.Add(efDetailsOrder);
             await _db.SaveChangesAsync();
-
+            
+            efDetailsOrder.CreatedAt = DateTime.Now;
+            efDetailsOrder.UnitPrice = d.UnitPrice;
             var created = await GetQueryableWithIncludes().FirstOrDefaultAsync(doe => doe.IdDetailsOrder == efDetailsOrder.IdDetailsOrder);
             return MapToDomain(created);
         }
 
-        public async Task UpdateDetailsOrderAsync(DetailsOrder d)
+        public async Task UpdateDetailsOrderAsync(int id, DetailsOrder d)
         {
             if (d.IdDetailsOrder <= 0)
                 throw new ArgumentException("DetailsOrder must have a valid IdDetailsOrder greater than zero to be updated.");
-            var existingEf = await _db.DetailsOrders.FindAsync(d.IdDetailsOrder);
+
+            var existingEf = await _db.DetailsOrders.FindAsync(id);
             if (existingEf == null)
                 throw new InvalidOperationException($"DetailsOrder with Id {d.IdDetailsOrder} does not exist.");
+
             existingEf.Count = d.Count;
             existingEf.SubTotal = d.SubTotal;
             existingEf.UnitPrice = d.UnitPrice;
             existingEf.UpdatedAt = DateTime.UtcNow;
-            existingEf.IdOrder = d.IdOrder;
-            existingEf.IdGarmentService = d.IdGarmentService;
+
             _db.DetailsOrders.Update(existingEf);
             await _db.SaveChangesAsync();
         }

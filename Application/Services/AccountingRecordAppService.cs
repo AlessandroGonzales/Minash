@@ -1,4 +1,6 @@
-﻿using Application.DTO;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -10,15 +12,15 @@ namespace Application.Services
         private readonly IAccountingRecordRepository _repo;
         public AccountingRecordAppService(IAccountingRecordRepository repo) { _repo = repo; }
 
-        private static AccountingRecordDto MapToDto(AccountingRecord accoutingRecord) => new AccountingRecordDto
+        private static AccountingRecordResponse MapToResponse(AccountingRecord accoutingRecord) => new AccountingRecordResponse
         {
             IdAccountingRecord = accoutingRecord.IdAccountingRecord,
-            idPay = accoutingRecord.IdPay,
+            IdPay = accoutingRecord.IdPay,
             Details = accoutingRecord.Details,
-            total = accoutingRecord.Total,
+            Total = accoutingRecord.Total,
         };
 
-        private static AccountingRecord MapToDomain(AccountingRecordDto accountingRecord) => new AccountingRecord
+        private static AccountingRecord MapToDomain(AccountingRecordRequest accountingRecord) => new AccountingRecord
         {
             IdAccountingRecord = accountingRecord.IdAccountingRecord,
             Details = accountingRecord.Details,
@@ -26,33 +28,41 @@ namespace Application.Services
             IdPay = accountingRecord.idPay,
         };
 
-        public async Task<IEnumerable<AccountingRecordDto>> GetAllAccountingRecordsAsync()
+        private static AccountingRecord MapToDomain(AccountingRecordsPartial accountingRecord) => new AccountingRecord
+        {
+            Total = accountingRecord.total,
+            Details = accountingRecord.Details
+        };
+        public async Task<IEnumerable<AccountingRecordResponse>> GetAllAccountingRecordsAsync()
         {
             var list = await _repo.GetAllAccountingRecordsAsync();
-            return list.Select(MapToDto);
+            return list.Select(MapToResponse);
         }
 
-        public async Task <AccountingRecordDto?> GetAccountingRecordByIdAsync(int id)
+        public async Task <AccountingRecordResponse?> GetAccountingRecordByIdAsync(int id)
         {
             var aR = await _repo.GetAccountingRecordByIdAsync(id);
-            return aR == null ? null : MapToDto(aR);
+            return aR == null ? null : MapToResponse(aR);
         }
 
-        public async Task <AccountingRecordDto> AddAccountingRecordAsync(AccountingRecordDto accountingRecord)
+        public async Task <AccountingRecordResponse> AddAccountingRecordAsync(AccountingRecordRequest accountingRecord)
         {
             var domain = MapToDomain(accountingRecord);
-            domain.CreatedAt = DateTime.UtcNow;
-            domain.UpdatedAt = DateTime.UtcNow;
             var created = await _repo.AddAccoutingRecordAsync(domain);
-            return MapToDto(created);
+            return MapToResponse(created);
         }
 
-        public async Task UpdateAccountingRecordAsync( AccountingRecordDto accountingRecord)
+        public async Task UpdateAccountingRecordAsync(int id, AccountingRecordRequest accountingRecord)
         {
             var domain = MapToDomain(accountingRecord);
-            domain.UpdatedAt = DateTime.UtcNow;
 
-            await _repo.UpdateAccountingRecordAsync(domain);
+            await _repo.UpdateAccountingRecordAsync(id, domain);
+        }
+
+        public async Task PartialUpdateAccountingRecordAsync(int id, AccountingRecordsPartial accountingRecordsDto)
+        {
+            var domain = MapToDomain(accountingRecordsDto);
+            await _repo.PartialUpdateAccountingRecordAsync(id, domain);
         }
 
         public async Task DeleteAccountingRecordAsync( int id)

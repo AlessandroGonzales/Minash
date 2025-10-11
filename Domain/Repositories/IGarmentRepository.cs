@@ -8,7 +8,8 @@ namespace Domain.Repositories
         Task<Garment?> GetGarmentByIdAsync(int id);
         Task<IEnumerable<Garment>> GetGarmentsByNameAsync(string name);
         Task<Garment> AddGarmentAsync(Garment garment);
-        Task UpdateGarmentAsync(Garment garment);
+        Task UpdateGarmentAsync(int id, Garment garment);
+        Task PartialUpdateGarmentAsync(int id, Garment garment);
         Task DeleteGarmentAsync(int id);
     }
 }

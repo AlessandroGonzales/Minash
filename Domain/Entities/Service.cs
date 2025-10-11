@@ -9,8 +9,8 @@
         public decimal Price { get; set; }
         public int State { get; set; }
         public string ImageUrl { get; set; } = null!;
-        public DateTimeOffset CreatedAt { get; set;  }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set;  }
+        public DateTime UpdatedAt { get; set; }
 
         // Navigation Properties
         public ICollection<Custom> Customs { get; set; } = new List<Custom>();

@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
-using Application.DTO;
+using Application.DTO.Request;
+using Application.DTO.Response;
+using Application.DTO.Partial;
 
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
     public class ServiceController : ControllerBase 
     {
         private readonly IServiceAppService _service;
@@ -23,7 +24,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetServiceById(int id)
+        public async Task<IActionResult> GetServiceById([FromRoute]int id)
         {
             var service = await _service.GetServiceByIdAsync(id);
             if (service == null)
@@ -45,17 +46,24 @@ namespace Presentation.Controllers
             return Ok(list);
         }
             
-
         [HttpPost]
-        public async Task<IActionResult> CreateService([FromBody] ServiceDto serviceDto)
+        public async Task<IActionResult> CreateService([FromBody] ServiceRequest serviceDto)
         {
             var createdService = await _service.AddServiceAsync(serviceDto);
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateService([FromBody] ServiceDto serviceDto)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateService([FromRoute]int id, [FromBody] ServiceRequest serviceDto)
         {
-            await _service.UpdateServiceAsync(serviceDto);
+            await _service.UpdateServiceAsync(id, serviceDto);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateServicePriceAsync([FromRoute] int id, [FromBody] ServicePartial serviceDto)
+        {
+            await _service.PartialUpdateServiceAsync(id, serviceDto);
             return NoContent();
         }
 
@@ -65,6 +73,5 @@ namespace Presentation.Controllers
             await _service.DeleteServiceAsync(id);
             return NoContent();
         }   
-
     }
 }

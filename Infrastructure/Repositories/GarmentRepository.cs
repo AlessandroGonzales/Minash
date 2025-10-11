@@ -1,7 +1,7 @@
-﻿using Domain.Repositories;
+﻿using Domain.Entities;
+using Domain.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
 using EfGarment = Infrastructure.Persistence.Entities.Garment;
 namespace Infrastructure.Repositories
 {
@@ -19,16 +19,16 @@ namespace Infrastructure.Repositories
             GarmentName = efGarment.GarmentName,
             GarmentDetails = efGarment.GarmentDetails,
             ImageUrl = efGarment.ImageUrl ?? string.Empty,
-            UpdatedAt = efGarment.UpdatedAt.HasValue ? DateTime.SpecifyKind(efGarment.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
-            CreatedAt = efGarment.CreatedAt.HasValue ? DateTime.SpecifyKind(efGarment.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+            UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
+            CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow,
 
             GarmentServices = efGarment.GarmentServices.Select(gs => new GarmentService
             {
                 IdGarmentService = gs.IdGarmentService,
                 AdditionalPrice = gs.AdditionalPrice,
                 ImageUrl = gs.ImageUrl ?? string.Empty,
-                CreatedAt = gs.CreatedAt.HasValue ? DateTime.SpecifyKind(gs.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
-                UpdatedAt = gs.UpdatedAt.HasValue ? DateTime.SpecifyKind(gs.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                CreatedAt = gs.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = gs.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = gs.IdGarment,
                 IdService = gs.IdService
             }).ToList(),
@@ -39,8 +39,8 @@ namespace Infrastructure.Repositories
                 CustomerDetails = c.CustomerDetails,
                 Count = c.Count,
                 ImageUrl = c.ImageUrl ?? string.Empty,
-                CreatedAt = c.CreatedAt.HasValue ? DateTime.SpecifyKind(c.CreatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
-                UpdatedAt = c.UpdatedAt.HasValue ? DateTime.SpecifyKind(c.UpdatedAt.Value, DateTimeKind.Utc) : DateTime.MinValue,
+                CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = c.IdGarment,
                 IdUser = c.IdUser,
                 IdService = c.IdService
@@ -86,16 +86,32 @@ namespace Infrastructure.Repositories
             return garment;
         }
 
-        public async Task UpdateGarmentAsync(Garment garment)
+        public async Task UpdateGarmentAsync(int id, Garment garment)
         {
-            var efGarment = await _db.Garments.FindAsync(garment.IdGarment);
+            var efGarment = await _db.Garments.FindAsync(id);
             if (efGarment == null) throw new KeyNotFoundException($"Garment with ID {garment.IdGarment} not found.");
+
             efGarment.GarmentName = garment.GarmentName;
             efGarment.GarmentDetails = garment.GarmentDetails;
             efGarment.ImageUrl = garment.ImageUrl;
             efGarment.UpdatedAt = DateTime.UtcNow;
+
             _db.Garments.Update(efGarment);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task PartialUpdateGarmentAsync(int id, Garment garment)
+        {
+            var efGarment = await _db.Garments.FindAsync(id);
+            if (efGarment == null) throw new KeyNotFoundException($"Garment with ID {id} not found.");
+
+            if (garment.ImageUrl is not null)
+                efGarment.ImageUrl = garment.ImageUrl;
+            efGarment.GarmentDetails = garment.GarmentDetails;
+
+            _db.Garments.Update(efGarment);
+            await _db.SaveChangesAsync();
+
         }
         public async Task DeleteGarmentAsync(int id)
         {

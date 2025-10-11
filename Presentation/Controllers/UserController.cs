@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTO;
+using Application.DTO.Request;
+using Application.DTO.Partial;
+
 namespace Presentation.Controllers
 {
     [ApiController]
@@ -19,6 +21,21 @@ namespace Presentation.Controllers
             var users = await _service.GetAllUsersAsync();
             return Ok(users);
         }
+
+        [HttpGet("by-city")]
+        public async Task<IActionResult> GetUsersByCityAsync([FromQuery] string city)
+        {
+            var users = await _service.GetUsersByCityAsync(city);
+            return Ok(users);
+        }
+
+        [HttpGet("by-name")]
+        public async Task<IActionResult> GetUserByNameAsync([FromQuery] string name)
+        {
+            var user = await _service.GetUserByNameAsync(name);
+            return Ok(user);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -45,19 +62,26 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
+        public async Task<IActionResult> CreateUser([FromBody] UserRequest userDto)
         {
             var createdUser = await _service.AddUserAsync(userDto);
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.IdUser }, createdUser);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody] UserDto userDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser([FromRoute]int id, [FromBody] UserRequest userDto)
         {
-            await _service.UpdateUserAsync(userDto);
+            await _service.UpdateUserAsync(id, userDto);
             return NoContent();
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateUserNameAndPhoneAsync([FromRoute]int id, [FromBody] UserPartial useDto)
+        {
+            await _service.PartialUpdateUserAsync(id, useDto);
+            return NoContent();
+        }
+     
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
