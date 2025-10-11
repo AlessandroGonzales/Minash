@@ -63,11 +63,11 @@ namespace Application.Services
             var createdDomain = await _repo.AddDetailsOrderAsync(domain);
             return MapToResponse(createdDomain);
         }
-        public async Task UpdateDetailsOrderAsync(DetailsOrderRequest dto)
+        public async Task UpdateDetailsOrderAsync(int id, DetailsOrderRequest dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             var domain = MapToDomain(dto);
-            await _repo.UpdateDetailsOrderAsync(domain);
+            await _repo.UpdateDetailsOrderAsync(id, domain);
         }
 
         public async Task DeleteDetailsOrderAsync (int id)

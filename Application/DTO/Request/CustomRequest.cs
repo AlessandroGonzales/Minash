@@ -10,7 +10,6 @@ namespace Application.DTO.Request
         public string CustomerDetails { get; set; } = null!;
 
         [Required]
-        [Range(1, (double)decimal.MaxValue, ErrorMessage = "La cantidad debe ser mayor a 0")]
         public int Count { get; set; }
         public string ImageUrl { get; set; } = null!;
 

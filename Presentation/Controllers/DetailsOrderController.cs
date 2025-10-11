@@ -43,10 +43,10 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetDetailsOrderById), new { id = createdDetailsOrder.IdDetailsOrder }, createdDetailsOrder);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateDetailsOrder([FromBody] DetailsOrderRequest detailsOrderDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateDetailsOrder([FromRoute]int id, [FromBody] DetailsOrderRequest detailsOrderDto)
         {
-            await _service.UpdateDetailsOrderAsync(detailsOrderDto);
+            await _service.UpdateDetailsOrderAsync(id, detailsOrderDto);
             return NoContent();
         }
 

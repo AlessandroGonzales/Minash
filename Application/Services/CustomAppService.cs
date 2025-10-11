@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -34,9 +35,21 @@ namespace Application.Services
             ImageUrl = dto.ImageUrl,
         };
 
+        private static Custom MapToDomain(CustomPartial dto) => new Custom
+        {
+            ImageUrl = dto.ImageUrl,
+            Count = dto.count,
+        };
+
         public async Task<IEnumerable<CustomResponse>> GetAllCustomsAsync()
         {
             var list = await _repo.GetAllCustomsAsync();
+            return list.Select(MapToResponse);
+        }
+
+        public async Task<IEnumerable<CustomResponse>> GetCustomsByUserNameAsync(string userName)
+        {
+            var list = await _repo.GetCustomsByUserNameAsync(userName);
             return list.Select(MapToResponse);
         }
 
@@ -53,10 +66,16 @@ namespace Application.Services
             return MapToResponse(createdCustom);
         }
 
-        public async Task UpdateCustomAsync(CustomRequest custom)
+        public async Task UpdateCustomAsync(int id, CustomRequest custom)
         {
             var UpdateCustom = MapToDomain(custom);
-            await _repo.UpdateCustomAsync(UpdateCustom);
+            await _repo.UpdateCustomAsync(id, UpdateCustom);
+        }
+
+        public async Task PartialUpdateCustomAsync(int id, CustomPartial custom)
+        {
+            var UpdateCustom = MapToDomain(custom);
+            await _repo.PartialUpdateCustomAsync(id, UpdateCustom);
         }
 
         public async Task DeleteCustomAsync(int id)
