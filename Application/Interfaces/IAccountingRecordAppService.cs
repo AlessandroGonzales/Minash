@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 
 namespace Application.Interfaces
@@ -8,7 +9,8 @@ namespace Application.Interfaces
         Task<IEnumerable<AccountingRecordResponse>> GetAllAccountingRecordsAsync();
         Task<AccountingRecordResponse> GetAccountingRecordByIdAsync(int id);
         Task<AccountingRecordResponse> AddAccountingRecordAsync(AccountingRecordRequest accountingRecordDto);
-        Task UpdateAccountingRecordAsync(AccountingRecordRequest accountingRecordDto);
+        Task UpdateAccountingRecordAsync(int id, AccountingRecordRequest accountingRecordDto);
+        Task PartialUpdateAccountingRecordAsync(int id, AccountingRecordsPartial accountingRecordDto);
         Task DeleteAccountingRecordAsync(int id);
     }
 }

@@ -8,7 +8,6 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
     public class ServiceController : ControllerBase 
     {
         private readonly IServiceAppService _service;
@@ -25,7 +24,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetServiceById(int id)
+        public async Task<IActionResult> GetServiceById([FromRoute]int id)
         {
             var service = await _service.GetServiceByIdAsync(id);
             if (service == null)
@@ -47,7 +46,6 @@ namespace Presentation.Controllers
             return Ok(list);
         }
             
-
         [HttpPost]
         public async Task<IActionResult> CreateService([FromBody] ServiceRequest serviceDto)
         {
@@ -75,7 +73,5 @@ namespace Presentation.Controllers
             await _service.DeleteServiceAsync(id);
             return NoContent();
         }   
-
     }
-
 }

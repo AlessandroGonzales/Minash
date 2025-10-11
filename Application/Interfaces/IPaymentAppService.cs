@@ -8,7 +8,7 @@ namespace Application.Interfaces
         Task<PaymentRequest?> GetPaymentByIdAsync(int id);
         Task<IEnumerable<PaymentRequest>> GetPaymentsByOrderIdAsync(int orderId);
         Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment);
-        Task UpdatePaymentAsync(PaymentRequest payment);
+        Task UpdatePaymentAsync(int id, PaymentRequest payment);
         Task DeletePaymentAsync(int id);
     }
 }

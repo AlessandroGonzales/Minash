@@ -68,10 +68,10 @@ namespace Application.Services
             return MapToDto(createdPay);
         }
 
-        public async Task UpdatePaymentAsync(PaymentRequest payment)
+        public async Task UpdatePaymentAsync(int id, PaymentRequest payment)
         {
             var domain = MapToDomain(payment);
-            await _repo.UpdatePaymentAsync(domain);
+            await _repo.UpdatePaymentAsync(id, domain);
         }
 
         public async Task DeletePaymentAsync(int id)

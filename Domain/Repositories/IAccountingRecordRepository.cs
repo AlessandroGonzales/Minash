@@ -7,7 +7,8 @@ namespace Domain.Repositories
         Task<IEnumerable<AccountingRecord>> GetAllAccountingRecordsAsync();
         Task<AccountingRecord?> GetAccountingRecordByIdAsync(int id);
         Task<AccountingRecord> AddAccoutingRecordAsync(AccountingRecord accountingrecord);
-        Task UpdateAccountingRecordAsync( AccountingRecord accountingrecord);
+        Task UpdateAccountingRecordAsync(int id, AccountingRecord accountingrecord);
+        Task PartialUpdateAccountingRecordAsync(int id, AccountingRecord record);
         Task DeleteAccountingRecordAsync(int id); 
     }
 }

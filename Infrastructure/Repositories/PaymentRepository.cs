@@ -119,9 +119,9 @@ namespace Infrastructure.Repositories
             return MapToDomain(createdPayment);
 
         }
-        public async Task UpdatePaymentAsync (Payment payment)
+        public async Task UpdatePaymentAsync (int id, Payment payment)
         {
-            var updatePayment = await _db.Payments.FindAsync(payment.IdPay);
+            var updatePayment = await _db.Payments.FindAsync(id);
             if (updatePayment == null)
                 throw new KeyNotFoundException();
 
@@ -135,7 +135,8 @@ namespace Infrastructure.Repositories
             payment.ReceiptImageUrl = updatePayment.ReceiptImageUrl;
             payment.IdempotencyKey = updatePayment.IdempotencyKey;
             payment.TransactionCode = updatePayment.TransactionCode;
-            
+
+            _db.Payments.Update(updatePayment);
             await _db.SaveChangesAsync();
         }
 

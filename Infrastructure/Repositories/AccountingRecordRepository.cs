@@ -83,17 +83,31 @@ namespace Infrastructure.Repositories
             return MapToDomain(creatdEf);
         }
 
-        public async Task UpdateAccountingRecordAsync( AccountingRecord accountingRecord)
+        public async Task UpdateAccountingRecordAsync(int id, AccountingRecord accountingRecord)
         {
-            var ef = await _db.AccountingRecords.FindAsync(accountingRecord.IdAccountingRecord);
+            var ef = await _db.AccountingRecords.FindAsync(id);
             ef.Details= accountingRecord.Details;
             ef.Total= accountingRecord.Total;
             ef.Total= accountingRecord.Total;
             ef.UpdatedAt = DateTime.UtcNow;
+
+            _db.AccountingRecords.Update(ef);
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteAccountingRecordAsync( int id)
+        public async Task PartialUpdateAccountingRecordAsync(int id, AccountingRecord accountingRecord)
+        {
+            var ef = await _db.AccountingRecords.FindAsync(id);
+            if (accountingRecord.Total == 0) ef.Total = ef.Total;
+                ef.Total = accountingRecord.Total;
+            if(accountingRecord.Details is not null)
+                ef.Details = accountingRecord.Details;
+
+            _db.AccountingRecords.Update(ef);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteAccountingRecordAsync(int id)
         {
             var aR = await _db.AccountingRecords.FindAsync(id);
             _db.AccountingRecords.Remove(aR);

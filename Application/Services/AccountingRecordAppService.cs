@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
@@ -27,6 +28,11 @@ namespace Application.Services
             IdPay = accountingRecord.idPay,
         };
 
+        private static AccountingRecord MapToDomain(AccountingRecordsPartial accountingRecord) => new AccountingRecord
+        {
+            Total = accountingRecord.total,
+            Details = accountingRecord.Details
+        };
         public async Task<IEnumerable<AccountingRecordResponse>> GetAllAccountingRecordsAsync()
         {
             var list = await _repo.GetAllAccountingRecordsAsync();
@@ -46,11 +52,17 @@ namespace Application.Services
             return MapToResponse(created);
         }
 
-        public async Task UpdateAccountingRecordAsync( AccountingRecordRequest accountingRecord)
+        public async Task UpdateAccountingRecordAsync(int id, AccountingRecordRequest accountingRecord)
         {
             var domain = MapToDomain(accountingRecord);
 
-            await _repo.UpdateAccountingRecordAsync(domain);
+            await _repo.UpdateAccountingRecordAsync(id, domain);
+        }
+
+        public async Task PartialUpdateAccountingRecordAsync(int id, AccountingRecordsPartial accountingRecordsDto)
+        {
+            var domain = MapToDomain(accountingRecordsDto);
+            await _repo.PartialUpdateAccountingRecordAsync(id, domain);
         }
 
         public async Task DeleteAccountingRecordAsync( int id)

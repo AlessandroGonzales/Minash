@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,11 +35,17 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetAccountingRecordByIdAsync), new { id = createAR.IdAccountingRecord }, createAR);
         }
 
-        [HttpPut]
-
-        public async Task<IActionResult> UpdateAccountingRecordAsync( AccountingRecordRequest accountingRecord)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAccountingRecordAsync([FromRoute]int id, AccountingRecordRequest accountingRecord)
         {
-            await _service.UpdateAccountingRecordAsync(accountingRecord);
+            await _service.UpdateAccountingRecordAsync(id, accountingRecord);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateAccountingRecordAsync([FromRoute]int id, AccountingRecordsPartial accountingRecord)
+        {
+            await _service.PartialUpdateAccountingRecordAsync(id, accountingRecord);
             return NoContent();
         }
 

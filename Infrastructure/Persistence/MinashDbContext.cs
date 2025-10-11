@@ -51,7 +51,16 @@ public partial class MinashDbContext : DbContext
 
         modelBuilder.Entity<Payment>()
             .Property(p => p.PaymentMethod)
+            .HasColumnType("payment_method")
             .HasColumnName("payment_method");
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.Property(p => p.PaymentMethod)
+                .HasConversion<string>()
+                .HasColumnName("payment_method")
+                .HasMaxLength(50);
+        });
             
 
 
