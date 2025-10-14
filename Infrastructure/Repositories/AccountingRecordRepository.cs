@@ -66,6 +66,12 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
+        public async Task <IEnumerable<AccountingRecord>> GetTotalAccountingRecordAsync()
+        {
+            var list = await GetQueryableWithIncludes().ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
         public async Task <AccountingRecord?> GetAccountingRecordByIdAsync(int id)
         {
             var accoutingRecord = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdAccountingRecord == id);
@@ -77,9 +83,10 @@ namespace Infrastructure.Repositories
             var ef = MapToEf(accoutingRecord);
             _db.AccountingRecords.Add(ef);
             await _db.SaveChangesAsync();
+
             ef.CreatedAt = DateTime.UtcNow;
             ef.UpdatedAt = DateTime.UtcNow;
-            var creatdEf = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdPay == ef.IdAccountingRecord);
+            var creatdEf = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdAccountingRecord == ef.IdAccountingRecord);
             return MapToDomain(creatdEf);
         }
 

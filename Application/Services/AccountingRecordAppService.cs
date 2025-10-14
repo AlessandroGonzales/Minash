@@ -9,8 +9,16 @@ namespace Application.Services
 {
     public class AccountingRecordAppService : IAccountingRecordAppService
     {
-        private readonly IAccountingRecordRepository _repo;
-        public AccountingRecordAppService(IAccountingRecordRepository repo) { _repo = repo; }
+        private readonly IAccountingRecordRepository _repoAccountingRecord;
+        private readonly IPaymentRepository _repoPayment;
+        public AccountingRecordAppService(
+            IAccountingRecordRepository repoAccountingRecord,
+            IPaymentRepository repoPayment
+        )
+        {
+            _repoAccountingRecord = repoAccountingRecord;
+            _repoPayment = repoPayment;
+        }
 
         private static AccountingRecordResponse MapToResponse(AccountingRecord accoutingRecord) => new AccountingRecordResponse
         {
@@ -33,22 +41,42 @@ namespace Application.Services
             Total = accountingRecord.total,
             Details = accountingRecord.Details
         };
+
         public async Task<IEnumerable<AccountingRecordResponse>> GetAllAccountingRecordsAsync()
         {
-            var list = await _repo.GetAllAccountingRecordsAsync();
+            var list = await _repoAccountingRecord.GetAllAccountingRecordsAsync();
             return list.Select(MapToResponse);
         }
 
+        public async Task<decimal> GetTotalByAccountingRecordAsync()
+        {
+            var total = await _repoAccountingRecord.GetTotalAccountingRecordAsync();
+            var NewTotal = total.Sum(s => s.Total);
+            return NewTotal;
+        }
         public async Task <AccountingRecordResponse?> GetAccountingRecordByIdAsync(int id)
         {
-            var aR = await _repo.GetAccountingRecordByIdAsync(id);
+            var aR = await _repoAccountingRecord.GetAccountingRecordByIdAsync(id);
             return aR == null ? null : MapToResponse(aR);
         }
 
         public async Task <AccountingRecordResponse> AddAccountingRecordAsync(AccountingRecordRequest accountingRecord)
         {
-            var domain = MapToDomain(accountingRecord);
-            var created = await _repo.AddAccoutingRecordAsync(domain);
+            var payment = await _repoPayment.GetPaymentByIdAsync(accountingRecord.idPay);
+            var total = payment.Total;
+
+            var newAccountingRecord = new AccountingRecord
+            {
+                IdAccountingRecord = accountingRecord.IdAccountingRecord,
+                IdPay = accountingRecord.idPay,
+                Details = accountingRecord.Details,
+                Total = total,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            var created = await _repoAccountingRecord.AddAccoutingRecordAsync(newAccountingRecord);
+
             return MapToResponse(created);
         }
 
@@ -56,18 +84,18 @@ namespace Application.Services
         {
             var domain = MapToDomain(accountingRecord);
 
-            await _repo.UpdateAccountingRecordAsync(id, domain);
+            await _repoAccountingRecord.UpdateAccountingRecordAsync(id, domain);
         }
 
         public async Task PartialUpdateAccountingRecordAsync(int id, AccountingRecordsPartial accountingRecordsDto)
         {
             var domain = MapToDomain(accountingRecordsDto);
-            await _repo.PartialUpdateAccountingRecordAsync(id, domain);
+            await _repoAccountingRecord.PartialUpdateAccountingRecordAsync(id, domain);
         }
 
         public async Task DeleteAccountingRecordAsync( int id)
         {
-            await _repo.DeleteAccountingRecordAsync(id);
+            await _repoAccountingRecord.DeleteAccountingRecordAsync(id);
         }
     }
 }

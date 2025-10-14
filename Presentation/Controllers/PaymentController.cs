@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,14 +19,14 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentByIdAsync([FromRoute] int id)
         {
             var pay = await _service.GetPaymentByIdAsync(id);
             return Ok(pay);
         }
 
-        [HttpGet("by-IdOrder/{Id}")]
+        [HttpGet("by-idOrder/{id}")]
         public async Task<IActionResult> GetPaymentByIdOrder([FromRoute] int id)
         {
             var pay = await _service.GetPaymentsByOrderIdAsync(id);
@@ -37,6 +38,7 @@ namespace Presentation.Controllers
             var createdPay = await _service.AddPaymentAsync(payment);
             return CreatedAtAction(nameof(GetPaymentByIdAsync), new { Id = createdPay.IdPay }, createdPay);
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePaymentAsync([FromRoute]int id, [FromBody] PaymentRequest payment)
         {
@@ -44,10 +46,17 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePaymentAsync(int Id)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdatePaymentAsync([FromRoute] int id, [FromBody] PaymentPartial payment)
         {
-            await _service.DeletePaymentAsync(Id);
+            await _service.PartialUpdatePaymentAsync(id, payment); 
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePaymentAsync(int id)
+        {
+            await _service.DeletePaymentAsync(id);
             return NoContent();
         }
 

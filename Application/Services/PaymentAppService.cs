@@ -1,9 +1,9 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+
 namespace Application.Services
 {
     public class PaymentAppService : IPaymentAppService
@@ -44,16 +44,20 @@ namespace Application.Services
             IdOrder = dto.IdOrder,
         };
 
+        private static Payment MapToDomain(PaymentPartial dto) => new Payment
+        {
+            Total = dto.Total,
+        };
         public async Task<IEnumerable<PaymentRequest>> GetAllPaymentsAsync()
         {
             var list = await _repo.GetAllPaymentsAsync();
             return list.Select(MapToDto);
         }
 
-        public async Task<IEnumerable<PaymentRequest>> GetPaymentsByOrderIdAsync(int orderId)
+        public async Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId)
         {
-            var list = await _repo.GetPaymentsByOrderIdAsync(orderId);
-            return list.Select(MapToDto);
+            var pay = await _repo.GetPaymentsByOrderIdAsync(orderId);
+            return MapToDto(pay);
         }
         public async Task<PaymentRequest?> GetPaymentByIdAsync(int id)
         {
@@ -72,6 +76,12 @@ namespace Application.Services
         {
             var domain = MapToDomain(payment);
             await _repo.UpdatePaymentAsync(id, domain);
+        }
+
+        public async Task PartialUpdatePaymentAsync(int id, PaymentPartial payment)
+        {
+            var domain = MapToDomain(payment);
+            await _repo.PartialUpdatePaymentAsync(id, domain);
         }
 
         public async Task DeletePaymentAsync(int id)

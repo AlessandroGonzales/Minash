@@ -2,6 +2,7 @@
 using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Presentation.Controllers
 
@@ -14,16 +15,23 @@ namespace Presentation.Controllers
         public AccountingRecordController(IAccountingRecordAppService service) { _service = service; }
 
         [HttpGet]
-        public async Task <IActionResult> GetAllAccountingRecordAsync()
+        public async Task<IActionResult> GetAllAccountingRecordAsync()
         {
             var list = await _service.GetAllAccountingRecordsAsync();
             return Ok(list);
         }
 
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalAccountingRecordAsync()
+        {
+            decimal total = await _service.GetTotalByAccountingRecordAsync();
+            return Ok(total);
+        }
+
         [HttpGet("{id}")]
         public async Task <IActionResult> GetAccountingRecordByIdAsync([FromRoute] int id)
         {
-            var accountingRecord = await _service.GetAccountingRecordByIdAsync(id);
+            var accountingRecord = await _service.GetAccountingRecordByIdAsync(id); 
             return Ok(accountingRecord);
         }
 
