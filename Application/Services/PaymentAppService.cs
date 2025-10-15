@@ -8,8 +8,16 @@ namespace Application.Services
 {
     public class PaymentAppService : IPaymentAppService
     {
-        private readonly IPaymentRepository _repo;
-        public PaymentAppService(IPaymentRepository repo) {  _repo = repo; }
+        private readonly IPaymentRepository _repoPayment;
+        private readonly IAccountingRecordRepository _repoAccountingRecord;
+        public PaymentAppService(
+            IPaymentRepository repoPayment,
+            IAccountingRecordRepository repoAccountingRecord
+        )
+        {
+            _repoPayment = repoPayment;
+            _repoAccountingRecord = repoAccountingRecord;
+        }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
         {
@@ -50,43 +58,44 @@ namespace Application.Services
         };
         public async Task<IEnumerable<PaymentRequest>> GetAllPaymentsAsync()
         {
-            var list = await _repo.GetAllPaymentsAsync();
+            var list = await _repoPayment.GetAllPaymentsAsync();
             return list.Select(MapToDto);
         }
 
         public async Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId)
         {
-            var pay = await _repo.GetPaymentsByOrderIdAsync(orderId);
+            var pay = await _repoPayment.GetPaymentsByOrderIdAsync(orderId);
             return MapToDto(pay);
         }
         public async Task<PaymentRequest?> GetPaymentByIdAsync(int id)
         {
-            var pay = await _repo.GetPaymentByIdAsync(id);
+            var pay = await _repoPayment.GetPaymentByIdAsync(id);
             return pay == null ? null : MapToDto(pay);
         }
 
         public async Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment)
         {
             var creatPay = MapToDomain(payment);
-            var createdPay = await _repo.AddPaymentAsync(creatPay);
+            var createdPay = await _repoPayment.AddPaymentAsync(creatPay);
+          
             return MapToDto(createdPay);
         }
 
         public async Task UpdatePaymentAsync(int id, PaymentRequest payment)
         {
             var domain = MapToDomain(payment);
-            await _repo.UpdatePaymentAsync(id, domain);
+            await _repoPayment.UpdatePaymentAsync(id, domain);
         }
 
         public async Task PartialUpdatePaymentAsync(int id, PaymentPartial payment)
         {
             var domain = MapToDomain(payment);
-            await _repo.PartialUpdatePaymentAsync(id, domain);
+            await _repoPayment.PartialUpdatePaymentAsync(id, domain);
         }
 
         public async Task DeletePaymentAsync(int id)
         {
-            await _repo.DeletePaymentAsync(id);
+            await _repoPayment.DeletePaymentAsync(id);
         }
     }
 }

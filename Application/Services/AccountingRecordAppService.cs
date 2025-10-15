@@ -54,6 +54,7 @@ namespace Application.Services
             var NewTotal = total.Sum(s => s.Total);
             return NewTotal;
         }
+
         public async Task <AccountingRecordResponse?> GetAccountingRecordByIdAsync(int id)
         {
             var aR = await _repoAccountingRecord.GetAccountingRecordByIdAsync(id);

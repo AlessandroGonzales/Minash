@@ -98,6 +98,7 @@ namespace Application.Services
             var payment = await _repoPayment.GetPaymentsByOrderIdAsync(dto.IdOrder);
             payment.Total = newTotal;
             await _repoPayment.PartialUpdatePaymentAsync(payment.IdPay ,payment);
+
             return MapToResponse(createdDomain);
         }
         public async Task UpdateDetailsOrderAsync(int id, DetailsOrderRequest dto)
