@@ -82,8 +82,6 @@ namespace Application.Services
             var user = await _repo.GetUserByNameAsync(name);
             return user == null ? null : MapToResponse(user);
         }
-
-
         public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
             var domain = await _repo.GetUserByIdAsync(id);

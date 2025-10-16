@@ -1,6 +1,7 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -12,6 +13,7 @@ namespace Presentation.Controllers
         private readonly ICustomAppService _service;
         public CustomController(ICustomAppService service) { _service = service; }
 
+        [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllCustomAsync()
         {
@@ -19,13 +21,15 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
-        [HttpGet("by-name")]
+        [Authorize(Policy = "CEOOrAdmin")]
+        [HttpGet("by-userName")]
         public async Task<IActionResult> GetCustomsByUserNameAsync([FromQuery] string userName)
         {
             var list = await _service.GetCustomsByUserNameAsync(userName);
             return Ok(list);
         }
-            
+
+        [Authorize(Policy = "ClientOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomByIdAsync([FromRoute] int id)
         {
@@ -33,6 +37,7 @@ namespace Presentation.Controllers
             return Ok(custom);
         }
 
+        [Authorize(Policy = "ClientOrAdmin")]
         [HttpPost]
         public async Task<IActionResult> AddCustomAsync([FromBody] CustomRequest domain)
         {
@@ -40,6 +45,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetCustomByIdAsync), new { id  = custom.IdCustom }, custom);
         }
 
+        [Authorize(Policy = "ClientOrAdmin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomAsync([FromRoute] int id, [FromBody] CustomRequest domain)
         {
@@ -47,6 +53,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "ClientOrAdmin")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdateCustomAsync([FromRoute] int id, [FromBody] CustomPartial domain)
         {
@@ -54,6 +61,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "ClientOrAdmin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomAsync([FromRoute] int id)
         {

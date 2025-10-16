@@ -1,6 +1,7 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -15,6 +16,7 @@ namespace Presentation.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllGarmentServices()
         {
@@ -22,6 +24,7 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentServiceById(int id)
         {
@@ -31,6 +34,7 @@ namespace Presentation.Controllers
             return Ok(garmentService);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("by-garment/{garmentId}")]
         public async Task<IActionResult> GetGarmentServicesByGarmentId(int garmentId)
         {
@@ -38,6 +42,7 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("By-service/{serviceId}")]
         public async Task<IActionResult> GetGarmentServicesByServiceIdAsync(int serviceId)
         {
@@ -45,6 +50,7 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("filter")]
         public async Task<IActionResult> GetGarmentServicesByQualityAsync(string  quality)
         {
@@ -52,6 +58,7 @@ namespace Presentation.Controllers
             return Ok(garmentServies);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateGarmentService([FromBody] GarmentServiceRequest garmentServiceDto)
         {
@@ -59,6 +66,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetGarmentServiceById), new { id = createdGarmentService.IdGarmentService }, createdGarmentService);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGarmentService([FromRoute]int id, [FromBody] GarmentServiceRequest garmentServiceDto)
         {
@@ -66,6 +74,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdateGarmentServcieAsync([FromRoute] int id, [FromBody] GarmentServicePartial garmentServiceDto)
         {
@@ -73,6 +82,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarmentService(int id)
         {

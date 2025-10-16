@@ -7,7 +7,6 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class GarmentController  : ControllerBase
     {
         private readonly IGarmentAppService _service;
@@ -16,6 +15,7 @@ namespace Presentation.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllGarments()
         {
@@ -23,6 +23,7 @@ namespace Presentation.Controllers
             return Ok(garments);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentById(int id)
         {
@@ -32,6 +33,7 @@ namespace Presentation.Controllers
             return Ok(garment);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("name")]
         public async Task<IActionResult> GetGarmentByName([FromQuery] string name)
         {
@@ -39,6 +41,7 @@ namespace Presentation.Controllers
             return Ok(garments);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateGarment([FromBody] GarmentRequest garmentDto)
         {
@@ -46,6 +49,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetGarmentById), new { id = createdGarment.IdGarment }, createdGarment);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGarment([FromRoute]int id, [FromBody] GarmentRequest garmentDto)
         {
@@ -53,6 +57,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdateGarmentAsync([FromRoute]int id, [FromBody] GarmentPartial garmentDto)
         {
@@ -60,6 +65,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarment(int id)
         {

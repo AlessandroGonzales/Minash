@@ -28,22 +28,6 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-
-    options.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
-        {
-            Console.WriteLine("Token inválido: " + context.Exception.Message);
-            return Task.CompletedTask;
-
-        },
-        OnChallenge = context =>
-        {
-            Console.WriteLine("Error de autenticación: " + context.ErrorDescription);
-            return Task.CompletedTask;
-        },
-    };
-
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
@@ -56,10 +40,14 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
     };
-
 });
 
-builder.Services.AddAuthorization();    
+builder.Services.AddAuthorization( options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ClienteOrAdmin", policy => policy.RequireRole("Cliente", "Admin"));
+    options.AddPolicy("CEOPolicy", policy => policy.RequireRole("CEO"));
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

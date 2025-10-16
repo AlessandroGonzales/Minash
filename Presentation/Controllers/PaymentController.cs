@@ -1,6 +1,7 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -12,6 +13,7 @@ namespace Presentation.Controllers
         private readonly IPaymentAppService _service;
         public PaymentController(IPaymentAppService service) { _service = service; }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet]
         public async Task<IActionResult> GetAllPaymentsAsync()
         {
@@ -19,6 +21,7 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentByIdAsync([FromRoute] int id)
         {
@@ -26,12 +29,15 @@ namespace Presentation.Controllers
             return Ok(pay);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by-idOrder/{id}")]
         public async Task<IActionResult> GetPaymentByIdOrder([FromRoute] int id)
         {
             var pay = await _service.GetPaymentsByOrderIdAsync(id);
             return Ok(pay);
         }
+
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPost]
         public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentRequest payment)
         {
@@ -39,6 +45,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetPaymentByIdAsync), new { Id = createdPay.IdPay }, createdPay);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePaymentAsync([FromRoute]int id, [FromBody] PaymentRequest payment)
         {
@@ -46,6 +53,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdatePaymentAsync([FromRoute] int id, [FromBody] PaymentPartial payment)
         {
@@ -53,6 +61,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentAsync(int id)
         {
