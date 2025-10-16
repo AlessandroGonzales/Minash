@@ -99,8 +99,6 @@ namespace Infrastructure.Repositories
             _db.DetailsOrders.Add(efDetailsOrder);
             await _db.SaveChangesAsync();
             
-            efDetailsOrder.CreatedAt = DateTime.Now;
-            efDetailsOrder.UnitPrice = d.UnitPrice;
             var created = await GetQueryableWithIncludes().FirstOrDefaultAsync(doe => doe.IdDetailsOrder == efDetailsOrder.IdDetailsOrder);
             return MapToDomain(created);
         }

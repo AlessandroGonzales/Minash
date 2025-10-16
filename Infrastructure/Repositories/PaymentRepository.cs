@@ -95,10 +95,10 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
-        public async Task<IEnumerable<Payment>> GetPaymentsByOrderIdAsync(int IdOrder )
+        public async Task<Payment?> GetPaymentsByOrderIdAsync(int idOrder)
         {
-            var list = await GetQueryableWithIncludes().Where(s => s.IdOrder == IdOrder).ToListAsync();
-            return list.Select(MapToDomain);
+            var payment = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdOrder == idOrder);
+            return MapToDomain(payment);
         }
 
         public async Task<Payment?> GetPaymentByIdAsync(int Id)
@@ -136,6 +136,15 @@ namespace Infrastructure.Repositories
             payment.IdempotencyKey = updatePayment.IdempotencyKey;
             payment.TransactionCode = updatePayment.TransactionCode;
 
+            _db.Payments.Update(updatePayment);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task PartialUpdatePaymentAsync(int id, Payment payment)
+        {
+            var updatePayment = await _db.Payments.FindAsync(id);
+
+            updatePayment.Total = payment.Total;
             _db.Payments.Update(updatePayment);
             await _db.SaveChangesAsync();
         }

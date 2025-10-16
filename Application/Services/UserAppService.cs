@@ -4,6 +4,7 @@ using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
+using BCrypt.Net;
 
 namespace Application.Services
 {
@@ -97,7 +98,7 @@ namespace Application.Services
         {
             if(user.IdRole <= 0)
                 throw new ArgumentException("Role ID must be greater than zero.");
-
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             var domain = MapToDomain(user);
             var addedDomain = await _repo.AddUserAsync(domain);
             return MapToResponse(addedDomain);
@@ -120,6 +121,17 @@ namespace Application.Services
         public async Task DeleteUserAsync(int id)
         {
             await _repo.DeleteUserAsync(id);
+        }
+
+        public async Task<UserResponse?> ValidateUserAsync(string email, string password)
+        {
+            var user = await _repo.GetUserByEmailAsync(email);
+            if (user == null) return null;
+
+            bool passwordIsValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+            if (!passwordIsValid) return null;
+
+            return MapToResponse(user);
         }
     }
 }

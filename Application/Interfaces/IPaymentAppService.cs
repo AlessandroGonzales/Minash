@@ -1,4 +1,5 @@
-﻿using Application.DTO.Request;
+﻿using Application.DTO.Partial;
+using Application.DTO.Request;
 
 namespace Application.Interfaces
 {
@@ -6,9 +7,10 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<PaymentRequest>> GetAllPaymentsAsync();
         Task<PaymentRequest?> GetPaymentByIdAsync(int id);
-        Task<IEnumerable<PaymentRequest>> GetPaymentsByOrderIdAsync(int orderId);
+        Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId);
         Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment);
         Task UpdatePaymentAsync(int id, PaymentRequest payment);
+        Task PartialUpdatePaymentAsync(int id, PaymentPartial payment);
         Task DeletePaymentAsync(int id);
     }
 }

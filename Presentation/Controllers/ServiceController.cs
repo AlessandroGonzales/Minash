@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
 using Application.DTO.Request;
-using Application.DTO.Response;
 using Application.DTO.Partial;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ServiceController : ControllerBase 
     {
         private readonly IServiceAppService _service;

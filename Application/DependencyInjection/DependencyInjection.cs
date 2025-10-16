@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Authentication;
+using Application.Interfaces;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPaymentAppService, PaymentAppService>();
             services.AddScoped<ICustomAppService, CustomAppService>();
             services.AddScoped<IAccountingRecordAppService, AccountingRecordAppService>();
+            services.AddSingleton<JwtService>();
             return services;
         }
     }
