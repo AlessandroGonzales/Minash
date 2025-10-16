@@ -29,7 +29,7 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
-        [Authorize(Policy = "ClientOrAdmin")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomByIdAsync([FromRoute] int id)
         {
@@ -37,7 +37,7 @@ namespace Presentation.Controllers
             return Ok(custom);
         }
 
-        [Authorize(Policy = "ClientOrAdmin")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPost]
         public async Task<IActionResult> AddCustomAsync([FromBody] CustomRequest domain)
         {
@@ -45,7 +45,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetCustomByIdAsync), new { id  = custom.IdCustom }, custom);
         }
 
-        [Authorize(Policy = "ClientOrAdmin")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomAsync([FromRoute] int id, [FromBody] CustomRequest domain)
         {
@@ -53,7 +53,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = "ClientOrAdmin")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdateCustomAsync([FromRoute] int id, [FromBody] CustomPartial domain)
         {
@@ -61,7 +61,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = "ClientOrAdmin")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomAsync([FromRoute] int id)
         {

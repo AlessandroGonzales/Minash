@@ -1,8 +1,8 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Presentation.Controllers
 
@@ -14,6 +14,7 @@ namespace Presentation.Controllers
         private readonly IAccountingRecordAppService _service;
         public AccountingRecordController(IAccountingRecordAppService service) { _service = service; }
 
+        [Authorize(Policy = "CEO")]
         [HttpGet]
         public async Task<IActionResult> GetAllAccountingRecordAsync()
         {
@@ -21,6 +22,7 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
+        [Authorize(Policy = "CEO")]
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalAccountingRecordAsync()
         {
@@ -28,6 +30,7 @@ namespace Presentation.Controllers
             return Ok(total);
         }
 
+        [Authorize(Policy = "CEO")]
         [HttpGet("{id}")]
         public async Task <IActionResult> GetAccountingRecordByIdAsync([FromRoute] int id)
         {
@@ -35,6 +38,7 @@ namespace Presentation.Controllers
             return Ok(accountingRecord);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task <IActionResult> AddAccountingRecordAsync(AccountingRecordRequest accountingRecord)
         {
@@ -43,6 +47,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetAccountingRecordByIdAsync), new { id = createAR.IdAccountingRecord }, createAR);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAccountingRecordAsync([FromRoute]int id, AccountingRecordRequest accountingRecord)
         {
@@ -50,6 +55,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdateAccountingRecordAsync([FromRoute]int id, AccountingRecordsPartial accountingRecord)
         {
@@ -57,6 +63,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccountingRecordAsync([FromRoute] int id)
         {

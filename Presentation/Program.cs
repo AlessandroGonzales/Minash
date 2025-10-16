@@ -45,8 +45,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization( options =>
 {
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("ClienteOrAdmin", policy => policy.RequireRole("Cliente", "Admin"));
+    options.AddPolicy("ClienteOrAdmin", policy => policy.RequireRole("Cliente", "Admin", "CEO"));
     options.AddPolicy("CEOPolicy", policy => policy.RequireRole("CEO"));
+    options.AddPolicy("CEOOrAdmin", policy => policy.RequireRole("Admin", "CEO"));
 });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
