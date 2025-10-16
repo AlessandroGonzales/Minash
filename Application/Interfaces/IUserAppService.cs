@@ -16,5 +16,6 @@ namespace Application.Interfaces
         Task UpdateUserAsync(int id, UserRequest userDto);
         Task PartialUpdateUserAsync(int id, UserPartial userDto);
         Task DeleteUserAsync(int id);
+        Task<UserResponse?> ValidateUserAsync(string email, string password);
     }
 }

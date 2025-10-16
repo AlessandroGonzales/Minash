@@ -1,13 +1,13 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Application.DTO.Request;
-using Application.DTO.Response;
 using Application.DTO.Partial;
+using Microsoft.AspNetCore.Authorization;
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
+    [Authorize(Roles = "Admin")]
     public class GarmentController  : ControllerBase
     {
         private readonly IGarmentAppService _service;
