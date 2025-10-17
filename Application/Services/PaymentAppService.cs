@@ -9,14 +9,14 @@ namespace Application.Services
     public class PaymentAppService : IPaymentAppService
     {
         private readonly IPaymentRepository _repoPayment;
-        private readonly IAccountingRecordRepository _repoAccountingRecord;
+        private readonly IOrderRepository _repoOrder;
         public PaymentAppService(
             IPaymentRepository repoPayment,
-            IAccountingRecordRepository repoAccountingRecord
+            IOrderRepository repoOrder
         )
         {
             _repoPayment = repoPayment;
-            _repoAccountingRecord = repoAccountingRecord;
+            _repoOrder = repoOrder;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -65,7 +65,7 @@ namespace Application.Services
         public async Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId)
         {
             var pay = await _repoPayment.GetPaymentsByOrderIdAsync(orderId);
-            return MapToDto(pay);
+            return pay == null? null : MapToDto(pay);
         }
         public async Task<PaymentRequest?> GetPaymentByIdAsync(int id)
         {
@@ -75,6 +75,9 @@ namespace Application.Services
 
         public async Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment)
         {
+            var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
+            if (order == null) throw new ArgumentException("Order not found.");
+            payment.Total = order.Total;
             var creatPay = MapToDomain(payment);
             var createdPay = await _repoPayment.AddPaymentAsync(creatPay);
           

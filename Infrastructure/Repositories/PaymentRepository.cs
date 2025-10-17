@@ -57,6 +57,7 @@ namespace Infrastructure.Repositories
                 CreatedAt = ar.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = ar.UpdatedAt ?? DateTime.UtcNow,
                 IdPay = ar.IdPay,
+
             }).ToList() ?? new List<AccountingRecord>()
         };
 
@@ -98,7 +99,7 @@ namespace Infrastructure.Repositories
         public async Task<Payment?> GetPaymentsByOrderIdAsync(int idOrder)
         {
             var payment = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdOrder == idOrder);
-            return MapToDomain(payment);
+            return payment == null? null : MapToDomain(payment);
         }
 
         public async Task<Payment?> GetPaymentByIdAsync(int Id)
