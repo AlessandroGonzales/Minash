@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.DTO.Request;
 using Application.DTO.Partial;
 using Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Presentation.Controllers
 {
@@ -24,6 +25,7 @@ namespace Presentation.Controllers
             _jwtService = jwtService;
         }
 
+        [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -31,6 +33,7 @@ namespace Presentation.Controllers
             return Ok(users);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by-city")]
         public async Task<IActionResult> GetUsersByCityAsync([FromQuery] string city)
         {
@@ -38,6 +41,7 @@ namespace Presentation.Controllers
             return Ok(users);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by-name")]
         public async Task<IActionResult> GetUserByNameAsync([FromQuery] string name)
         {
@@ -45,6 +49,7 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -54,6 +59,7 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by-Role/{roleId}")]
         public async Task<IActionResult> GetUsersByRoleId(int roleId)
         {
@@ -61,6 +67,7 @@ namespace Presentation.Controllers
             return Ok(users);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by_email/{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
@@ -70,6 +77,7 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserRequest userDto)
         {
@@ -78,29 +86,33 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login ([FromBody] LoginRequest login)
+        public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
             var user = await _userService.ValidateUserAsync(login.Email, login.Password);
             if (user == null)
                 return Unauthorized("Credenciales invalidas");
             var rol = await _roleService.GetRoleByIdAsync(user.IdRol);
             var token = _jwtService.GenerateToken(user, rol);
-            return Ok(new { Token = token});
+            return Ok(new { Token = token });
         }
+
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser([FromRoute]int id, [FromBody] UserRequest userDto)
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UserRequest userDto)
         {
             await _userService.UpdateUserAsync(id, userDto);
             return NoContent();
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateUserNameAndPhoneAsync([FromRoute]int id, [FromBody] UserPartial useDto)
+        public async Task<IActionResult> PartialUpdateUserAsync([FromRoute] int id, [FromBody] UserPartial useDto)
         {
             await _userService.PartialUpdateUserAsync(id, useDto);
             return NoContent();
         }
-     
+
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

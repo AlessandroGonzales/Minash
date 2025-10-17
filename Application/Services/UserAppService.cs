@@ -82,8 +82,6 @@ namespace Application.Services
             var user = await _repo.GetUserByNameAsync(name);
             return user == null ? null : MapToResponse(user);
         }
-
-
         public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
             var domain = await _repo.GetUserByIdAsync(id);
@@ -99,6 +97,7 @@ namespace Application.Services
             if(user.IdRole <= 0)
                 throw new ArgumentException("Role ID must be greater than zero.");
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+            user.IdRole = 1;
             var domain = MapToDomain(user);
             var addedDomain = await _repo.AddUserAsync(domain);
             return MapToResponse(addedDomain);

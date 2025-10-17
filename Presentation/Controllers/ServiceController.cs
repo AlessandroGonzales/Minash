@@ -9,7 +9,6 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class ServiceController : ControllerBase 
     {
         private readonly IServiceAppService _service;
@@ -18,6 +17,7 @@ namespace Presentation.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllServices()
         {
@@ -25,6 +25,7 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceById([FromRoute]int id)
         {
@@ -34,6 +35,7 @@ namespace Presentation.Controllers
             return Ok(service);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("name")]
         public async Task<IActionResult> GetServiceByName([FromQuery] string name)
         {
@@ -41,13 +43,15 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("filter")]
         public async Task<IActionResult> GetServicesByqualityAsync([FromQuery] string quality)
         {
             var list = await _service.GetServicesByQualityAsync(quality);
             return Ok(list);
         }
-            
+
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateService([FromBody] ServiceRequest serviceDto)
         {
@@ -55,6 +59,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateService([FromRoute]int id, [FromBody] ServiceRequest serviceDto)
         {
@@ -62,6 +67,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateServicePriceAsync([FromRoute] int id, [FromBody] ServicePartial serviceDto)
         {
@@ -69,6 +75,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(int id)
         {

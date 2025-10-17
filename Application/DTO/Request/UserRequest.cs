@@ -19,7 +19,7 @@ namespace Application.DTO.Request
         public string Province { get; set; } = null!;
         public string City { get; set; } = null!;
         public string FullAddress { get; set; } = null!;
-        public int IdRole { get; set; }
+        public int IdRole { get; set; } = 1;
 
     }
 }

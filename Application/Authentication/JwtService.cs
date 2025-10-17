@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Application.DTO.Response;
 using System.Security.Claims;
 using System.Text;
-using Domain.Entities;
-using Application.DTO.Response;
 
 namespace Application.Authentication
 {

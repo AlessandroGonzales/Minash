@@ -143,6 +143,9 @@ namespace Infrastructure.Repositories
             if (user.IdRole <= 0)
                 throw new ArgumentException("Role ID must be a positive integer.");
 
+            if(user.IdRole == 0)
+                user.IdRole = 1; 
+
             var efUser = MapToEf(user);
             _db.Users.Add(efUser);
             await _db.SaveChangesAsync();
