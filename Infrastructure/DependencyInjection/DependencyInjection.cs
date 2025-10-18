@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.ExternalServices;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Domain.Repositories;
+using Polly;
+using Polly.Extensions.Http;
+
 
 namespace Infrastructure.DependencyInjection
 {
@@ -27,8 +31,25 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ICustomRepository, CustomRepository>();
             services.AddScoped<IAccountingRecordRepository, AccountingRecordRepository>();
+
+            var retryPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(
+                    retryCount: 3,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+            var circuitBreakerPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .CircuitBreakerAsync(
+                    handledEventsAllowedBeforeBreaking: 5,
+                    durationOfBreak: TimeSpan.FromSeconds(30));
+
+            services.AddHttpClient<MercadoPagoClient>()
+                    .AddPolicyHandler(retryPolicy)
+                    .AddPolicyHandler(circuitBreakerPolicy);
+
             return services;
         }
-        
+
     }
 }

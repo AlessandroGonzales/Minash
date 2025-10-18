@@ -3,20 +3,25 @@ using Application.DTO.Request;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
+using Infrastructure.ExternalServices;
+using System.Text.Json;
 
 namespace Application.Services
 {
     public class PaymentAppService : IPaymentAppService
     {
         private readonly IPaymentRepository _repoPayment;
-        private readonly IAccountingRecordRepository _repoAccountingRecord;
+        private readonly IOrderRepository _repoOrder;
+        private readonly MercadoPagoClient _mercadoPagoClient;
         public PaymentAppService(
             IPaymentRepository repoPayment,
-            IAccountingRecordRepository repoAccountingRecord
+            IOrderRepository repoOrder,
+            MercadoPagoClient mercadoPagoClient
         )
         {
             _repoPayment = repoPayment;
-            _repoAccountingRecord = repoAccountingRecord;
+            _repoOrder = repoOrder;
+            _mercadoPagoClient = mercadoPagoClient;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -65,7 +70,7 @@ namespace Application.Services
         public async Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId)
         {
             var pay = await _repoPayment.GetPaymentsByOrderIdAsync(orderId);
-            return MapToDto(pay);
+            return pay == null? null : MapToDto(pay);
         }
         public async Task<PaymentRequest?> GetPaymentByIdAsync(int id)
         {
@@ -75,6 +80,26 @@ namespace Application.Services
 
         public async Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment)
         {
+            var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
+            if (order == null) throw new ArgumentException("Order not found.");
+
+            payment.Total = order.Total;
+
+            var mpPayment = new
+            {
+                transaction_amount = payment.Total,
+                description = $"Payment for Order #{payment.IdOrder}",
+                payment_method_id = "pix",
+                payer = new
+                {
+                    email = "cliente@example.com"
+                }
+            };
+
+            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(mpPayment);
+            payment.ProviderResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
+                           ?? new Dictionary<string, object>(); 
+
             var creatPay = MapToDomain(payment);
             var createdPay = await _repoPayment.AddPaymentAsync(creatPay);
           

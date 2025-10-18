@@ -69,5 +69,13 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [HttpPost("test-mercadopago")]
+        [Authorize(Policy = "ClienteOrAdmin")]
+        public async Task<IActionResult> TestMercadoPagoAsync([FromBody] PaymentRequest payment)
+        {
+            var result = await _service.AddPaymentAsync(payment);
+            return Ok(result);
+        }
+
     }
 }

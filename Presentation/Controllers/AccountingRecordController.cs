@@ -14,7 +14,7 @@ namespace Presentation.Controllers
         private readonly IAccountingRecordAppService _service;
         public AccountingRecordController(IAccountingRecordAppService service) { _service = service; }
 
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "CEOPolicy")]
         [HttpGet]
         public async Task<IActionResult> GetAllAccountingRecordAsync()
         {
@@ -22,7 +22,7 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "CEOPolicy")]
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalAccountingRecordAsync()
         {
@@ -30,7 +30,7 @@ namespace Presentation.Controllers
             return Ok(total);
         }
 
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "CEOPolicy")]
         [HttpGet("{id}")]
         public async Task <IActionResult> GetAccountingRecordByIdAsync([FromRoute] int id)
         {
