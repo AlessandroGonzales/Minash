@@ -34,6 +34,9 @@
             "projectReferences": {
               "C:\\Users\\jaman\\Minash\\Domain\\Domain.csproj": {
                 "projectPath": "C:\\Users\\jaman\\Minash\\Domain\\Domain.csproj"
+              },
+              "C:\\Users\\jaman\\Minash\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\jaman\\Minash\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -214,9 +217,25 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Http.Polly": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Polly": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Polly.Extensions.Http": {
+              "target": "Package",
+              "version": "[3.0.0, )"
             }
           },
           "imports": [

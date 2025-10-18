@@ -3,6 +3,8 @@ using Application.DTO.Request;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
+using Infrastructure.ExternalServices;
+using System.Text.Json;
 
 namespace Application.Services
 {
@@ -10,13 +12,16 @@ namespace Application.Services
     {
         private readonly IPaymentRepository _repoPayment;
         private readonly IOrderRepository _repoOrder;
+        private readonly MercadoPagoClient _mercadoPagoClient;
         public PaymentAppService(
             IPaymentRepository repoPayment,
-            IOrderRepository repoOrder
+            IOrderRepository repoOrder,
+            MercadoPagoClient mercadoPagoClient
         )
         {
             _repoPayment = repoPayment;
             _repoOrder = repoOrder;
+            _mercadoPagoClient = mercadoPagoClient;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -77,7 +82,24 @@ namespace Application.Services
         {
             var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
             if (order == null) throw new ArgumentException("Order not found.");
+
             payment.Total = order.Total;
+
+            var mpPayment = new
+            {
+                transaction_amount = payment.Total,
+                description = $"Payment for Order #{payment.IdOrder}",
+                payment_method_id = "pix",
+                payer = new
+                {
+                    email = "cliente@example.com"
+                }
+            };
+
+            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(mpPayment);
+            payment.ProviderResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
+                           ?? new Dictionary<string, object>(); 
+
             var creatPay = MapToDomain(payment);
             var createdPay = await _repoPayment.AddPaymentAsync(creatPay);
           
