@@ -36,6 +36,7 @@ namespace Application.Services
             GarmentDetails = dto.GarmentDetails,
             ImageUrl = dto.ImageUrl
         };
+
         public async Task<IEnumerable<GarmentResponse>> GetAllGarmentsAsync()
         {
             var list = await _repo.GetAllGarmentsAsync();
