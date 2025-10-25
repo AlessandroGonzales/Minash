@@ -35,7 +35,7 @@ namespace Presentation.Controllers
 
 
                 if (!notification.TryGetProperty("data", out var data) ||
-                        !data.TryGetProperty("id", out var idElement))
+                        !data.TryGetProperty("id", out var idElement))  
                     return BadRequest("Invalid notification format.");
 
 
@@ -55,8 +55,7 @@ namespace Presentation.Controllers
                 var payerEmail = paymentDetails.Value.GetProperty("payer").GetProperty("email").GetString();
                 var paymentMethod = paymentDetails.Value.GetProperty("payment_method_id").GetString();
                 var externalReference = paymentDetails.Value.GetProperty("external_reference").GetString();
-                var idOrder = int.Parse(externalReference!);
-
+                int idOrder = int.Parse(externalReference!);
 
                 if (idOrder == 0)
                 {
@@ -80,7 +79,7 @@ namespace Presentation.Controllers
                     ExternalPaymentId = paymentId
                 };
 
-                await _paymentService.AddPaymentAsync(paymentRequest);
+                await _paymentService.ConfirmPaymentAsync(paymentRequest);
                 _logger.LogInformation("Payment processed successfully for Order ID: {OrderId}", idOrder);
                 return Ok();
             }

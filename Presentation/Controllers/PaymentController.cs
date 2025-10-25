@@ -33,7 +33,7 @@ namespace Presentation.Controllers
         [HttpGet("by-idOrder/{id}")]
         public async Task<IActionResult> GetPaymentByIdOrder([FromRoute] int id)
         {
-            var pay = await _service.GetPaymentsByOrderIdAsync(id);
+            var pay = await _service.GetPaymentsByOrderIdAsync(id); 
             return Ok(pay);
         }
 
@@ -44,7 +44,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var reference = await _service.AddPaymentAsync(payment);
+                var reference = await _service.CreateMercadoPagoPreferenceAsync(payment);
                 return Ok(reference);
             }
             catch (Exception ex)
@@ -61,7 +61,6 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdatePaymentAsync([FromRoute] int id, [FromBody] PaymentPartial payment)
         {
@@ -77,13 +76,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpPost("test-mercadopago")]
-        [Authorize(Policy = "ClienteOrAdmin")]
-        public async Task<IActionResult> TestMercadoPagoAsync([FromBody] PaymentRequest payment)
-        {
-            var result = await _service.AddPaymentAsync(payment);
-            return Ok(result);
-        }
+    
 
     }
 }

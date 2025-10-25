@@ -1,5 +1,6 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -82,47 +83,56 @@ namespace Application.Services
             return pay == null ? null : MapToDto(pay);
         }
 
-        public async Task<object> AddPaymentAsync(PaymentRequest payment)
+        public async Task<object> CreateMercadoPagoPreferenceAsync(paymentMercadoPago payment)
         {
-            var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
+            var order = await _repoOrder.GetOrderByIdAsync(payment.PreferenceId);
             if (order == null) throw new ArgumentException("Order not found.");
 
-            var preferenceData = new
+            var preference = new
             {
                 items = new[]
-       {
-            new {
-                title = $"Pago de orden #{order.IdOrder}",
-                quantity = 1,
-                currency_id = "ARS",
-                unit_price = order.Total
-            }
-        },
-                payer = new
                 {
-                    email = "TESTUSER2519918320270544758@testuser.com" // cuenta de prueba del comprador
+                    new
+                    {
+                        title = $"Order #{order.IdOrder}",
+                        quantity = 1,
+                        unit_price = order.Total,
+                        currency_id = "ARS"
+                    }
                 },
+                payer = new { email = "TESTUSER2519918320270544758@testuser.com" },
                 notification_url = "https://nikia-dutiful-rattly.ngrok-free.dev/api/paymentnotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
                 {
                     success = "https://tusitio.com/success",
-                    pending = "https://tusitio.com/pending",
-                    failure = "https://tusitio.com/failure"
+                    failure = "https://tusitio.com/failure",
+                    pending = "https://tusitio.com/pending"
                 },
                 auto_return = "approved"
             };
-
-            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(preferenceData);
+            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(preference);
             var preferenceResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
-                           ?? new Dictionary<string, object>();
-
-            return new {
+                               ?? new Dictionary<string, object>();
+            return new
+            {
                 OrderId = order.IdOrder,
                 PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
-                InitPoint = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString(),
+                InitPoint = preferenceResponse.GetValueOrDefault("init_point")?.ToString(),
                 SandboxUrl = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString()
             };
+        }
+        public async Task ConfirmPaymentAsync(PaymentRequest payment)
+        {
+            var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
+            if (order == null) throw new ArgumentException("Order not found.");
+            var domain = MapToDomain(payment);
+            domain.Verified = payment.Verified;
+            domain.Total = payment.Total;
+            domain.Provider = "MercadoPago";
+            domain.Currency = "ARS";
+
+            await _repoPayment.AddPaymentAsync(domain);
         }
 
         public async Task UpdatePaymentAsync(int id, PaymentRequest payment)
