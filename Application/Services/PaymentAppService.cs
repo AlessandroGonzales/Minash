@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
 using Infrastructure.ExternalServices;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace Application.Services
@@ -13,15 +14,18 @@ namespace Application.Services
         private readonly IPaymentRepository _repoPayment;
         private readonly IOrderRepository _repoOrder;
         private readonly MercadoPagoClient _mercadoPagoClient;
+        private readonly IConfiguration _config;
         public PaymentAppService(
             IPaymentRepository repoPayment,
             IOrderRepository repoOrder,
-            MercadoPagoClient mercadoPagoClient
+            MercadoPagoClient mercadoPagoClient,
+            IConfiguration config
         )
         {
             _repoPayment = repoPayment;
             _repoOrder = repoOrder;
             _mercadoPagoClient = mercadoPagoClient;
+            _config = config;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -38,7 +42,7 @@ namespace Application.Services
             Verified = payment.Verified,
             Total = payment.Total,
             IdOrder = payment.IdOrder,
-            
+
         };
 
         private static Payment MapToDomain(PaymentRequest dto) => new Payment
@@ -70,7 +74,7 @@ namespace Application.Services
         public async Task<PaymentRequest?> GetPaymentsByOrderIdAsync(int orderId)
         {
             var pay = await _repoPayment.GetPaymentsByOrderIdAsync(orderId);
-            return pay == null? null : MapToDto(pay);
+            return pay == null ? null : MapToDto(pay);
         }
         public async Task<PaymentRequest?> GetPaymentByIdAsync(int id)
         {
@@ -78,32 +82,47 @@ namespace Application.Services
             return pay == null ? null : MapToDto(pay);
         }
 
-        public async Task<PaymentRequest> AddPaymentAsync(PaymentRequest payment)
+        public async Task<object> AddPaymentAsync(PaymentRequest payment)
         {
             var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
             if (order == null) throw new ArgumentException("Order not found.");
 
-            payment.Total = order.Total;
-
-            var mpPayment = new
+            var preferenceData = new
             {
-                transaction_amount = payment.Total,
-                description = $"Payment for Order #{payment.IdOrder}",
-                payment_method_id = "pix",
+                items = new[]
+       {
+            new {
+                title = $"Pago de orden #{order.IdOrder}",
+                quantity = 1,
+                currency_id = "ARS",
+                unit_price = order.Total
+            }
+        },
                 payer = new
                 {
-                    email = "cliente@example.com"
-                }
+                    email = "TESTUSER2519918320270544758@testuser.com" // cuenta de prueba del comprador
+                },
+                notification_url = "https://nikia-dutiful-rattly.ngrok-free.dev/api/paymentnotification/notification",
+                external_reference = order.IdOrder.ToString(),
+                back_urls = new
+                {
+                    success = "https://tusitio.com/success",
+                    pending = "https://tusitio.com/pending",
+                    failure = "https://tusitio.com/failure"
+                },
+                auto_return = "approved"
             };
 
-            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(mpPayment);
-            payment.ProviderResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
-                           ?? new Dictionary<string, object>(); 
+            var mpResponseJson = await _mercadoPagoClient.CreateCheckoutPreferenceAsync(preferenceData);
+            var preferenceResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
+                           ?? new Dictionary<string, object>();
 
-            var creatPay = MapToDomain(payment);
-            var createdPay = await _repoPayment.AddPaymentAsync(creatPay);
-          
-            return MapToDto(createdPay);
+            return new {
+                OrderId = order.IdOrder,
+                PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
+                InitPoint = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString(),
+                SandboxUrl = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString()
+            };
         }
 
         public async Task UpdatePaymentAsync(int id, PaymentRequest payment)

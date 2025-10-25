@@ -37,12 +37,20 @@ namespace Presentation.Controllers
             return Ok(pay);
         }
 
+
         [Authorize(Policy = "ClienteOrAdmin")]
-        [HttpPost]
-        public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentRequest payment)
+        [HttpPost("create-mercadopago")]
+        public async Task<IActionResult> CreateMercadoPagoPaymentAsync([FromBody] paymentMercadoPago payment)
         {
-            var createdPay = await _service.AddPaymentAsync(payment);
-            return CreatedAtAction(nameof(GetPaymentByIdAsync), new { Id = createdPay.IdPay }, createdPay);
+            try
+            {
+                var reference = await _service.AddPaymentAsync(payment);
+                return Ok(reference);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [Authorize(Policy = "AdminPolicy")]

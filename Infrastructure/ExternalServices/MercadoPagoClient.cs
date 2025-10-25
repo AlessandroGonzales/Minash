@@ -39,5 +39,20 @@ namespace Infrastructure.ExternalServices
 
             return responseText;
         }
+
+        public async Task<JsonElement?> GetPaymentByIdAsync(string paymentId)
+        {
+            var response = await _httpClient.GetAsync($"v1/payments/{paymentId}");
+            var responseText = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Error retrieving payment {paymentId}: {responseText}");
+                return null;
+            }
+
+            return JsonSerializer.Deserialize<JsonElement>(responseText);
+        }
+
     }
 }
