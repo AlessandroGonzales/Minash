@@ -16,17 +16,21 @@ namespace Application.Services
         private readonly IOrderRepository _repoOrder;
         private readonly MercadoPagoClient _mercadoPagoClient;
         private readonly IConfiguration _config;
+        private readonly IUserRepository _repoUser;
         public PaymentAppService(
             IPaymentRepository repoPayment,
             IOrderRepository repoOrder,
             MercadoPagoClient mercadoPagoClient,
-            IConfiguration config
+            IConfiguration config,
+            IUserRepository repoUser
+
         )
         {
             _repoPayment = repoPayment;
             _repoOrder = repoOrder;
             _mercadoPagoClient = mercadoPagoClient;
             _config = config;
+            _repoUser = repoUser;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -86,6 +90,7 @@ namespace Application.Services
         public async Task<object> CreateMercadoPagoPreferenceAsync(paymentMercadoPago payment)
         {
             var order = await _repoOrder.GetOrderByIdAsync(payment.PreferenceId);
+            var user = await _repoUser.GetUserByIdAsync(order.IdUser);
             if (order == null) throw new ArgumentException("Order not found.");
 
             var preference = new
@@ -100,7 +105,7 @@ namespace Application.Services
                         currency_id = "ARS"
                     }
                 },
-                payer = new { email = "TESTUSER2519918320270544758@testuser.com" },
+                payer = new { email = user.Email },
                 notification_url = "https://nikia-dutiful-rattly.ngrok-free.dev/api/paymentnotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
