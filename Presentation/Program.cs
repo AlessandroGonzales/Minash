@@ -4,14 +4,35 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+var logger = builder.Logging.Services.BuildServiceProvider().GetService<ILogger<Program>>();
+logger?.LogInformation("=== DEBUG: Entorno = {Env}, ConnectionString length = {Len}", builder.Environment.EnvironmentName, builder.Configuration.GetConnectionString("MinashDB")?.Length ?? 0);
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer}, Duration = {Dur}",
+    jwtSettings["Key"]?.Length ?? 0, jwtSettings["Issuer"], jwtSettings["DurationInMinutes"]);
+
+if (string.IsNullOrEmpty(jwtSettings["Key"]))
+{
+    logger?.LogError("=== ERROR: JWT Key is NULL/EMPTY – check env vars!");
+    throw new InvalidOperationException("JWT Key missing in config");  // Falla startup visible
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+logger?.LogInformation("=== DEBUG: JWT Key bytes = {BytesLen}", key.Length);
+
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
     .AddEnvironmentVariables();
 
+var connectionString = builder.Configuration.GetConnectionString("MinashDB");
+builder.Configuration.GetValue<string>("MercadoPago:AccessToken");
 
 #region
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -23,8 +44,6 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 #endregion
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -100,7 +119,7 @@ c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecuritySc
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
