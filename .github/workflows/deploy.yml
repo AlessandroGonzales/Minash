@@ -1,0 +1,94 @@
+name: CI/CD - Deploy to Azure App Service
+
+# Dispara deploy solo en pushes a main (ajusta si corresponde)
+on:
+  push:
+    branches: [ "main" ]
+
+# Necesario para OIDC
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # --- REEMPLAZA ESTOS VALORES ---
+  AZURE_SUBSCRIPTION_ID: "9f65ae10-ac2e-4ccf-8bd0-da91013f5b01"
+  AZURE_TENANT_ID: "44fda9ef-c695-46ea-814f-c136a1243382"
+  AZURE_CLIENT_ID: "c703ac65-9474-4212-ae16-ada6d9f15fda"    # appId de la App Registration (federated)
+  AZURE_RESOURCE_GROUP: "minash"
+  AZURE_WEBAPP_NAME: "minashapp"
+  DOTNET_VERSION: "8.0.x"
+  BUILD_CONFIGURATION: "Release"
+  ARTIFACT_PATH: "./publish.zip"
+  # -------------------------------
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-$(echo ${{ hashFiles('**/*.csproj') }} )
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+
+      - name: Publish (produce carpeta lista para deploy)
+        run: dotnet publish -c ${{ env.BUILD_CONFIGURATION }} -o ./publish --no-build
+
+      - name: Create zip artifact
+        run: |
+          cd publish
+          zip -r ../publish.zip .
+          cd ..
+
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy artifact to Azure Web App (ZIP Deploy)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          package: ${{ env.ARTIFACT_PATH }}
+
+      - name: Restart Web App
+        run: az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+
+      - name: Smoke test - check HTTP 200
+        env:
+          APP_URL: "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+        run: |
+          echo "Probando ${APP_URL} ..."
+          for i in 1 2 3; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" ${APP_URL})
+            echo "Intento $i -> HTTP $status"
+            if [ "$status" = "200" ]; then
+              echo "OK: App responde 200"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "ERROR: La app no responde 200 tras 3 intentos" >&2
+          exit 1
