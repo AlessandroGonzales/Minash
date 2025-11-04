@@ -88,7 +88,7 @@ jobs:
 
       - name: Smoke test - check HTTP 200
         env:
-          APP_URL: "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          APP_URL: "https://${{ env.APP_HOSTNAME }}"
         run: |
           echo "Probando ${APP_URL} ..."
           for i in 1 2 3; do
