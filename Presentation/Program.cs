@@ -12,19 +12,9 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
     .AddEnvironmentVariables();
 
-var dbHost = builder.Configuration.GetValue<string>("DB_HOST");
-var dbName = builder.Configuration.GetValue<string>("DB_NAME");
-var dbUser = builder.Configuration.GetValue<string>("DB_USER");
-var dbPass = builder.Configuration.GetValue<string>("DB_PASS");
-
-
 var loggerFactory = builder.Services.BuildServiceProvider().GetService<ILoggerFactory>();
 var logger = loggerFactory.CreateLogger("ConfigDebug");
 
-logger?.LogInformation("=== DB CONFIG: Host = {Host}, User = {User}", dbHost, dbUser);
-var connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass};Pooling=true;SSL Mode=Prefer;Trust Server Certificate=true";
-
-builder.Configuration["ConnectionStrings:PostgreSQL"] = connectionString;
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer}, Duration = {Dur}",
