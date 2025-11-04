@@ -15,11 +15,11 @@ namespace Infrastructure.DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("PostgreSQL");
+            var connectionString = configuration.GetConnectionString("minash");
 
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new InvalidOperationException("PostgreSQL Connection String is missing. Check Azure App Service Key Vault references (DB_HOST, DB_USER, etc.).");
+                throw new InvalidOperationException("minash Connection String is missing. Check Azure App Service Key Vault references (DB_HOST, DB_USER, etc.).");
             }
 
             services.AddDbContext<MinashDbContext>(options =>
