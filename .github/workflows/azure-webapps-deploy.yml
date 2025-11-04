@@ -64,11 +64,12 @@ jobs:
 
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
-      uses: azure/webapps-deploy@v3
+      uses: azure/webapps-deploy@v4
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: .
 
     - name: Get webapp URL
-      run: echo "webapp-url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+      run: |
+        echo "webapp-url: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
       shell: bash
