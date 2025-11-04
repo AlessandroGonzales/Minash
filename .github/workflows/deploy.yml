@@ -74,7 +74,7 @@ jobs:
           package: ${{ env.ARTIFACT_PATH }}
           
       - name: Wait for App to initialize
-        run: sleep 30 # Espera 30 segundos antes de reiniciar y probar
+        run: sleep 30 
         
       - name: Restart Web App
         run: az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
