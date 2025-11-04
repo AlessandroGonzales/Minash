@@ -1,4 +1,4 @@
-using Application.DependencyInjection;
+﻿using Application.DependencyInjection;
 using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +9,15 @@ using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var logger = builder.Logging.Services.BuildServiceProvider().GetService<ILogger<Program>>();
-logger?.LogInformation("=== DEBUG: Entorno = {Env}, ConnectionString length = {Len}", builder.Environment.EnvironmentName, builder.Configuration.GetConnectionString("MinashDB")?.Length ?? 0);
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
+
+
+var loggerFactory = builder.Services.BuildServiceProvider().GetService<ILoggerFactory>();
+var logger = loggerFactory.CreateLogger("ConfigDebug");
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer}, Duration = {Dur}",
@@ -18,20 +25,13 @@ logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer},
 
 if (string.IsNullOrEmpty(jwtSettings["Key"]))
 {
-    logger?.LogError("=== ERROR: JWT Key is NULL/EMPTY � check env vars!");
-    throw new InvalidOperationException("JWT Key missing in config");  // Falla startup visible
+    logger?.LogError("=== ERROR: JWT Key is NULL/EMPTY – check env vars!");
+    throw new InvalidOperationException("JWT Key missing in config");  
 }
 
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 logger?.LogInformation("=== DEBUG: JWT Key bytes = {BytesLen}", key.Length);
 
-
-builder.Configuration
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();
-
-var connectionString = builder.Configuration.GetConnectionString("MinashDB");
 builder.Configuration.GetValue<string>("MercadoPago:AccessToken");
 
 #region
@@ -44,6 +44,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 #endregion
 
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);
+builder.Logging.AddFilter("Npgsql", LogLevel.Information);
 
 builder.Services.AddAuthentication(options =>
 {
