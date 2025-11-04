@@ -15,16 +15,19 @@ namespace Infrastructure.DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = "Host=minashpostgresql.postgres.database.azure.com;Port=5432;Database=Minash;Username=postgres@minashpostgresql;Password=[TU_PASS_REAL];Ssl Mode=Require;Trust Server Certificate=true;";
+            var connectionString = configuration.GetConnectionString("PostgreSQL");
 
-            Console.WriteLine("=== DI: Using connection = " + connectionString);
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("PostgreSQL Connection String is missing. Check Azure App Service Key Vault references (DB_HOST, DB_USER, etc.).");
+            }
 
             services.AddDbContext<MinashDbContext>(options =>
-         options.UseNpgsql("Host=minashpostgresql.postgres.database.azure.com;Port=5432;Database=Minash;Username=postgres@minashpostgresql;Password=[TU_PASS_REAL];Ssl Mode=Require;Trust Server Certificate=true;", npgsqlOptionsAction =>
-         {
-             npgsqlOptionsAction.EnableRetryOnFailure();
-         })
-     );
+                options.UseNpgsql(connectionString, npgsqlOptionsAction =>
+                {
+                     npgsqlOptionsAction.EnableRetryOnFailure();
+                }));
+
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IGarmentRepository, GarmentRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
