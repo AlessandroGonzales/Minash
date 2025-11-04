@@ -19,7 +19,6 @@ namespace Presentation.Controllers
             ILogger<PaymentNotificationController> logger,
             MercadoPagoClient mpClient
             )
-
         {
             _paymentService = paymentService;
             _logger = logger;
@@ -90,11 +89,5 @@ namespace Presentation.Controllers
             }
         }
 
-        [HttpPost("notification-test")]
-        public IActionResult NotificationTest()
-        {
-            _logger.LogInformation("✅ Mercado Pago webhook test received correctly.");
-            return Ok("Webhook test successful.");
-        }
     }
 }

@@ -15,12 +15,16 @@ namespace Infrastructure.DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var connectionString = "Host=minashpostgresql.postgres.database.azure.com;Port=5432;Database=Minash;Username=postgres@minashpostgresql;Password=[TU_PASS_REAL];Ssl Mode=Require;Trust Server Certificate=true;";
+
+            Console.WriteLine("=== DI: Using connection = " + connectionString);
+
             services.AddDbContext<MinashDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("MinashDB"), npgsqlOptionsAction =>
-                {
-                    npgsqlOptionsAction.EnableRetryOnFailure();
-                })
-            );
+         options.UseNpgsql("Host=minashpostgresql.postgres.database.azure.com;Port=5432;Database=Minash;Username=postgres@minashpostgresql;Password=[TU_PASS_REAL];Ssl Mode=Require;Trust Server Certificate=true;", npgsqlOptionsAction =>
+         {
+             npgsqlOptionsAction.EnableRetryOnFailure();
+         })
+     );
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IGarmentRepository, GarmentRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();

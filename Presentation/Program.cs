@@ -1,11 +1,38 @@
-using Application.DependencyInjection;
+﻿using Application.DependencyInjection;
 using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
+
+
+var loggerFactory = builder.Services.BuildServiceProvider().GetService<ILoggerFactory>();
+var logger = loggerFactory.CreateLogger("ConfigDebug");
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer}, Duration = {Dur}",
+    jwtSettings["Key"]?.Length ?? 0, jwtSettings["Issuer"], jwtSettings["DurationInMinutes"]);
+
+if (string.IsNullOrEmpty(jwtSettings["Key"]))
+{
+    logger?.LogError("=== ERROR: JWT Key is NULL/EMPTY – check env vars!");
+    throw new InvalidOperationException("JWT Key missing in config");  
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+logger?.LogInformation("=== DEBUG: JWT Key bytes = {BytesLen}", key.Length);
+
+builder.Configuration.GetValue<string>("MercadoPago:AccessToken");
 
 #region
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -17,8 +44,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 #endregion
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information);
+builder.Logging.AddFilter("Npgsql", LogLevel.Information);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -39,6 +66,16 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
     };
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "https://minash-frontend.azurewebsites.net")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddAuthorization( options =>
@@ -84,7 +121,7 @@ c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecuritySc
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

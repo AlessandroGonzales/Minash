@@ -1,9 +1,12 @@
-﻿using Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Application.DTO.Request;
+﻿using Application.Authentication;
 using Application.DTO.Partial;
-using Application.Authentication;
+using Application.DTO.Request;
+using Application.Interfaces;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Presentation.Controllers
 {
@@ -14,16 +17,34 @@ namespace Presentation.Controllers
         private readonly IUserAppService _userService;
         private readonly IRoleAppService _roleService;
         private readonly JwtService _jwtService;
+        private readonly IConfiguration _configuration;
         public UserController(
             IUserAppService service,
             IRoleAppService roleService,
-            JwtService jwtService
+            JwtService jwtService,
+            IConfiguration configuration
         )
         {
             _userService = service;
             _roleService = roleService;
             _jwtService = jwtService;
+            _configuration = configuration;
         }
+
+        [HttpGet("test-db-real")]
+        public async Task<IActionResult> TestDbReal([FromServices] MinashDbContext db)
+        {
+            try
+            {
+                var count = await db.Users.CountAsync();  // Query real a DB
+                return Ok(new { UsersCount = count, Message = "DB connected OK" });  // Debe mostrar 3
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });  // Muestra error exacto
+            }
+        }
+
 
         [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet]
@@ -119,5 +140,6 @@ namespace Presentation.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
+
     }
 }
