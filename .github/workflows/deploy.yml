@@ -53,12 +53,6 @@ jobs:
       - name: Publish (produce carpeta lista para deploy)
         run: dotnet publish -c ${{ env.BUILD_CONFIGURATION }} -o ./publish --no-build
 
-      - name: Create zip artifact
-        run: |
-          cd publish
-          zip -r ../publish.zip .
-          cd ..
-
       - name: Login to Azure using OIDC
         uses: azure/login@v2
         with:
@@ -72,10 +66,10 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'production'
-          package: ${{ env.ARTIFACT_PATH }}
+          package: ./publish
           
       - name: Get Web App Hostname
-        id: get_hostname # <-- ID para obtener el output
+        id: get_hostname 
         run: |
           # Consulta la propiedad defaultHostName y la guarda en un archivo
           APP_HOSTNAME=$(az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "defaultHostName" -o tsv)
