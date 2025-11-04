@@ -67,15 +67,22 @@ jobs:
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy artifact to Azure Web App (ZIP Deploy)
+        id: deploy
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'production'
           package: ${{ env.ARTIFACT_PATH }}
           
-      - name: Wait for App to initialize
-        run: sleep 30 
-        
+      - name: Get Web App Hostname
+        id: get_hostname # <-- ID para obtener el output
+        run: |
+          # Consulta la propiedad defaultHostName y la guarda en un archivo
+          APP_HOSTNAME=$(az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "defaultHostName" -o tsv)
+          # Hace que la variable sea accesible en pasos posteriores
+          echo "APP_HOSTNAME=$APP_HOSTNAME" >> $GITHUB_ENV
+          echo "El hostname es: $APP_HOSTNAME"
+          
       - name: Restart Web App
         run: az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
