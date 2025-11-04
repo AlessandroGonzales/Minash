@@ -1,26 +1,26 @@
 name: CI/CD - Deploy to Azure App Service
 
-# Dispara deploy solo en pushes a main (ajusta si corresponde)
+
 on:
   push:
     branches: [ "main" ]
 
-# Necesario para OIDC
+
 permissions:
   id-token: write
   contents: read
 
 env:
-  # --- REEMPLAZA ESTOS VALORES ---
+
   AZURE_SUBSCRIPTION_ID: "9f65ae10-ac2e-4ccf-8bd0-da91013f5b01"
   AZURE_TENANT_ID: "44fda9ef-c695-46ea-814f-c136a1243382"
-  AZURE_CLIENT_ID: "c703ac65-9474-4212-ae16-ada6d9f15fda"    # appId de la App Registration (federated)
+  AZURE_CLIENT_ID: "c703ac65-9474-4212-ae16-ada6d9f15fda"   
   AZURE_RESOURCE_GROUP: "minash"
   AZURE_WEBAPP_NAME: "minashapp"
   DOTNET_VERSION: "8.0.x"
   BUILD_CONFIGURATION: "Release"
   ARTIFACT_PATH: "./publish.zip"
-  # -------------------------------
+
 
 jobs:
   build-and-deploy:
@@ -72,7 +72,10 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'production'
           package: ${{ env.ARTIFACT_PATH }}
-
+          
+      - name: Wait for App to initialize
+        run: sleep 30 # Espera 30 segundos antes de reiniciar y probar
+        
       - name: Restart Web App
         run: az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
