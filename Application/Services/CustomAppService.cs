@@ -55,7 +55,12 @@ namespace Application.Services
 
         public async Task<CustomResponse> GetCustomByIdAsync(int id)
         {
+
             var custom = await _repo.GetCustomByIdAsync(id);
+            if (custom == null)
+            {
+                throw new KeyNotFoundException($"Custom with ID {id} not found.");
+            }
             return MapToResponse(custom);
         }
 

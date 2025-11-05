@@ -63,7 +63,12 @@ namespace Application.Services
 
         public async Task <AccountingRecordResponse> AddAccountingRecordAsync(AccountingRecordRequest accountingRecord)
         {
+            if (accountingRecord == null)
+                throw new ArgumentNullException(nameof(accountingRecord));
             var payment = await _repoPayment.GetPaymentByIdAsync(accountingRecord.idPay);
+            if (payment == null)
+                throw new ArgumentException($"Payment with ID {accountingRecord.idPay} not found.");
+
             var total = payment.Total;
 
             var newAccountingRecord = new AccountingRecord
