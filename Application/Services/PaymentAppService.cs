@@ -89,7 +89,7 @@ namespace Application.Services
 
         public async Task<object> CreateMercadoPagoPreferenceAsync(paymentMercadoPago payment)
         {
-            var order = await _repoOrder.GetOrderByIdAsync(payment.PreferenceId);
+            var order = await _repoOrder.GetOrderByIdAsync(payment.OrderId);
             var user = await _repoUser.GetUserByIdAsync(order.IdUser);
             if (order == null) throw new ArgumentException("Order not found.");
 
@@ -106,13 +106,13 @@ namespace Application.Services
                     }
                 },
                 payer = new { email = user.Email },
-                notification_url = "https://nikia-dutiful-rattly.ngrok-free.dev/api/paymentnotification/notification",
+                notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
                 {
-                    success = "https://tusitio.com/success",
-                    failure = "https://tusitio.com/failure",
-                    pending = "https://tusitio.com/pending"
+                    success = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html",
+                    failure = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html",
+                    pending = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html"
                 },
                 auto_return = "approved"
             };

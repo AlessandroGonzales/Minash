@@ -104,14 +104,6 @@ namespace Application.Services
             order.Total = newTotal;
             await _repoOrder.PartialUpdateOrderAsync(order.IdOrder, order);
 
-            var payment = await _repoPayment.GetPaymentsByOrderIdAsync(dto.IdOrder);
-            if (payment == null)
-            {
-                throw new Exception($"Payment for Order ID {dto.IdOrder} not found.");
-            }
-            payment.Total = newTotal;
-            await _repoPayment.PartialUpdatePaymentAsync(payment.IdPay ,payment);
-
             return MapToResponse(createdDomain);
         }
         public async Task UpdateDetailsOrderAsync(int id, DetailsOrderRequest dto)
