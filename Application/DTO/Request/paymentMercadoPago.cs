@@ -2,6 +2,6 @@
 {
     public class paymentMercadoPago
     {
-        public int PreferenceId { get; set; }
+        public int OrderId { get; set; }
     }
 }

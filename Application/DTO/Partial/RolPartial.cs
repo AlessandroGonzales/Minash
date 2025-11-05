@@ -2,7 +2,7 @@
 {
     public class RolPartial
     {
-        public string? RolName { get; set; }
-        public string? RolDetails { get; set; } 
+        public string RolName { get; set; } = null!;
+        public string RolDetails { get; set; } = null!;
     }
 }
