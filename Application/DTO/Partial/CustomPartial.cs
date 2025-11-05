@@ -3,6 +3,6 @@
     public class CustomPartial
     {
         public int count { get; set; }
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = null!;
     }
 }
