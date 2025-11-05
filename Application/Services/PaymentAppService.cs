@@ -124,13 +124,13 @@ namespace Application.Services
                 OrderId = order.IdOrder,
                 PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
                 InitPoint = preferenceResponse.GetValueOrDefault("init_point")?.ToString(),
-                SandboxUrl = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString()
             };
         }
         public async Task ConfirmPaymentAsync(PaymentRequest payment)
         {
             var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
             if (order == null) throw new ArgumentException("Order not found.");
+
             var domain = MapToDomain(payment);
             domain.Verified = payment.Verified;
             domain.Total = payment.Total;
