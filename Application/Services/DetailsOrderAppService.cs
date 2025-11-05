@@ -71,7 +71,16 @@ namespace Application.Services
         {
 
             var garmentService = await _repoGarmenService.GetGarmentServiceByIdAsync(dto.IdGarmentService);
+            if (garmentService == null)
+            {
+                throw new Exception($"Garment Service with ID {dto.IdGarmentService} not found.");
+            }
+
             var order = await _repoOrder.GetOrderByIdAsync(dto.IdOrder);
+            if (order == null)
+            {
+                throw new Exception($"Order with ID {dto.IdOrder} not found.");
+            }
 
             var unitPrice = garmentService.AdditionalPrice;
             var subTotal = dto.Count * unitPrice;
@@ -96,6 +105,10 @@ namespace Application.Services
             await _repoOrder.PartialUpdateOrderAsync(order.IdOrder, order);
 
             var payment = await _repoPayment.GetPaymentsByOrderIdAsync(dto.IdOrder);
+            if (payment == null)
+            {
+                throw new Exception($"Payment for Order ID {dto.IdOrder} not found.");
+            }
             payment.Total = newTotal;
             await _repoPayment.PartialUpdatePaymentAsync(payment.IdPay ,payment);
 
