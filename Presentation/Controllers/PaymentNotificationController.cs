@@ -26,19 +26,20 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("notification")]
-        public async Task<IActionResult> Notification([FromBody] JsonElement notification)
+        public async Task<IActionResult> Notification([FromQuery] string? topic, [FromQuery] string? id)
         {
             try
             {
-                _logger.LogInformation("Webhook notification received: {Notification}", notification.ToString());
+                _logger.LogInformation("Webhook notification received: {topic}, {id}", topic, id);
 
 
-                if (!notification.TryGetProperty("data", out var data) ||
-                        !data.TryGetProperty("id", out var idElement))  
-                    return BadRequest("Invalid notification format.");
+                if (string.IsNullOrEmpty(id) || topic != "payment")
+                {
+                    _logger.LogWarning("Invalid notification received. Topic: {Topic}, ID: {Id}", topic, id);
+                    return Ok();
+                }
 
-
-                var paymentId = idElement.GetString();
+                var paymentId = id;
                 _logger.LogInformation("Processing payment ID: {PaymentId}", paymentId);
 
                 var paymentDetails = await _mpClient.GetPaymentByIdAsync(paymentId!);
@@ -61,7 +62,6 @@ namespace Presentation.Controllers
                     _logger.LogWarning("Invalid order ID extracted from payment details: {ExternalReference}", externalReference);
                     return Ok();
                 }
-
 
                 var paymentRequest = new PaymentRequest
                 {
