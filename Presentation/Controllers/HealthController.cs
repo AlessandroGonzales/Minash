@@ -1,6 +1,16 @@
-﻿namespace Presentation.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Presentation.Controllers
 {
-    public class HealthController
+    [ApiController]
+    [Route("api/[controller]")]
+    public class HealthController : ControllerBase
     {
+        [HttpGet]
+        public IActionResult GetHealth()
+        {
+            return Ok("La aplicacion funciona correctamente");
+
+        }
     }
 }
