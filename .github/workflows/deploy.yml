@@ -82,17 +82,19 @@ jobs:
 
       - name: Smoke test - check HTTP 200
         env:
-          APP_URL: "https://${{ env.APP_HOSTNAME }}"
+          HEALTH_URL: "https://${{ env.APP_HOSTNAME }}/api/Health" 
         run: |
-          echo "Probando ${APP_URL} ..."
+          echo "Probando ${{ env.HEALTH_URL }} ..."
+          # El comando curl debe usar la nueva variable HEALTH_URL
           for i in 1 2 3; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" ${APP_URL})
+            status=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.HEALTH_URL }})
             echo "Intento $i -> HTTP $status"
             if [ "$status" = "200" ]; then
               echo "OK: App responde 200"
               exit 0
             fi
-            sleep 3
+            # Aumentamos el sleep a 5 segundos para darle más tiempo al App Service a reiniciar
+            sleep 5 
           done
           echo "ERROR: La app no responde 200 tras 3 intentos" >&2
           exit 1
