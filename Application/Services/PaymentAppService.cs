@@ -91,10 +91,12 @@ namespace Application.Services
         {
             var order = await _repoOrder.GetOrderByIdAsync(payment.OrderId);
             var user = await _repoUser.GetUserByIdAsync(order.IdUser);
+            if (user == null) throw new ArgumentException("User not found.");
             if (order == null) throw new ArgumentException("Order not found.");
 
             var preference = new
             {
+
                 items = new[]
                 {
                     new
@@ -105,7 +107,13 @@ namespace Application.Services
                         currency_id = "ARS"
                     }
                 },
-                payer = new { email = user.Email },
+                payer = new { 
+                    name = user.UserName,
+                    lastName = user.LastName,
+                    email = user.Email,
+                    phone = user.Phone,
+                },
+                    
                 notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new

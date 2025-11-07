@@ -1,8 +1,6 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
@@ -31,6 +29,7 @@ namespace Infrastructure.ExternalServices
             var response = await _httpClient.PostAsync("checkout/preferences", content);
 
             var responseText = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Error creating payment: {responseText}");
