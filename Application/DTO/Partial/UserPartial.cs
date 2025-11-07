@@ -2,8 +2,8 @@
 {
     public class UserPartial
     {
-        public string? UserName { get; set; } 
-        public string? Phone { get; set; }
-        public string? ImageUrl { get; set; } 
+        public string UserName { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+        public string ImageUrl { get; set; } = null!;
     }
 }

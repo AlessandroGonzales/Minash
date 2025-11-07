@@ -3,6 +3,6 @@
     public class ServicePartial
     {
         public decimal ServicePrice { get; set; }
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = null!;   
     }
 }

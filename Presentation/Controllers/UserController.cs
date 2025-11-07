@@ -113,6 +113,7 @@ namespace Presentation.Controllers
             if (user == null)
                 return Unauthorized("Credenciales invalidas");
             var rol = await _roleService.GetRoleByIdAsync(user.IdRol);
+
             var token = _jwtService.GenerateToken(user, rol);
             return Ok(new { Token = token });
         }

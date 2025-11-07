@@ -3,6 +3,6 @@
     public class GarmentPartial
     {
         public string GarmentDetails { get; set; } = null!;
-        public string? ImageUrl { get; set; } 
+        public string ImageUrl { get; set; } = null!;
     }
 }

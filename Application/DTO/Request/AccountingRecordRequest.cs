@@ -9,7 +9,7 @@ namespace Application.DTO.Request
         [Range(1, (double)decimal.MaxValue, ErrorMessage = "El Total debe ser mayor a 0" )]
         public decimal total {  get; set; }
         [Required]
-        public string? Details { get; set; }
+        public string Details { get; set; } = null!;
         [Required]
         public int idPay { get; set; }
     }
