@@ -111,7 +111,10 @@ namespace Application.Services
                     name = user.UserName,
                     lastName = user.LastName,
                     email = user.Email,
-                    phone = user.Phone,
+                    phone = new
+                    {   area_code = "54",
+                        number = user.Phone,
+                    }
                 },
                     
                 notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
