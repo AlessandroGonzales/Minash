@@ -7,10 +7,9 @@ namespace Presentation.Controllers
     public class HealthController : ControllerBase
     {
         [HttpGet]
-        public IActionResult GetHealth()
+        public IActionResult Health()
         {
             return Ok("La aplicacion funciona correctamente");
-
         }
     }
 }
