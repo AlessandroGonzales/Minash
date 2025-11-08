@@ -114,31 +114,15 @@ namespace Application.Services
                     phone = new
                     {   area_code = "54",
                         number = user.Phone.ToString(),
-                    },
-                    identification = new
-                    {
-                        type = "DNI",
-                        number = "94932369"
-                    }
-                },
-                shipments = new
-                {
-                    receiver_address = new
-                    {
-                        zip_code = "1406",
-                        street_name = "Calle Falsa",
-                        street_number = "123",
-                        floor = "1",
-                        apartment = "A"
                     }
                 },
                 notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
                 {
-                    success = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html",
-                    failure = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html",
-                    pending = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/swagger/index.html"
+                    success = "https://tu-dominio.com/payment/success/{order.IdOrder}",
+                    failure = "https://tu-dominio.com/payment/failure/{order.IdOrder}",
+                    pending = "https://tu-dominio.com/payment/pending/{order.IdOrder}"
                 },
                 auto_return = "approved"
             };
@@ -146,7 +130,7 @@ namespace Application.Services
             var preferenceResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(mpResponseJson)
                                ?? new Dictionary<string, object>();
             return new
-            {
+            {   
                 OrderId = order.IdOrder,
                 PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
                 InitPoint = preferenceResponse.GetValueOrDefault("init_point")?.ToString(),
