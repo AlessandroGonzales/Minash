@@ -113,7 +113,7 @@ namespace Application.Services
                     email = user.Email,
                     phone = new
                     {   area_code = "54",
-                        number = user.Phone,
+                        number = user.Phone.ToString(),
                     },
                     identification = new
                     {
