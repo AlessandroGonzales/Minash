@@ -109,12 +109,28 @@ namespace Application.Services
                 },
                 payer = new { 
                     name = user.UserName,
-                    lastName = user.LastName,
+                    surname = user.LastName,
                     email = user.Email,
                     phone = new
                     {   area_code = "54",
                         number = user.Phone,
+                    },
+                    identification = new
+                    {
+                          type = "DNI",
+                        number = "94932369"
+                    },
+                    shipments = new                     {
+                        receiver_address = new
+                        {
+                            zip_code = "1406",
+                            street_name = "Calle Falsa",
+                            street_number = 123,
+                            floor = "1",
+                            apartment = "A"
+                        }
                     }
+
                 },
                     
                 notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
