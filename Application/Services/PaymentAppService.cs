@@ -120,9 +120,9 @@ namespace Application.Services
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
                 {
-                    success = "https://tu-dominio.com/payment/success/{order.IdOrder}",
-                    failure = "https://tu-dominio.com/payment/failure/{order.IdOrder}",
-                    pending = "https://tu-dominio.com/payment/pending/{order.IdOrder}"
+                    success = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/success?orderId={order.IdOrder}",
+                    failure = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/failure?orderId={order.IdOrder}",
+                    pending = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/pending?orderId={order.IdOrder}"
                 },
                 auto_return = "approved"
             };
