@@ -117,22 +117,21 @@ namespace Application.Services
                     },
                     identification = new
                     {
-                          type = "DNI",
+                        type = "DNI",
                         number = "94932369"
-                    },
-                    shipments = new                     {
-                        receiver_address = new
-                        {
-                            zip_code = "1406",
-                            street_name = "Calle Falsa",
-                            street_number = 123,
-                            floor = "1",
-                            apartment = "A"
-                        }
                     }
-
                 },
-                    
+                shipments = new
+                {
+                    receiver_address = new
+                    {
+                        zip_code = "1406",
+                        street_name = "Calle Falsa",
+                        street_number = "123",
+                        floor = "1",
+                        apartment = "A"
+                    }
+                },
                 notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
