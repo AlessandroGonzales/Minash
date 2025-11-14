@@ -1,11 +1,10 @@
-﻿using Domain.Enums;
-
-namespace Infrastructure.Persistence.Entities;
+﻿namespace Infrastructure.Persistence.Entities;
 
 public partial class Payment
 {
-    public PaymentMethod PaymentMethod { get; set; }
     public int IdPay { get; set; }
+
+    public string PaymentMethod { get; set; } = null!;
 
     public DateOnly PaymentDate { get; set; }
 

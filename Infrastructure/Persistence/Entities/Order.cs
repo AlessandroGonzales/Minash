@@ -14,7 +14,11 @@ public partial class Order
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int? IdCustom { get; set; }
+
     public virtual ICollection<DetailsOrder> DetailsOrders { get; set; } = new List<DetailsOrder>();
+
+    public virtual Custom? IdCustomNavigation { get; set; }
 
     public virtual User IdUserNavigation { get; set; } = null!;
 

@@ -27,4 +27,6 @@ public partial class Custom
     public virtual Service IdServiceNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

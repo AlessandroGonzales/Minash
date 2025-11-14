@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
             Total = order.Total,
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
-            IdUser = order.IdUser
+            IdUser = order.IdUser,
         };
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
