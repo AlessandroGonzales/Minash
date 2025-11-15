@@ -10,5 +10,6 @@ namespace Application.DTO.Request
         public decimal Total { get; set; }
         [Required]
         public int IdUser { get; set; }
-    }
+        public int? IdCustom { get; set; }
+        }
 }

@@ -20,6 +20,7 @@ namespace Application.Services
             IdOrder = d.IdOrder,
             TotalPrice = d.Total,
             IdUser = d.IdUser,
+            IdCustom = d.IdCustom,
         };
 
         private static Order MapToDomain(OrderRequest dto) => new Order
@@ -27,6 +28,7 @@ namespace Application.Services
             IdOrder = dto.IdOrder,
             Total = dto.Total,
             IdUser = dto.IdUser,
+            IdCustom = dto.IdCustom,
         };
 
         private static Order MapToDomain(OrderPartial dto) => new Order
@@ -62,6 +64,14 @@ namespace Application.Services
             var order = MapToDomain(orderDto);
 
             var createdOrder = await _repo.AddOrderAsync(order);
+            return MapToResponse(createdOrder);
+        }
+
+        public async Task<OrderResponse> AddCustomOrderAsync(OrderRequest orderRequest)
+        {
+            if (orderRequest == null) throw new ArgumentNullException(nameof(orderRequest));
+            var order = MapToDomain(orderRequest);
+            var createdOrder = await _repo.AddCustomOrderAsync(order);
             return MapToResponse(createdOrder);
         }
 

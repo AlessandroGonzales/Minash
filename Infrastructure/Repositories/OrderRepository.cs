@@ -3,6 +3,7 @@ using Domain.Repositories;
 using Infrastructure.Persistence;
 using EfUser = Infrastructure.Persistence.Entities.User;
 using EfOrder = Infrastructure.Persistence.Entities.Order;
+using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repositories
 {
@@ -36,6 +37,19 @@ namespace Infrastructure.Repositories
             };
         }
 
+        private static Custom MapToDomainCustom(EfCustom ef) => new Custom
+        {
+            IdCustom = ef.IdCustom,
+            Count = ef.Count,
+            IdGarment = ef.IdGarment,
+            IdService = ef.IdService,
+            IdUser = ef.IdUser,
+            CustomerDetails = ef.CustomerDetails,
+            ImageUrl = ef.ImageUrl,
+            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
+            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
+        };
+
         private static Order MapToDomain(EfOrder ef) => new Order
         {
             IdOrder = ef.IdOrder,
@@ -44,7 +58,8 @@ namespace Infrastructure.Repositories
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdUser = ef.IdUser,
             User = MapToDomainUser(ef.IdUserNavigation),
-
+            IdCustom = ef.IdCustom ?? 0,
+            Custom = MapToDomainCustom(ef.IdCustomNavigation!),
             DetailsOrders = ef.DetailsOrders.Select(doe => new DetailsOrder
             {
                 IdDetailsOrder = doe.IdDetailsOrder,
@@ -121,6 +136,17 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
         public async Task<Order> AddOrderAsync(Order order)
+        {
+            var efOrder = MapToEf(order);
+            await _db.Orders.AddAsync(efOrder);
+            await _db.SaveChangesAsync();
+            order.CreatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.Now;
+            order.IdOrder = efOrder.IdOrder;
+            return order;
+        }
+
+        public async Task<Order> AddCustomOrderAsync(Order order)
         {
             var efOrder = MapToEf(order);
             await _db.Orders.AddAsync(efOrder);

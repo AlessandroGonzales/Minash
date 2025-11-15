@@ -10,7 +10,13 @@ namespace Application.Services
     public class CustomAppService : ICustomAppService
     {
         private readonly ICustomRepository _repo;
-        public CustomAppService(ICustomRepository repo) { _repo = repo; }
+        private readonly IOrderRepository _orderRepo;
+        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo)
+        {
+            _repo = repo;
+            _orderRepo = orderRepo;
+        }
+
 
 
         private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
@@ -68,6 +74,16 @@ namespace Application.Services
         {
             var creatCustom = MapToDomain(custom);
             var createdCustom = await _repo.AddCustomAsync(creatCustom);
+
+            var order = new Order
+            {
+                IdCustom = createdCustom.IdCustom,
+                IdUser = createdCustom.IdUser,
+                Total = createdCustom.Service.Price, 
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _orderRepo.AddCustomOrderAsync(order);
             return MapToResponse(createdCustom);
         }
 

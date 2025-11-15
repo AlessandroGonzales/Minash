@@ -11,7 +11,7 @@
         // Foreign Keys
         public int IdUser { get; set; }
         public User User { get; set; } = null!;
-        public int IdCustom { get; set; }
+        public int? IdCustom { get; set; }
         public Custom? Custom { get; set; }
 
         // Navigation Properties
