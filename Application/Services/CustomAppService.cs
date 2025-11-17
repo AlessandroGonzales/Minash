@@ -28,6 +28,7 @@ namespace Application.Services
             CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            IdGarmentService = custom.IdGarmentService
         };
 
         private static Custom MapToDomain(CustomRequest dto) => new Custom
@@ -39,6 +40,7 @@ namespace Application.Services
             CustomerDetails = dto.CustomerDetails,
             Count = dto.Count,
             ImageUrl = dto.ImageUrl,
+            IdGarmentService = dto.IdGarmentService
         };
 
         private static Custom MapToDomain(CustomPartial dto) => new Custom
