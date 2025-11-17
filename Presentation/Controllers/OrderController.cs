@@ -59,14 +59,6 @@ namespace Presentation.Controllers
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]
-        [HttpPost("custom")]
-        public async Task<IActionResult> CreateCustomOrder([FromBody] OrderRequest orderDto)
-        {
-            var createdOrder = await _service.AddCustomOrderAsync(orderDto);
-            return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.IdOrder }, createdOrder);
-        }
-
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder([FromRoute]int id, [FromBody] OrderRequest orderDto)
         {

@@ -133,6 +133,7 @@ namespace Infrastructure.Repositories
             payment.ExternalPaymentId = updatePayment.ExternalPaymentId;
             payment.Verified = updatePayment.Verified;
             payment.Provider = updatePayment.Provider;
+            payment.PaymentMethod = updatePayment.PaymentMethod;
             payment.ReceiptImageUrl = updatePayment.ReceiptImageUrl;
             payment.IdempotencyKey = updatePayment.IdempotencyKey;
             payment.TransactionCode = updatePayment.TransactionCode;
@@ -144,6 +145,8 @@ namespace Infrastructure.Repositories
         public async Task PartialUpdatePaymentAsync(int id, Payment payment)
         {
             var updatePayment = await _db.Payments.FindAsync(id);
+            if (updatePayment == null)
+                throw new KeyNotFoundException();
 
             updatePayment.Total = payment.Total;
             _db.Payments.Update(updatePayment);

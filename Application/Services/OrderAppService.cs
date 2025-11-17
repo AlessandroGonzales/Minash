@@ -35,6 +35,7 @@ namespace Application.Services
         {
             Total = dto.Total,
         };
+
         public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
             var list = await _repo.GetAllOrdersAsync();
@@ -64,14 +65,6 @@ namespace Application.Services
             var order = MapToDomain(orderDto);
 
             var createdOrder = await _repo.AddOrderAsync(order);
-            return MapToResponse(createdOrder);
-        }
-
-        public async Task<OrderResponse> AddCustomOrderAsync(OrderRequest orderRequest)
-        {
-            if (orderRequest == null) throw new ArgumentNullException(nameof(orderRequest));
-            var order = MapToDomain(orderRequest);
-            var createdOrder = await _repo.AddCustomOrderAsync(order);
             return MapToResponse(createdOrder);
         }
 

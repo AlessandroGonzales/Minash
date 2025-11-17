@@ -1,4 +1,6 @@
-﻿using Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -93,6 +95,7 @@ public partial class MinashDbContext : DbContext
                 .HasColumnName("creation_date");
             entity.Property(e => e.CustomerDetails).HasColumnName("customer_details");
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
+            entity.Property(e => e.IdGarmentService).HasColumnName("id_garment_service");
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.ImageUrl)
@@ -106,6 +109,10 @@ public partial class MinashDbContext : DbContext
                 .HasForeignKey(d => d.IdGarment)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("custom_id_garment_fkey");
+
+            entity.HasOne(d => d.IdGarmentServiceNavigation).WithMany(p => p.Customs)
+                .HasForeignKey(d => d.IdGarmentService)
+                .HasConstraintName("custom_id_garment_service_fkey");
 
             entity.HasOne(d => d.IdServiceNavigation).WithMany(p => p.Customs)
                 .HasForeignKey(d => d.IdService)
@@ -173,6 +180,9 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(200)
                 .HasColumnName("image_url");
+            entity.Property(e => e.Price)
+                .HasPrecision(10, 2)
+                .HasColumnName("price");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");

@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.Persistence.Entities;
 
 public partial class GarmentService
 {
@@ -15,6 +18,8 @@ public partial class GarmentService
     public DateTime? UpdatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
+
+    public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 
     public virtual ICollection<DetailsOrder> DetailsOrders { get; set; } = new List<DetailsOrder>();
 

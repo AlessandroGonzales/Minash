@@ -11,7 +11,6 @@ namespace Application.Interfaces
         Task<IEnumerable<OrderResponse>> GetOrdersByUserNameAsync(string userName);
         Task<OrderResponse?> GetOrderByIdAsync(int id);
         Task<OrderResponse> AddOrderAsync(OrderRequest orderDto);
-        Task<OrderResponse> AddCustomOrderAsync(OrderRequest orderDto);
         Task UpdateOrderAsync(int id, OrderRequest orderDto);
         Task PartialUpdateOrderAsync(int id, OrderPartial orderDto);
         Task DeleteOrderAsync(int id);

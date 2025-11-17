@@ -1,16 +1,9 @@
-﻿using Domain.Entities;
-using Domain.Enums;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-namespace Application.DTO.Request
-{
+﻿namespace Application.DTO.Request{
     public class PaymentRequest
     {
         public int IdPay { get; set; }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public PaymentMethod PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = null!;
 
         public decimal Total { get; set; }
         public string Provider { get; set; } = null!;

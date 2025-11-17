@@ -60,6 +60,7 @@ namespace Infrastructure.Repositories
             User = MapToDomainUser(ef.IdUserNavigation),
             IdCustom = ef.IdCustom ?? 0,
             Custom = MapToDomainCustom(ef.IdCustomNavigation!),
+
             DetailsOrders = ef.DetailsOrders.Select(doe => new DetailsOrder
             {
                 IdDetailsOrder = doe.IdDetailsOrder,
@@ -95,6 +96,7 @@ namespace Infrastructure.Repositories
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
             IdUser = order.IdUser,
+            IdCustom = order.IdCustom
         };
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -135,18 +137,8 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
             return list.Select(MapToDomain);
         }
-        public async Task<Order> AddOrderAsync(Order order)
-        {
-            var efOrder = MapToEf(order);
-            await _db.Orders.AddAsync(efOrder);
-            await _db.SaveChangesAsync();
-            order.CreatedAt = DateTime.Now;
-            order.UpdatedAt = DateTime.Now;
-            order.IdOrder = efOrder.IdOrder;
-            return order;
-        }
 
-        public async Task<Order> AddCustomOrderAsync(Order order)
+        public async Task<Order> AddOrderAsync(Order order)
         {
             var efOrder = MapToEf(order);
             await _db.Orders.AddAsync(efOrder);
@@ -179,6 +171,7 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
 
         }
+
         public async Task DeleteOrderAsync(int id)
         {
             var efOrder = await _db.Orders.FindAsync(id);

@@ -26,6 +26,7 @@ namespace Infrastructure.Repositories
             TransactionCode = payment.TransactionCode,
             Verified = payment.Verified,
             Currency = payment.Currency,
+            PaymentMethod = payment.PaymentMethod,
             ProviderResponse = string.IsNullOrWhiteSpace(payment.ProviderResponse)
             ? new Dictionary<string, object>()
             : JsonSerializer.Deserialize<Dictionary<string, object>>(payment.ProviderResponse),

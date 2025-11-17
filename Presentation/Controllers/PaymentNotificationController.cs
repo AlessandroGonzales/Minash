@@ -70,7 +70,7 @@ namespace Presentation.Controllers
                     Currency = "ARS",
                     Provider = "MercadoPago",
                     ProviderResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(paymentDetails.ToString()) ?? new(),
-                    PaymentMethod = Enum.TryParse(paymentMethod, true, out Domain.Enums.PaymentMethod method) ? method : Domain.Enums.PaymentMethod.Transferencia,
+                    PaymentMethod = paymentMethod,
                     Verified = status == "approved",
                     ReceiptImageUrl = "",
                     Installments = paymentDetails.Value.TryGetProperty("installments", out var instProp) ? instProp.GetInt32() : 1,

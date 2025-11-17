@@ -5,7 +5,6 @@
         public int IdPay { get; set; }
         public int IdOrder { get; set; }
         public decimal Total { get; set; }
-
-
     }
+
 }

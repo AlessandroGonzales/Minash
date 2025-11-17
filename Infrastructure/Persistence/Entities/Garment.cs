@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.Persistence.Entities;
 
 public partial class Garment
 {
@@ -13,6 +16,8 @@ public partial class Garment
     public DateTime? UpdatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
+
+    public decimal Price { get; set; }
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 

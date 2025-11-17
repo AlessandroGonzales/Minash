@@ -79,12 +79,13 @@ namespace Application.Services
             {
                 IdCustom = createdCustom.IdCustom,
                 IdUser = createdCustom.IdUser,
-                Total = createdCustom.Service.Price, 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            await _orderRepo.AddCustomOrderAsync(order);
+
+            await _orderRepo.AddOrderAsync(order);
             return MapToResponse(createdCustom);
+
         }
 
         public async Task UpdateCustomAsync(int id, CustomRequest custom)
