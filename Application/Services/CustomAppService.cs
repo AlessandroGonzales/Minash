@@ -18,7 +18,6 @@ namespace Application.Services
         }
 
 
-
         private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
         {
             IdCustom = custom.IdCustom,

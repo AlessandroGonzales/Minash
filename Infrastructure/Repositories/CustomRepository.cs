@@ -6,6 +6,7 @@ using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using EfGarment = Infrastructure.Persistence.Entities.Garment;
 using EfService = Infrastructure.Persistence.Entities.Service;
 using EfUser = Infrastructure.Persistence.Entities.User;
+using EfGarmentService = Infrastructure.Persistence.Entities.GarmentService;
 
 namespace Infrastructure.Repositories
 {
@@ -38,6 +39,7 @@ namespace Infrastructure.Repositories
             IdGarment = garment.IdGarment,
             GarmentDetails = garment.GarmentDetails,
             ImageUrl = garment.ImageUrl,
+            Price = garment.Price,
             GarmentName = garment.GarmentName,
             CreatedAt = garment.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = garment.UpdatedAt ?? DateTime.UtcNow,
@@ -50,8 +52,19 @@ namespace Infrastructure.Repositories
             ServiceDetails = service.ServiceDetails,
             ImageUrl = service.ImageUrl,
             CreatedAt = service.CreatedAt ?? DateTime.UtcNow,
-            UpdatedAt= service.UpdatedAt ?? DateTime.UtcNow,
             Price = service.Price,
+
+        };
+
+        private static GarmentService MapToDomainGarmentService(EfGarmentService ef) => new GarmentService
+        {
+            IdGarmentService = ef.IdGarmentService,
+            AdditionalPrice = ef.AdditionalPrice,
+            ImageUrl = ef.ImageUrl,
+            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
+            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
+            IdGarment = ef.IdGarment,
+            IdService = ef.IdService,
         };
 
         private static Custom MapToDomain(EfCustom custom) => new Custom
@@ -68,6 +81,9 @@ namespace Infrastructure.Repositories
             User = MapToDomainUser(custom.IdUserNavigation),
             IdGarment = custom.IdGarment,
             Garment = MapToDomainGarment(custom.IdGarmentNavigation),
+            IdGarmentService = custom.IdGarmentService,
+            GarmentService = MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
+
         };
 
         private static EfCustom MapToEf(Custom custom) => new EfCustom
@@ -79,6 +95,7 @@ namespace Infrastructure.Repositories
             IdService = custom.IdService,
             IdUser = custom.IdUser,
             IdGarment = custom.IdGarment,
+            IdGarmentService= custom.IdGarmentService,
         };
 
         private IQueryable<EfCustom> GetQueryableWithIncludes(bool tracking = false)
@@ -86,7 +103,8 @@ namespace Infrastructure.Repositories
             var list = _db.Customs
                 .Include(x => x.IdUserNavigation)
                 .Include(x => x.IdServiceNavigation)
-                .Include(x => x.IdGarmentNavigation);
+                .Include(x => x.IdGarmentNavigation)
+                .Include(x => x.IdGarmentServiceNavigation);
 
             return tracking ? list : list.AsNoTracking();
         }

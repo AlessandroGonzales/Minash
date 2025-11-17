@@ -22,7 +22,6 @@ namespace Infrastructure.Repositories
             Price = efService.Price,
             ImageUrl = efService.ImageUrl ?? string.Empty,
             CreatedAt = efService.CreatedAt ?? DateTime.UtcNow,
-            UpdatedAt = efService.UpdatedAt ?? DateTime.UtcNow,
 
             Customs = efService.Customs.Select(c => new Custom
             {
@@ -114,7 +113,6 @@ namespace Infrastructure.Repositories
             ef.ServiceDetails = service.ServiceDetails;
             ef.Price = service.Price;
             ef.ImageUrl = service.ImageUrl;
-            ef.UpdatedAt = DateTime.UtcNow;
 
             _db.Services.Update(ef);
             await _db.SaveChangesAsync();
@@ -130,6 +128,7 @@ namespace Infrastructure.Repositories
 
             if (service.ImageUrl is not null)
                 ef.ImageUrl = service.ImageUrl;
+
             _db.Services.Update(ef);
             await _db.SaveChangesAsync();
 

@@ -21,6 +21,7 @@ namespace Infrastructure.Repositories
             ImageUrl = efGarment.ImageUrl ?? string.Empty,
             UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow,
+            Price = efGarment.Price,
 
             GarmentServices = efGarment.GarmentServices.Select(gs => new GarmentService
             {
@@ -51,6 +52,7 @@ namespace Infrastructure.Repositories
         {
             GarmentName = d.GarmentName,
             GarmentDetails = d.GarmentDetails,
+            Price = d.Price,
             ImageUrl = d.ImageUrl,
             UpdatedAt = d.UpdatedAt,
             CreatedAt = d.CreatedAt,
@@ -94,6 +96,7 @@ namespace Infrastructure.Repositories
             efGarment.GarmentName = garment.GarmentName;
             efGarment.GarmentDetails = garment.GarmentDetails;
             efGarment.ImageUrl = garment.ImageUrl;
+            efGarment.Price = garment.Price;
             efGarment.UpdatedAt = DateTime.UtcNow;
 
             _db.Garments.Update(efGarment);
@@ -107,7 +110,12 @@ namespace Infrastructure.Repositories
 
             if (garment.ImageUrl is not null)
                 efGarment.ImageUrl = garment.ImageUrl;
-            efGarment.GarmentDetails = garment.GarmentDetails;
+
+            if(garment.GarmentDetails is not null)
+                efGarment.GarmentDetails = garment.GarmentDetails;
+
+            if(garment.Price != 0)
+                efGarment.Price = garment.Price;
 
             _db.Garments.Update(efGarment);
             await _db.SaveChangesAsync();

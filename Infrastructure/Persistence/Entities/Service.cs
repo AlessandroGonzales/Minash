@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infrastructure.Persistence.Entities;
+﻿namespace Infrastructure.Persistence.Entities;
 
 public partial class Service
 {
@@ -15,7 +12,6 @@ public partial class Service
 
     public DateTime? CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
 
     public string? ImageUrl { get; set; }
 
