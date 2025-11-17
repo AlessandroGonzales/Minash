@@ -17,11 +17,6 @@ namespace Infrastructure.DependencyInjection
         {
             var connectionString = configuration.GetConnectionString("minash");
 
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("minash Connection String is missing. Check Azure App Service Key Vault references (DB_HOST, DB_USER, etc.).");
-            }
-
             services.AddDbContext<MinashDbContext>(options =>
                 options.UseNpgsql(connectionString, npgsqlOptionsAction =>
                 {

@@ -21,6 +21,7 @@ namespace Application.Services
             GarmentName = d.GarmentName,
             GarmentDetails = d.GarmentDetails,
             ImageUrl = d.ImageUrl,
+            Price = d.Price
         };
 
         private static Garment MaptoDomain(GarmentRequest dto) => new Garment
@@ -29,12 +30,15 @@ namespace Application.Services
             GarmentName = dto.GarmentName,
             GarmentDetails = dto.GarmentDetails,
             ImageUrl = dto.ImageUrl,
+            Price = dto.Price,
         };
 
         private static Garment MapToDomain(GarmentPartial dto) => new Garment
         {
             GarmentDetails = dto.GarmentDetails,
-            ImageUrl = dto.ImageUrl
+            ImageUrl = dto.ImageUrl,
+            Price = dto.Price,
+
         };
 
         public async Task<IEnumerable<GarmentResponse>> GetAllGarmentsAsync()

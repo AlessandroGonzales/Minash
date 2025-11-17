@@ -10,7 +10,12 @@ namespace Application.Services
     public class CustomAppService : ICustomAppService
     {
         private readonly ICustomRepository _repo;
-        public CustomAppService(ICustomRepository repo) { _repo = repo; }
+        private readonly IOrderRepository _orderRepo;
+        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo)
+        {
+            _repo = repo;
+            _orderRepo = orderRepo;
+        }
 
 
         private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
@@ -22,6 +27,7 @@ namespace Application.Services
             CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            IdGarmentService = custom.IdGarmentService
         };
 
         private static Custom MapToDomain(CustomRequest dto) => new Custom
@@ -33,6 +39,7 @@ namespace Application.Services
             CustomerDetails = dto.CustomerDetails,
             Count = dto.Count,
             ImageUrl = dto.ImageUrl,
+            IdGarmentService = dto.IdGarmentService
         };
 
         private static Custom MapToDomain(CustomPartial dto) => new Custom
@@ -68,7 +75,18 @@ namespace Application.Services
         {
             var creatCustom = MapToDomain(custom);
             var createdCustom = await _repo.AddCustomAsync(creatCustom);
+
+            var order = new Order
+            {
+                IdCustom = createdCustom.IdCustom,
+                IdUser = createdCustom.IdUser,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _orderRepo.AddOrderAsync(order);
             return MapToResponse(createdCustom);
+
         }
 
         public async Task UpdateCustomAsync(int id, CustomRequest custom)

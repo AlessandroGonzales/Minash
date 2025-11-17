@@ -1,12 +1,10 @@
-﻿using Domain.Enums;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class Payment
     {
         public int IdPay { get; set; }
         public decimal Total { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int IdOrder { get; set; }

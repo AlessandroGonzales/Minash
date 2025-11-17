@@ -12,5 +12,7 @@ namespace Application.DTO.Request
         [Required(ErrorMessage = "Los detalles son obligatorios")]
         public string GarmentDetails { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor que cero")]
+        public decimal Price { get; set; }
     }
 }

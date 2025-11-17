@@ -13,7 +13,6 @@ public partial class Service
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
-
     public string? ImageUrl { get; set; }
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();

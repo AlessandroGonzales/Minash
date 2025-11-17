@@ -19,5 +19,6 @@ namespace Application.DTO.Request
         public int IdGarment { get; set; }
         [Required]
         public int IdService { get; set; }
+        public int? IdGarmentService { get; set; }
     }
 }

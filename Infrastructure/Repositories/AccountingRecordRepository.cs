@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using EfAccountingRecord = Infrastructure.Persistence.Entities.AccountingRecord;
 using EfPayment = Infrastructure.Persistence.Entities.Payment;
+
 namespace Infrastructure.Repositories
 {
     public class AccountingRecordRepository : IAccountingRecordRepository
@@ -25,6 +26,7 @@ namespace Infrastructure.Repositories
             TransactionCode = payment.TransactionCode,
             Verified = payment.Verified,
             Currency = payment.Currency,
+            PaymentMethod = payment.PaymentMethod,
             ProviderResponse = string.IsNullOrWhiteSpace(payment.ProviderResponse)
             ? new Dictionary<string, object>()
             : JsonSerializer.Deserialize<Dictionary<string, object>>(payment.ProviderResponse),

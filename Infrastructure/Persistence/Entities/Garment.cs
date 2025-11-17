@@ -2,7 +2,6 @@
 
 public partial class Garment
 {
-    // Attributes
     public int IdGarment { get; set; }
 
     public string GarmentName { get; set; } = null!;
@@ -15,8 +14,7 @@ public partial class Garment
 
     public string? ImageUrl { get; set; }
 
-
-    // Navigation Properties
+    public decimal Price { get; set; }
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 

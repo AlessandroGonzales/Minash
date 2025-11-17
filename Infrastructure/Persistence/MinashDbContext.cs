@@ -34,6 +34,9 @@ public partial class MinashDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=minash;Username=postgres;Password=Jamancapiero85.;Include Error Detail=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,21 +48,6 @@ public partial class MinashDbContext : DbContext
             .HasPostgresEnum("payment_state", new[] { "Pendiente", "Aceptado", "Rechazado" })
             .HasPostgresEnum("service_state", new[] { "Activo", "Inactivo" })
             .HasPostgresEnum("user_state", new[] { "Activo", "Inactivo" });
-
-        modelBuilder.Entity<Payment>()
-            .Property(p => p.PaymentMethod)
-            .HasColumnType("payment_method")
-            .HasColumnName("payment_method");
-
-        modelBuilder.Entity<Payment>(entity =>
-        {
-            entity.Property(p => p.PaymentMethod)
-                .HasConversion<string>()
-                .HasColumnName("payment_method")
-                .HasMaxLength(50);
-        });
-            
-
 
         modelBuilder.Entity<AccountingRecord>(entity =>
         {
@@ -105,6 +93,7 @@ public partial class MinashDbContext : DbContext
                 .HasColumnName("creation_date");
             entity.Property(e => e.CustomerDetails).HasColumnName("customer_details");
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
+            entity.Property(e => e.IdGarmentService).HasColumnName("id_garment_service");
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.ImageUrl)
@@ -118,6 +107,10 @@ public partial class MinashDbContext : DbContext
                 .HasForeignKey(d => d.IdGarment)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("custom_id_garment_fkey");
+
+            entity.HasOne(d => d.IdGarmentServiceNavigation).WithMany(p => p.Customs)
+                .HasForeignKey(d => d.IdGarmentService)
+                .HasConstraintName("custom_id_garment_service_fkey");
 
             entity.HasOne(d => d.IdServiceNavigation).WithMany(p => p.Customs)
                 .HasForeignKey(d => d.IdService)
@@ -185,6 +178,9 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(200)
                 .HasColumnName("image_url");
+            entity.Property(e => e.Price)
+                .HasPrecision(10, 2)
+                .HasColumnName("price");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
@@ -238,6 +234,7 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("CURRENT_DATE")
                 .HasColumnName("creation_date");
+            entity.Property(e => e.IdCustom).HasColumnName("id_custom");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.Total)
                 .HasPrecision(12, 2)
@@ -245,6 +242,11 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.IdCustomNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.IdCustom)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_orders_custom");
 
             entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.IdUser)
@@ -281,6 +283,9 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.PaymentDate)
                 .HasDefaultValueSql("CURRENT_DATE")
                 .HasColumnName("payment_date");
+            entity.Property(e => e.PaymentMethod)
+                .HasMaxLength(50)
+                .HasColumnName("payment_method");
             entity.Property(e => e.Provider)
                 .HasMaxLength(50)
                 .HasDefaultValueSql("'MercadoPago'::character varying")

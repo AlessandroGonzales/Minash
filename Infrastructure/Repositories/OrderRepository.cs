@@ -3,6 +3,7 @@ using Domain.Repositories;
 using Infrastructure.Persistence;
 using EfUser = Infrastructure.Persistence.Entities.User;
 using EfOrder = Infrastructure.Persistence.Entities.Order;
+using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repositories
 {
@@ -36,6 +37,19 @@ namespace Infrastructure.Repositories
             };
         }
 
+        private static Custom MapToDomainCustom(EfCustom ef) => new Custom
+        {
+            IdCustom = ef.IdCustom,
+            Count = ef.Count,
+            IdGarment = ef.IdGarment,
+            IdService = ef.IdService,
+            IdUser = ef.IdUser,
+            CustomerDetails = ef.CustomerDetails,
+            ImageUrl = ef.ImageUrl,
+            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
+            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
+        };
+
         private static Order MapToDomain(EfOrder ef) => new Order
         {
             IdOrder = ef.IdOrder,
@@ -44,6 +58,8 @@ namespace Infrastructure.Repositories
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdUser = ef.IdUser,
             User = MapToDomainUser(ef.IdUserNavigation),
+            IdCustom = ef.IdCustom ?? 0,
+            Custom = MapToDomainCustom(ef.IdCustomNavigation!),
 
             DetailsOrders = ef.DetailsOrders.Select(doe => new DetailsOrder
             {
@@ -79,7 +95,8 @@ namespace Infrastructure.Repositories
             Total = order.Total,
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
-            IdUser = order.IdUser
+            IdUser = order.IdUser,
+            IdCustom = order.IdCustom
         };
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -120,6 +137,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
             return list.Select(MapToDomain);
         }
+
         public async Task<Order> AddOrderAsync(Order order)
         {
             var efOrder = MapToEf(order);
@@ -153,6 +171,7 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
 
         }
+
         public async Task DeleteOrderAsync(int id)
         {
             var efOrder = await _db.Orders.FindAsync(id);

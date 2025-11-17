@@ -42,12 +42,11 @@ namespace Application.Services
             ReceiptImageUrl = payment.ReceiptImageUrl,
             ProviderResponse = payment.ProviderResponse,
             TransactionCode = payment.TransactionCode,
-            PaymentMethod = payment.PaymentMethod,
             ExternalPaymentId = payment.ExternalPaymentId,
             Verified = payment.Verified,
             Total = payment.Total,
             IdOrder = payment.IdOrder,
-
+            PaymentMethod = payment.PaymentMethod,
         };
 
         private static Payment MapToDomain(PaymentRequest dto) => new Payment
@@ -60,10 +59,11 @@ namespace Application.Services
             ProviderResponse = dto.ProviderResponse,
             TransactionCode = dto.TransactionCode,
             ExternalPaymentId = dto.ExternalPaymentId,
-            PaymentMethod = dto.PaymentMethod,
             Verified = dto.Verified,
             Total = dto.Total,
             IdOrder = dto.IdOrder,
+            PaymentMethod = dto.PaymentMethod,
+            
         };
 
         private static Payment MapToDomain(PaymentPartial dto) => new Payment

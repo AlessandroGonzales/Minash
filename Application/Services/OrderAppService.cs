@@ -20,6 +20,7 @@ namespace Application.Services
             IdOrder = d.IdOrder,
             TotalPrice = d.Total,
             IdUser = d.IdUser,
+            IdCustom = d.IdCustom,
         };
 
         private static Order MapToDomain(OrderRequest dto) => new Order
@@ -27,12 +28,14 @@ namespace Application.Services
             IdOrder = dto.IdOrder,
             Total = dto.Total,
             IdUser = dto.IdUser,
+            IdCustom = dto.IdCustom,
         };
 
         private static Order MapToDomain(OrderPartial dto) => new Order
         {
             Total = dto.Total,
         };
+
         public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
             var list = await _repo.GetAllOrdersAsync();

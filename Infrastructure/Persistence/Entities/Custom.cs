@@ -22,9 +22,15 @@ public partial class Custom
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int? IdGarmentService { get; set; }
+
     public virtual Garment IdGarmentNavigation { get; set; } = null!;
+
+    public virtual GarmentService? IdGarmentServiceNavigation { get; set; }
 
     public virtual Service IdServiceNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

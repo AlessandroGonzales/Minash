@@ -130,6 +130,7 @@ namespace Infrastructure.Repositories
 
             if (service.ImageUrl is not null)
                 ef.ImageUrl = service.ImageUrl;
+
             _db.Services.Update(ef);
             await _db.SaveChangesAsync();
 
