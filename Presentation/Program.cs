@@ -20,12 +20,6 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 logger?.LogInformation("=== DEBUG: JWT Key length = {KeyLen}, Issuer = {Issuer}, Duration = {Dur}",
     jwtSettings["Key"]?.Length ?? 0, jwtSettings["Issuer"], jwtSettings["DurationInMinutes"]);
 
-if (string.IsNullOrEmpty(jwtSettings["Key"]))
-{
-    logger?.LogError("=== ERROR: JWT Key is NULL/EMPTY – check env vars!");
-    throw new InvalidOperationException("JWT Key missing in config");  
-}
-
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 logger?.LogInformation("=== DEBUG: JWT Key bytes = {BytesLen}", key.Length);
 
