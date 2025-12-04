@@ -6,6 +6,8 @@
         public string GarmentName { get; set; } = null!;
         public string GarmentDetails { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
+        public List<string> Colors { get; set; } = new List<string>();
+        public List<string> Sizes { get; set; } = new List<string>();
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public decimal Price { get; set; }

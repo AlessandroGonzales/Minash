@@ -22,6 +22,8 @@ namespace Application.Services
             IdService = d.IdService,
             AddtionalPrice = d.AdditionalPrice,
             ImageUrl = d.ImageUrl,
+            GarmentServiceDetails = d.GarmentServiceDetails,
+            GarmentServiceName = d.GarmentServiceName,
         };
 
         private static GarmentService MapToDomain(GarmentServiceRequest dto) 
@@ -36,6 +38,8 @@ namespace Application.Services
                 IdService = dto.IdService,
                 AdditionalPrice = dto.AdditionalPrice,
                 ImageUrl = dto.ImageUrl,
+                GarmentServiceDetails = dto.GarmentServiceDetails,
+                GarmentServiceName = dto.GarmentServiceName,
             };
         }
 

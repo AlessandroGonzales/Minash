@@ -14,5 +14,7 @@ namespace Application.DTO.Request
         public string ImageUrl { get; set; } = null!;
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor que cero")]
         public decimal Price { get; set; }
+        public List<string>? Colors { get; set; }
+        public List<string>? Sizes { get; set; }
     }
 }

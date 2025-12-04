@@ -13,5 +13,7 @@ namespace Application.DTO.Request
         public int IdGarment { get; set; }
         [Required]
         public int IdService { get; set; }
+        public string GarmentServiceName { get; set; } = null!;
+        public string GarmentServiceDetails { get; set; } = null!;
     }
 }
