@@ -21,7 +21,10 @@ namespace Application.Services
             GarmentName = d.GarmentName,
             GarmentDetails = d.GarmentDetails,
             ImageUrl = d.ImageUrl,
-            Price = d.Price
+            Price = d.Price,
+            Colors = d.Colors,
+            Sizes = d.Sizes,
+
         };
 
         private static Garment MaptoDomain(GarmentRequest dto) => new Garment
@@ -31,6 +34,8 @@ namespace Application.Services
             GarmentDetails = dto.GarmentDetails,
             ImageUrl = dto.ImageUrl,
             Price = dto.Price,
+            Colors = dto.Colors,
+            Sizes = dto.Sizes,
         };
 
         private static Garment MapToDomain(GarmentPartial dto) => new Garment
