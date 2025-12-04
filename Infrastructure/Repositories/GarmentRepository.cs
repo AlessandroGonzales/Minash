@@ -19,8 +19,6 @@ namespace Infrastructure.Repositories
             GarmentName = efGarment.GarmentName,
             GarmentDetails = efGarment.GarmentDetails,
             ImageUrl = efGarment.ImageUrl ?? string.Empty,
-            Sizes = efGarment.Sizes,
-            Colors = efGarment.Colors,
             UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow,
             Price = efGarment.Price,
@@ -58,8 +56,6 @@ namespace Infrastructure.Repositories
             ImageUrl = d.ImageUrl,
             UpdatedAt = d.UpdatedAt,
             CreatedAt = d.CreatedAt,
-            Sizes = d.Sizes,
-            Colors = d.Colors
         };
 
         public async Task<IEnumerable<Garment>> GetAllGarmentsAsync()

@@ -1,4 +1,6 @@
-﻿using Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -36,7 +38,7 @@ public partial class MinashDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=minash;Username=postgres;Password=Jamancapiero85.;Include Error Detail=true;");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=minash;Username=postgres;Password=Jamancapiero85.");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -168,6 +170,9 @@ public partial class MinashDbContext : DbContext
             entity.HasIndex(e => e.GarmentName, "idx_garments_name");
 
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
+            entity.Property(e => e.Colors)
+                .HasColumnType("character varying(255)[]")
+                .HasColumnName("colors");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
@@ -181,6 +186,9 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.Price)
                 .HasPrecision(10, 2)
                 .HasColumnName("price");
+            entity.Property(e => e.Sizes)
+                .HasColumnType("character varying(10)[]")
+                .HasColumnName("sizes");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
@@ -201,6 +209,10 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
+            entity.Property(e => e.GarmentServiceDetails).HasColumnName("garment_service_details");
+            entity.Property(e => e.GarmentServiceName)
+                .HasMaxLength(255)
+                .HasColumnName("garment_service_name");
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.ImageUrl)
