@@ -20,6 +20,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPaymentAppService, PaymentAppService>();
             services.AddScoped<ICustomAppService, CustomAppService>();
             services.AddScoped<IAccountingRecordAppService, AccountingRecordAppService>();
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddSingleton<JwtService>();
             return services;
         }

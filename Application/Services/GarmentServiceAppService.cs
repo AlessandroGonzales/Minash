@@ -10,9 +10,11 @@ namespace Application.Services
     public class GarmentServiceAppService : IGarmentServiceAppService
     {
         private readonly IGarmentServiceRepository _repo;
-        public GarmentServiceAppService(IGarmentServiceRepository repo)
+        private readonly IFileStorageService _fileStorage;
+        public GarmentServiceAppService(IGarmentServiceRepository repo, IFileStorageService fileStorage)
         {
             _repo = repo;
+            _fileStorage = fileStorage;
         }
 
         private static GarmentServiceResponse MapToResponse(GarmentService d) => new GarmentServiceResponse
@@ -26,27 +28,19 @@ namespace Application.Services
             GarmentServiceName = d.GarmentServiceName,
         };
 
-        private static GarmentService MapToDomain(GarmentServiceRequest dto) 
+        private static GarmentService MapToDomain(GarmentServiceRequest dto) => new GarmentService
         {
-
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-
-            return new GarmentService
-            {
-                IdGarmentService = dto.IdGarmentService,
-                IdGarment = dto.IdGarment,
-                IdService = dto.IdService,
-                AdditionalPrice = dto.AdditionalPrice,
-                ImageUrl = dto.ImageUrl,
-                GarmentServiceDetails = dto.GarmentServiceDetails,
-                GarmentServiceName = dto.GarmentServiceName,
-            };
-        }
+            IdGarmentService = dto.IdGarmentService,
+            IdGarment = dto.IdGarment,
+            IdService = dto.IdService,
+            AdditionalPrice = dto.AdditionalPrice,
+            GarmentServiceDetails = dto.GarmentServiceDetails,
+            GarmentServiceName = dto.GarmentServiceName,
+        };
 
         private static GarmentService MapToDomain(GarmentServicePartial dto) => new GarmentService
         {
             AdditionalPrice = dto.AdditionalPrice,
-            ImageUrl = dto.ImageUrl,
         };
 
         public async Task<IEnumerable<GarmentServiceResponse>> GetAllGarmentServicesAsync()
@@ -85,12 +79,21 @@ namespace Application.Services
 
             return garmentServices.Select(MapToResponse);
         }
-        public async Task<GarmentServiceResponse> AddGarmentServiceAsync(GarmentServiceRequest dto)
+
+        public async Task<GarmentServiceResponse> AddGarmentServiceAsync(GarmentServiceRequest dto, string webRootPath)
         {
             if (dto.IdGarment <= 0 || dto.IdService <= 0)
                 throw new ArgumentException("IDs de Garment y Service deben ser mayores a 0.");
 
+            string imageUrl = null;
+            if (dto.ImageFile != null) // Verifica si el usuario envió una imagen
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(dto.ImageFile, "garments", webRootPath);
+            }
+
+
             var domain = MapToDomain(dto);
+            domain.ImageUrl = imageUrl;
             domain.CreatedAt = DateTime.UtcNow; 
             domain.UpdatedAt = DateTime.UtcNow;
 
