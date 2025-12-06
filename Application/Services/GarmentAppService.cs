@@ -10,9 +10,11 @@ namespace Application.Services
     public class GarmentAppService : IGarmentAppService
     {
         private readonly IGarmentRepository _repo;
-        public GarmentAppService(IGarmentRepository repo)
+        private readonly IFileStorageService _fileStorage;
+        public GarmentAppService(IGarmentRepository repo, IFileStorageService fileStorage)
         {
             _repo = repo;
+            _fileStorage = fileStorage;
         }
 
         private static GarmentResponse MapToResponse(Garment d) => new GarmentResponse
@@ -66,9 +68,16 @@ namespace Application.Services
             return list.Select(MapToResponse);
         }
 
-        public async Task<GarmentResponse> AddGarmentAsync(GarmentRequest garment)
+        public async Task<GarmentResponse> AddGarmentAsync(GarmentRequest garment, string webRootPath)
         {
+            string imageUrl = null;
+            if (garment.ImageUrl != null)
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(garment.ImageUrl, "garments", webRootPath);
+            }
+
             var domainGarment = MaptoDomain(garment);
+            domainGarment.ImageUrl = imageUrl;
             var createdGarment = await _repo.AddGarmentAsync(domainGarment);
             return MapToResponse(createdGarment);
         }

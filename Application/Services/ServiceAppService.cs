@@ -10,9 +10,11 @@ namespace Application.Services
     public class ServiceAppService : IServiceAppService
     {
         private readonly IServiceRepository _repo;
-        public ServiceAppService(IServiceRepository repo)
+        private readonly IFileStorageService _fileStorage;
+        public ServiceAppService(IServiceRepository repo, IFileStorageService fileStorage)
         {
             _repo = repo;
+            _fileStorage = fileStorage;
         }
 
         private static ServiceResponse MapToResponse(Service d) => new ServiceResponse
@@ -74,9 +76,16 @@ namespace Application.Services
 
         }
 
-        public async Task<ServiceResponse> AddServiceAsync(ServiceRequest service)
+        public async Task<ServiceResponse> AddServiceAsync(ServiceRequest service, string webRootPath)
         {
+            string imageUrl = null;
+            if(service.ImageUrl != null)
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(service.ImageUrl, "services", webRootPath);
+            }
+            
             var domainService = MapToDomain(service);
+            domainService.ImageUrl = imageUrl;
             var createdService = await _repo.AddServiceAsync(domainService);
             return MapToResponse(createdService);
         }

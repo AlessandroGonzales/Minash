@@ -10,9 +10,11 @@ namespace Presentation.Controllers
     public class GarmentController  : ControllerBase
     {
         private readonly IGarmentAppService _service;
-        public GarmentController(IGarmentAppService service)
+        private readonly IWebHostEnvironment _env;
+        public GarmentController(IGarmentAppService service, IWebHostEnvironment env)
         {
             _service = service;
+            _env = env;
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]
@@ -45,7 +47,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateGarment([FromBody] GarmentRequest garmentDto)
         {
-            var createdGarment = await _service.AddGarmentAsync(garmentDto);
+            var createdGarment = await _service.AddGarmentAsync(garmentDto, _env.WebRootPath);
             return CreatedAtAction(nameof(GetGarmentById), new { id = createdGarment.IdGarment }, createdGarment);
         }
 
