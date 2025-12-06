@@ -18,17 +18,20 @@ namespace Presentation.Controllers
         private readonly IRoleAppService _roleService;
         private readonly JwtService _jwtService;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
         public UserController(
             IUserAppService service,
             IRoleAppService roleService,
             JwtService jwtService,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IWebHostEnvironment env
         )
         {
             _userService = service;
             _roleService = roleService;
             _jwtService = jwtService;
             _configuration = configuration;
+            _env = env;
         }
 
         [HttpGet("test-db-real")]
@@ -36,12 +39,12 @@ namespace Presentation.Controllers
         {
             try
             {
-                var count = await db.Users.CountAsync();  // Query real a DB
-                return Ok(new { UsersCount = count, Message = "DB connected OK" });  // Debe mostrar 3
+                var count = await db.Users.CountAsync();  
+                return Ok(new { UsersCount = count, Message = "DB connected OK" });  
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = ex.Message });  // Muestra error exacto
+                return BadRequest(new { Error = ex.Message });  
             }
         }
 
@@ -100,9 +103,9 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserRequest userDto)
+        public async Task<IActionResult> CreateUser([FromForm] UserRequest userDto)
         {
-            var createdUser = await _userService.AddUserAsync(userDto);
+            var createdUser = await _userService.AddUserAsync(userDto, _env.WebRootPath);
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.IdUser }, createdUser);
         }
 

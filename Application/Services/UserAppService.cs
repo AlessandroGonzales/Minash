@@ -11,9 +11,11 @@ namespace Application.Services
     public class UserAppService : IUserAppService
     {
         private readonly IUserRepository _repo;
-        public UserAppService(IUserRepository repo)
+        private readonly IFileStorageService _fileStorage;
+        public UserAppService(IUserRepository repo, IFileStorageService fileStorage)
         {
             _repo = repo;
+            _fileStorage = fileStorage;
         }
         private static UserResponse MapToResponse(User d) => new UserResponse
         {
@@ -40,7 +42,6 @@ namespace Application.Services
                 Email = dto.Email,
                 Phone = dto.Phone,
                 Address = dto.Address,
-                ImageUrl = dto.ImageUrl,
                 Province = dto.Province,
                 City = dto.City,
                 FullAddress = dto.FullAddress,
@@ -55,7 +56,6 @@ namespace Application.Services
             {
                 UserName = dto.UserName,
                 Phone = dto.Phone,
-                ImageUrl= dto.ImageUrl,
             };
         }
 
@@ -92,13 +92,20 @@ namespace Application.Services
             var domain = await _repo.GetUserByEmailAsync(email);
             return domain != null ? MapToResponse(domain) : null;
         }
-        public async Task<UserResponse>AddUserAsync(UserRequest user)
+        public async Task<UserResponse>AddUserAsync(UserRequest user, string webRootPath)
         {
             if(user.IdRole <= 0)
                 throw new ArgumentException("Role ID must be greater than zero.");
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             user.IdRole = 1;
+            string imageUrl = null;
+            if ( user.ImageUrl != null)
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(user.ImageUrl, "users", webRootPath);
+            }
+
             var domain = MapToDomain(user);
+            domain.ImageUrl = imageUrl;
             var addedDomain = await _repo.AddUserAsync(domain);
             return MapToResponse(addedDomain);
         }
