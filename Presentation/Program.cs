@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using Application.DependencyInjection;
 using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,6 +68,14 @@ builder.Services.AddAuthorization( options =>
     options.AddPolicy("CEOPolicy", policy => policy.RequireRole("CEO"));
     options.AddPolicy("CEOOrAdmin", policy => policy.RequireRole("Admin", "CEO"));
 });
+=======
+using Application;
+using Infrastructure;
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+>>>>>>> origin/main
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
