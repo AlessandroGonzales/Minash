@@ -12,7 +12,7 @@ namespace Application.Interfaces
         Task<UserResponse?> GetUserByNameAsync(string name);
         Task<UserResponse?> GetUserByIdAsync(int id);
         Task<UserResponse?> GetUserByEmailAsync(string email);
-        Task<UserResponse> AddUserAsync(UserRequest userDto);
+        Task<UserResponse> AddUserAsync(UserRequest userDto, string webRootPath);
         Task UpdateUserAsync(int id, UserRequest userDto);
         Task PartialUpdateUserAsync(int id, UserPartial userDto);
         Task DeleteUserAsync(int id);

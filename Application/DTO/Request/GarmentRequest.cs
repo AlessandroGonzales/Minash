@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTO.Request
 {
@@ -11,7 +12,7 @@ namespace Application.DTO.Request
 
         [Required(ErrorMessage = "Los detalles son obligatorios")]
         public string GarmentDetails { get; set; } = null!;
-        public string ImageUrl { get; set; } = null!;
+        public IFormFile ImageUrl { get; set; } = null!;
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor que cero")]
         public decimal Price { get; set; }
         public List<string>? Colors { get; set; }

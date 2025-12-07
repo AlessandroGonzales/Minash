@@ -60,18 +60,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
-
-
 builder.Services.AddAuthorization( options =>
 {
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin", "CEO"));
@@ -118,7 +106,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI( c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minash API V1");
+    });
 }
 
 app.UseHttpsRedirection();

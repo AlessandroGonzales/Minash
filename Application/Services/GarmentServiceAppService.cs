@@ -86,11 +86,10 @@ namespace Application.Services
                 throw new ArgumentException("IDs de Garment y Service deben ser mayores a 0.");
 
             string imageUrl = null;
-            if (dto.ImageFile != null) // Verifica si el usuario envió una imagen
+            if (dto.ImageFile != null) 
             {
                 imageUrl = await _fileStorage.UploadFileAsync(dto.ImageFile, "garments", webRootPath);
             }
-
 
             var domain = MapToDomain(dto);
             domain.ImageUrl = imageUrl;

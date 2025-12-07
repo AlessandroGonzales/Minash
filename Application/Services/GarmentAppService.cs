@@ -34,7 +34,6 @@ namespace Application.Services
             IdGarment = dto.IdGarment,
             GarmentName = dto.GarmentName,
             GarmentDetails = dto.GarmentDetails,
-            ImageUrl = dto.ImageUrl,
             Price = dto.Price,
             Colors = dto.Colors,
             Sizes = dto.Sizes,
@@ -43,7 +42,6 @@ namespace Application.Services
         private static Garment MapToDomain(GarmentPartial dto) => new Garment
         {
             GarmentDetails = dto.GarmentDetails,
-            ImageUrl = dto.ImageUrl,
             Price = dto.Price,
 
         };

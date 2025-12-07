@@ -12,9 +12,11 @@ namespace Presentation.Controllers
     public class ServiceController : ControllerBase 
     {
         private readonly IServiceAppService _service;
-        public ServiceController(IServiceAppService service)
+        private readonly IWebHostEnvironment _env;
+        public ServiceController(IServiceAppService service, IWebHostEnvironment env    )
         {
             _service = service;
+            _env = env;
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]
@@ -53,9 +55,9 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
-        public async Task<IActionResult> CreateService([FromBody] ServiceRequest serviceDto)
+        public async Task<IActionResult> CreateService([FromForm] ServiceRequest serviceDto)
         {
-            var createdService = await _service.AddServiceAsync(serviceDto);
+            var createdService = await _service.AddServiceAsync(serviceDto, _env.WebRootPath);
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }
 

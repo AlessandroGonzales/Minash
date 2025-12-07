@@ -32,13 +32,11 @@ namespace Application.Services
             ServiceName = dto.ServiceName,
             ServiceDetails = dto.ServiceDetails,
             Price = dto.Price,
-            ImageUrl = dto.ImageUrl,
         };
 
         private static Service MapToDomain(ServicePartial dto) => new Service
         {
             Price = dto.ServicePrice,
-            ImageUrl = dto.ImageUrl,
         };
 
         public async Task<IEnumerable<ServiceResponse>> GetAllServicesAsync()

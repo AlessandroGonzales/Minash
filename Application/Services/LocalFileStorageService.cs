@@ -35,7 +35,11 @@ namespace Application.Services
                 await file.CopyToAsync(stream);
             }
 
-            return $"/images/{folderName}/{uniqueFileName}";
+            string relativeUrl = $"/images/{folderName}/{uniqueFileName}";
+
+            string simulatedBaseUrl = "https://minash.local";
+
+            return simulatedBaseUrl + relativeUrl;
         }
     }
 

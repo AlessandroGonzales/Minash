@@ -45,7 +45,7 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
-        public async Task<IActionResult> CreateGarment([FromBody] GarmentRequest garmentDto)
+        public async Task<IActionResult> CreateGarment([FromForm] GarmentRequest garmentDto)
         {
             var createdGarment = await _service.AddGarmentAsync(garmentDto, _env.WebRootPath);
             return CreatedAtAction(nameof(GetGarmentById), new { id = createdGarment.IdGarment }, createdGarment);
