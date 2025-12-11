@@ -11,13 +11,17 @@ namespace Application.Services
     {
         private readonly ICustomRepository _repo;
         private readonly IOrderRepository _orderRepo;
-        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo)
+        private readonly IGarmentRepository _garmentRepo;
+        private readonly IServiceRepository _serviceRepo;
+        private readonly IGarmentServiceRepository _garmentServiceRepo;
+        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo, IGarmentRepository garmentRepo, IServiceRepository serviceRepo, IGarmentServiceRepository garmentServiceRepo)
         {
             _repo = repo;
             _orderRepo = orderRepo;
+            _garmentRepo = garmentRepo;
+            _serviceRepo = serviceRepo;
+            _garmentServiceRepo = garmentServiceRepo;
         }
-
-
         private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
         {
             IdCustom = custom.IdCustom,
@@ -53,13 +57,11 @@ namespace Application.Services
             var list = await _repo.GetAllCustomsAsync();
             return list.Select(MapToResponse);
         }
-
         public async Task<IEnumerable<CustomResponse>> GetCustomsByUserNameAsync(string userName)
         {
             var list = await _repo.GetCustomsByUserNameAsync(userName);
             return list.Select(MapToResponse);
         }
-
         public async Task<CustomResponse> GetCustomByIdAsync(int id)
         {
 
@@ -70,16 +72,47 @@ namespace Application.Services
             }
             return MapToResponse(custom);
         }
-
         public async Task<CustomResponse> AddCustomAsync(CustomRequest custom)
         {
+            var garment = await _garmentRepo.GetGarmentByIdAsync(custom.IdGarment);
+            if (garment == null)
+                {
+                throw new KeyNotFoundException($"Garment with ID {custom.IdGarment} not found.");
+            }
+
+            var service = await _serviceRepo.GetServiceByIdAsync(custom.IdService);
+            if (service == null)
+            {
+                throw new KeyNotFoundException($"Service with ID {custom.IdService} not found.");
+            }
+
+            GarmentService? garmentService = null;
+
+
+            if (custom.IdGarmentService.HasValue)
+            {
+                garmentService = await _garmentServiceRepo.GetGarmentServiceByIdAsync(custom.IdGarmentService.Value);
+            }
+
+            decimal total;
+
+            if(garmentService != null)
+            {
+                total = custom.Count * garmentService.AdditionalPrice;
+            }
+            else
+            {
+                total = custom.Count * (service.Price + garment.Price);
+            }
+
             var creatCustom = MapToDomain(custom);
             var createdCustom = await _repo.AddCustomAsync(creatCustom);
-
+            
             var order = new Order
             {
                 IdCustom = createdCustom.IdCustom,
                 IdUser = createdCustom.IdUser,
+                Total = total,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -88,19 +121,16 @@ namespace Application.Services
             return MapToResponse(createdCustom);
 
         }
-
         public async Task UpdateCustomAsync(int id, CustomRequest custom)
         {
             var UpdateCustom = MapToDomain(custom);
             await _repo.UpdateCustomAsync(id, UpdateCustom);
         }
-
         public async Task PartialUpdateCustomAsync(int id, CustomPartial custom)
         {
             var UpdateCustom = MapToDomain(custom);
             await _repo.PartialUpdateCustomAsync(id, UpdateCustom);
         }
-
         public async Task DeleteCustomAsync(int id)
         {
             await _repo.DeleteCustomAsync(id);
