@@ -63,7 +63,6 @@ namespace Application.Services
             Total = dto.Total,
             IdOrder = dto.IdOrder,
             PaymentMethod = dto.PaymentMethod,
-            
         };
 
         private static Payment MapToDomain(PaymentPartial dto) => new Payment

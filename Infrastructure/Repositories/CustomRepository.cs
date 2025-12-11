@@ -83,7 +83,6 @@ namespace Infrastructure.Repositories
             Garment = MapToDomainGarment(custom.IdGarmentNavigation),
             IdGarmentService = custom.IdGarmentService,
             GarmentService = MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
-
         };
 
         private static EfCustom MapToEf(Custom custom) => new EfCustom
@@ -134,7 +133,9 @@ namespace Infrastructure.Repositories
             var creatCustom = MapToEf(custom);
             _db.Customs.Add(creatCustom);
             await _db.SaveChangesAsync();
+
             var createdCustom = await GetQueryableWithIncludes().FirstAsync(s => s.IdCustom == creatCustom.IdCustom);
+
             return MapToDomain(createdCustom);
         }
 
