@@ -80,14 +80,17 @@ namespace Infrastructure.Repositories
             return accoutingRecord == null ? null : MapToDomain(accoutingRecord);
         }
 
-        public async Task <AccountingRecord> AddAccoutingRecordAsync(AccountingRecord accoutingRecord)
+        public async Task <AccountingRecord> AddAccountingRecordAsync(AccountingRecord accoutingRecord)
         {
             var ef = MapToEf(accoutingRecord);
+            ef.CreatedAt = DateTime.UtcNow;
+            ef.UpdatedAt = DateTime.UtcNow;
+
+
             _db.AccountingRecords.Add(ef);
             await _db.SaveChangesAsync();
 
-            ef.CreatedAt = DateTime.UtcNow;
-            ef.UpdatedAt = DateTime.UtcNow;
+           
             var creatdEf = await GetQueryableWithIncludes().FirstOrDefaultAsync(s => s.IdAccountingRecord == ef.IdAccountingRecord);
             return MapToDomain(creatdEf);
         }

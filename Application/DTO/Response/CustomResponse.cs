@@ -10,7 +10,5 @@
         public string ImageUrl { get; set; } = null!;
         public string CustomDetails { get; set; } = null!;
         public int Count { get; set; }
-
-
     }
 }

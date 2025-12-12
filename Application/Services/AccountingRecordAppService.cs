@@ -81,7 +81,7 @@ namespace Application.Services
                 UpdatedAt = DateTime.UtcNow,
             };
 
-            var created = await _repoAccountingRecord.AddAccoutingRecordAsync(newAccountingRecord);
+            var created = await _repoAccountingRecord.AddAccountingRecordAsync(newAccountingRecord);
 
             return MapToResponse(created);
         }

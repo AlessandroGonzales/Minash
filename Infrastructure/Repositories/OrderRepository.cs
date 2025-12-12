@@ -43,6 +43,7 @@ namespace Infrastructure.Repositories
             Count = ef.Count,
             IdGarment = ef.IdGarment,
             IdService = ef.IdService,
+            IdGarmentService = ef.IdGarmentService == null ? null : ef.IdGarmentService,
             IdUser = ef.IdUser,
             CustomerDetails = ef.CustomerDetails,
             ImageUrl = ef.ImageUrl,
@@ -59,7 +60,9 @@ namespace Infrastructure.Repositories
             IdUser = ef.IdUser,
             User = MapToDomainUser(ef.IdUserNavigation),
             IdCustom = ef.IdCustom ?? 0,
-            Custom = MapToDomainCustom(ef.IdCustomNavigation!),
+            Custom = ef.IdCustomNavigation == null
+                ? null
+                : MapToDomainCustom(ef.IdCustomNavigation),
 
             DetailsOrders = ef.DetailsOrders.Select(doe => new DetailsOrder
             {

@@ -40,6 +40,8 @@ namespace Infrastructure.Repositories
             GarmentDetails = garment.GarmentDetails,
             ImageUrl = garment.ImageUrl,
             Price = garment.Price,
+            Colors = garment.Colors ?? new List<string>(),
+            Sizes = garment.Sizes ?? new List<string>(),
             GarmentName = garment.GarmentName,
             CreatedAt = garment.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = garment.UpdatedAt ?? DateTime.UtcNow,
@@ -59,6 +61,8 @@ namespace Infrastructure.Repositories
         private static GarmentService MapToDomainGarmentService(EfGarmentService ef) => new GarmentService
         {
             IdGarmentService = ef.IdGarmentService,
+            GarmentServiceDetails = ef.GarmentServiceDetails,
+            GarmentServiceName = ef.GarmentServiceName,
             AdditionalPrice = ef.AdditionalPrice,
             ImageUrl = ef.ImageUrl,
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
@@ -72,9 +76,9 @@ namespace Infrastructure.Repositories
             IdCustom = custom.IdCustom,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
-            CreatedAt= custom.CreatedAt ?? DateTime.UtcNow,
+            CreatedAt = custom.CreatedAt ?? DateTime.UtcNow,
             CustomerDetails = custom.CustomerDetails,
-            UpdatedAt= custom.UpdatedAt ?? DateTime.UtcNow,
+            UpdatedAt = custom.UpdatedAt ?? DateTime.UtcNow,
             IdService = custom.IdService,
             Service = MapToDomainService(custom.IdServiceNavigation),
             IdUser = custom.IdUser,
@@ -82,7 +86,9 @@ namespace Infrastructure.Repositories
             IdGarment = custom.IdGarment,
             Garment = MapToDomainGarment(custom.IdGarmentNavigation),
             IdGarmentService = custom.IdGarmentService,
-            GarmentService = MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
+            GarmentService = custom.IdGarmentServiceNavigation == null
+                ? null
+                : MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
         };
 
         private static EfCustom MapToEf(Custom custom) => new EfCustom
@@ -90,6 +96,8 @@ namespace Infrastructure.Repositories
             IdCustom = custom.IdCustom,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            CreatedAt = custom.CreatedAt,
+            UpdatedAt = custom.UpdatedAt,
             CustomerDetails = custom.CustomerDetails,
             IdService = custom.IdService,
             IdUser = custom.IdUser,

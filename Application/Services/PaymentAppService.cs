@@ -17,13 +17,14 @@ namespace Application.Services
         private readonly MercadoPagoClient _mercadoPagoClient;
         private readonly IConfiguration _config;
         private readonly IUserRepository _repoUser;
+        private readonly IAccountingRecordRepository _repoAccountingRecord;
         public PaymentAppService(
             IPaymentRepository repoPayment,
             IOrderRepository repoOrder,
             MercadoPagoClient mercadoPagoClient,
             IConfiguration config,
-            IUserRepository repoUser
-
+            IUserRepository repoUser,
+            IAccountingRecordRepository repoAccountingRecord
         )
         {
             _repoPayment = repoPayment;
@@ -31,6 +32,7 @@ namespace Application.Services
             _mercadoPagoClient = mercadoPagoClient;
             _config = config;
             _repoUser = repoUser;
+            _repoAccountingRecord = repoAccountingRecord;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -107,21 +109,21 @@ namespace Application.Services
                     }
                 },
                 payer = new { 
-                    name = user.UserName,
-                    surname = user.LastName,
-                    email = user.Email,
+                    name = "Test",
+                    surname = "Test",
+                    email = "test_user_723562367022246502@testuser.com",
                     phone = new
                     {   area_code = "54",
                         number = user.Phone.ToString(),
                     }
                 },
-                notification_url = "https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/api/PaymentNotification/notification",
+                notification_url = "https://nikia-dutiful-rattly.ngrok-free.dev/api/PaymentNotification/notification",
                 external_reference = order.IdOrder.ToString(),
                 back_urls = new
                 {
-                    success = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/success?orderId={order.IdOrder}",
-                    failure = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/failure?orderId={order.IdOrder}",
-                    pending = $"https://minashapp-a9cebeaxgve9gmhv.brazilsouth-01.azurewebsites.net/payment/pending?orderId={order.IdOrder}"
+                    success = $"https://nikia-dutiful-rattly.ngrok-free.dev/payment/success?orderId={order.IdOrder}",
+                    failure = $"https://nikia-dutiful-rattly.ngrok-free.dev/payment/failure?orderId={order.IdOrder}",
+                    pending = $"https://nikia-dutiful-rattly.ngrok-free.dev/payment/pending?orderId={order.IdOrder}"
                 },
                 auto_return = "approved"
             };
@@ -133,6 +135,7 @@ namespace Application.Services
                 OrderId = order.IdOrder,
                 PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
                 InitPoint = preferenceResponse.GetValueOrDefault("init_point")?.ToString(),
+                CheckBox = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString(),
             };
         }
         public async Task ConfirmPaymentAsync(PaymentRequest payment)
@@ -146,7 +149,20 @@ namespace Application.Services
             domain.Provider = "MercadoPago";
             domain.Currency = "ARS";
 
-            await _repoPayment.AddPaymentAsync(domain);
+           
+
+            var createdPayment = await _repoPayment.AddPaymentAsync(domain);
+
+            var createdaccountingRecord = new AccountingRecord
+            {
+                IdAccountingRecord = 0,
+                Total = createdPayment.IdPay,
+                Details = $"Payment received for Order #{order.IdOrder} via {domain.Provider}",
+                IdPay = createdPayment.IdPay,
+            };
+
+            await _repoAccountingRecord.AddAccountingRecordAsync(createdaccountingRecord);
+
         }
 
         public async Task UpdatePaymentAsync(int id, PaymentRequest payment)

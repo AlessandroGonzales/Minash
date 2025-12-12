@@ -17,7 +17,7 @@
         public int IdService { get; set; }
         public Service Service { get; set; } = null!;
         public int? IdGarmentService { get; set; }
-        public GarmentService GarmentService { get; set; } = null!;
+        public GarmentService? GarmentService { get; set; }
 
     }
 }
