@@ -5,8 +5,10 @@
         // Attributes
         public int IdGarmentService { get; set; }
         public decimal AdditionalPrice { get; set; }
-        public string ImageUrl { get; set; } = null!;
+        public List<string>? ImageUrl { get; set; }
         public string GarmentServiceName { get; set; } = null!;
+        public List<string> Colors { get; set; } = new List<string>();
+        public List<string> Sizes { get; set; } = new List<string>();
         public string GarmentServiceDetails { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
