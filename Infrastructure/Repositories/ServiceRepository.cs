@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
-        public async Task<Service?> GetServiceByIdAsync(int id)
+        public async Task<Service?> GetServiceByIdAsync(int? id)
         {
             var efService = await _db.Services
                 .FindAsync(id);

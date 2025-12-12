@@ -26,6 +26,9 @@ namespace Infrastructure.Repositories
                 GarmentName = efGarment.GarmentName,
                 GarmentDetails = efGarment.GarmentDetails,
                 ImageUrl = efGarment.ImageUrl ?? string.Empty,
+                Sizes = efGarment.Sizes ?? new List<string>(),
+                Colors = efGarment.Colors ?? new List<string>(),
+                Price = efGarment.Price,
                 CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow, 
                 UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             };
@@ -51,6 +54,8 @@ namespace Infrastructure.Repositories
         {
             IdGarmentService = ef.IdGarmentService,
             AdditionalPrice = ef.AdditionalPrice,
+            Colors = ef.Colors ?? new List<string>(),
+            Sizes = ef.Sizes ?? new List<string>(),
             ImageUrl = ef.ImageUrl,
             GarmentServiceName = ef.GarmentServiceName,
             GarmentServiceDetails = ef.GarmentServiceDetails,
@@ -86,6 +91,8 @@ namespace Infrastructure.Repositories
                 UpdatedAt = domain.UpdatedAt,
                 IdGarment = domain.IdGarment,
                 IdService = domain.IdService,
+                Sizes = domain.Sizes,
+                Colors = domain.Colors,
             };
         }
 

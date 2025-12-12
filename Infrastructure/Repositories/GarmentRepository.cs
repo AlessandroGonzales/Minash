@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
             {
                 IdGarmentService = gs.IdGarmentService,
                 AdditionalPrice = gs.AdditionalPrice,
-                ImageUrl = gs.ImageUrl ?? string.Empty,
+                ImageUrl = gs.ImageUrl,
                 CreatedAt = gs.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = gs.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = gs.IdGarment,
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                 IdCustom = c.IdCustom,
                 CustomerDetails = c.CustomerDetails,
                 Count = c.Count,
-                ImageUrl = c.ImageUrl ?? string.Empty,
+                ImageUrl = c.ImageUrl,
                 CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = c.IdGarment,
@@ -68,7 +68,7 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
-        public async Task<Garment?> GetGarmentByIdAsync(int id)
+        public async Task<Garment?> GetGarmentByIdAsync(int? id)
         {
             var efGarment = await _db.Garments.FindAsync(id);
             return efGarment == null ? null : MapToDomain(efGarment);

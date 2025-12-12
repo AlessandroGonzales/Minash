@@ -14,13 +14,15 @@ namespace Application.Services
         private readonly IGarmentRepository _garmentRepo;
         private readonly IServiceRepository _serviceRepo;
         private readonly IGarmentServiceRepository _garmentServiceRepo;
-        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo, IGarmentRepository garmentRepo, IServiceRepository serviceRepo, IGarmentServiceRepository garmentServiceRepo)
+        private readonly IFileStorageService _fileStorage;
+        public CustomAppService(ICustomRepository repo, IOrderRepository orderRepo, IGarmentRepository garmentRepo, IServiceRepository serviceRepo, IGarmentServiceRepository garmentServiceRepo, IFileStorageService fileStorage)
         {
             _repo = repo;
             _orderRepo = orderRepo;
             _garmentRepo = garmentRepo;
             _serviceRepo = serviceRepo;
             _garmentServiceRepo = garmentServiceRepo;
+            _fileStorage = fileStorage;
         }
         private static CustomResponse MapToResponse(Custom custom) => new CustomResponse
         {
@@ -30,7 +32,7 @@ namespace Application.Services
             IdUser = custom.IdUser,
             CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
-            ImageUrl = custom.ImageUrl,
+            ImageUrl = custom.ImageUrl ?? new List<string>(),
             IdGarmentService = custom.IdGarmentService
         };
 
@@ -42,13 +44,11 @@ namespace Application.Services
             IdUser = dto.IdUser,
             CustomerDetails = dto.CustomerDetails,
             Count = dto.Count,
-            ImageUrl = dto.ImageUrl,
             IdGarmentService = dto.IdGarmentService
         };
 
         private static Custom MapToDomain(CustomPartial dto) => new Custom
         {
-            ImageUrl = dto.ImageUrl,
             Count = dto.count,
         };
 
@@ -72,8 +72,15 @@ namespace Application.Services
             }
             return MapToResponse(custom);
         }
-        public async Task<CustomResponse> AddCustomAsync(CustomRequest custom)
+        public async Task<CustomResponse> AddCustomAsync(CustomRequest custom, string webRootPath)
         {
+            List<string> imageUrl = new List<string>();
+            if(custom.ImageUrl != null && custom.ImageUrl.Count > 0)
+            {
+                imageUrl = await _fileStorage.UploadFilesAsync(custom.ImageUrl,"custom", webRootPath);
+            }
+
+
             var garment = await _garmentRepo.GetGarmentByIdAsync(custom.IdGarment);
             if (garment == null)
                 {
@@ -106,6 +113,7 @@ namespace Application.Services
             }
 
             var creatCustom = MapToDomain(custom);
+            creatCustom.ImageUrl = imageUrl;
             var createdCustom = await _repo.AddCustomAsync(creatCustom);
             
             var order = new Order

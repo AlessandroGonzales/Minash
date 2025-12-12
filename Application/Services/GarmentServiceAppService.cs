@@ -23,6 +23,8 @@ namespace Application.Services
             IdGarments = d.IdGarment,
             IdService = d.IdService,
             AddtionalPrice = d.AdditionalPrice,
+            Colors = d.Colors,
+            Sizes =d.Sizes,
             ImageUrl = d.ImageUrl,
             GarmentServiceDetails = d.GarmentServiceDetails,
             GarmentServiceName = d.GarmentServiceName,
@@ -33,6 +35,8 @@ namespace Application.Services
             IdGarmentService = dto.IdGarmentService,
             IdGarment = dto.IdGarment,
             IdService = dto.IdService,
+            Colors = dto.Colors,
+            Sizes=dto.Sizes,
             AdditionalPrice = dto.AdditionalPrice,
             GarmentServiceDetails = dto.GarmentServiceDetails,
             GarmentServiceName = dto.GarmentServiceName,
@@ -85,16 +89,17 @@ namespace Application.Services
             if (dto.IdGarment <= 0 || dto.IdService <= 0)
                 throw new ArgumentException("IDs de Garment y Service deben ser mayores a 0.");
 
-            string imageUrl = null;
-            if (dto.ImageFile != null) 
-            {
-                imageUrl = await _fileStorage.UploadFileAsync(dto.ImageFile, "garments", webRootPath);
-            }
+            List<string> imageUrl = new List<string>();
 
+            if(dto.ImageFiles != null && dto.ImageFiles.Count > 0)
+            {
+                imageUrl = await _fileStorage.UploadFilesAsync(dto.ImageFiles,"garmentServices", webRootPath);
+            }
+          
             var domain = MapToDomain(dto);
-            domain.ImageUrl = imageUrl;
             domain.CreatedAt = DateTime.UtcNow; 
             domain.UpdatedAt = DateTime.UtcNow;
+            domain.ImageUrl = imageUrl;
 
             var addedDomain = await _repo.AddGarmentServiceAsync(domain);
             return MapToResponse(addedDomain);
