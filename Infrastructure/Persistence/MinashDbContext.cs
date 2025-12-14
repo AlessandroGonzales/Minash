@@ -101,6 +101,12 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.ImageUrl)
                 .HasColumnType("character varying(200)[]")
                 .HasColumnName("image_url");
+            entity.Property(e => e.SelectedColor)
+                .HasMaxLength(50)
+                .HasColumnName("selected_color");
+            entity.Property(e => e.SelectedSize)
+                .HasMaxLength(10)
+                .HasColumnName("selected_size");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");

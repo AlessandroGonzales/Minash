@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.Persistence.Entities;
 
 public partial class Custom
 {
@@ -23,6 +26,10 @@ public partial class Custom
     public DateTime? UpdatedAt { get; set; }
 
     public int? IdGarmentService { get; set; }
+
+    public string? SelectedColor { get; set; }
+
+    public string? SelectedSize { get; set; }
 
     public virtual Garment? IdGarmentNavigation { get; set; }
 

@@ -36,7 +36,7 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomByIdAsync([FromRoute] int id)
+        public async Task<IActionResult> GetCustomByIdAsync(int id)
         {
             var custom = await _service.GetCustomByIdAsync(id);
             return Ok(custom);
@@ -46,8 +46,9 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomAsync([FromForm] CustomRequest domain)
         {
-            var custom = await _service.AddCustomAsync(domain, _env.ContentRootPath); 
-            return CreatedAtAction(nameof(GetCustomByIdAsync), new { id  = custom.IdCustom }, custom);
+
+            var custom = await _service.AddCustomAsync(domain, _env.WebRootPath);
+            return Ok(custom);
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]

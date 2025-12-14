@@ -8,6 +8,8 @@
         public List<string> ImageUrl { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public string? SelectedColor { get; set; }
+        public string? SelectedSize { get; set; }
 
         // Foreign Keys
         public int? IdGarment { get; set; }

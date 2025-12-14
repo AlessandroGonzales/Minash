@@ -12,7 +12,8 @@ namespace Application.DTO.Request
 
         [Required]
         public int Count { get; set; }
-
+        public string? SelectedColor { get; set; } 
+        public string? SelectedSize { get; set; } 
         public List<IFormFile> ImageUrl { get; set; } = null!;
 
         [Required]

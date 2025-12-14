@@ -33,6 +33,8 @@ namespace Application.Services
             CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            SelectedColor = custom.SelectedColor,
+            SelectedSize = custom.SelectedSize,
             IdGarmentService = custom.IdGarmentService
         };
 
@@ -40,6 +42,8 @@ namespace Application.Services
         {
             IdCustom = dto.IdCustom,
             IdService = dto.IdService,
+            SelectedSize = dto.SelectedSize,
+            SelectedColor = dto.SelectedColor,
             IdGarment = dto.IdGarment,
             IdUser = dto.IdUser,
             CustomerDetails = dto.CustomerDetails,
