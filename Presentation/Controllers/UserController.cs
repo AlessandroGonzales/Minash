@@ -34,21 +34,6 @@ namespace Presentation.Controllers
             _env = env;
         }
 
-        [HttpGet("test-db-real")]
-        public async Task<IActionResult> TestDbReal([FromServices] MinashDbContext db)
-        {
-            try
-            {
-                var count = await db.Users.CountAsync();  
-                return Ok(new { UsersCount = count, Message = "DB connected OK" });  
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });  
-            }
-        }
-
-
         [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()

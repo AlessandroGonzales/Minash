@@ -4,9 +4,9 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using EfGarment = Infrastructure.Persistence.Entities.Garment;
+using EfGarmentService = Infrastructure.Persistence.Entities.GarmentService;
 using EfService = Infrastructure.Persistence.Entities.Service;
 using EfUser = Infrastructure.Persistence.Entities.User;
-using EfGarmentService = Infrastructure.Persistence.Entities.GarmentService;
 
 namespace Infrastructure.Repositories
 {
@@ -40,6 +40,8 @@ namespace Infrastructure.Repositories
             GarmentDetails = garment.GarmentDetails,
             ImageUrl = garment.ImageUrl,
             Price = garment.Price,
+            Colors = garment.Colors ?? new List<string>(),
+            Sizes = garment.Sizes ?? new List<string>(),
             GarmentName = garment.GarmentName,
             CreatedAt = garment.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = garment.UpdatedAt ?? DateTime.UtcNow,
@@ -50,6 +52,7 @@ namespace Infrastructure.Repositories
             IdService = service.IdService,
             ServiceName = service.ServiceName,
             ServiceDetails = service.ServiceDetails,
+            UpdatedAt = service.UpdatedAt ?? DateTime.UtcNow,
             ImageUrl = service.ImageUrl,
             CreatedAt = service.CreatedAt ?? DateTime.UtcNow,
             Price = service.Price,
@@ -59,12 +62,16 @@ namespace Infrastructure.Repositories
         private static GarmentService MapToDomainGarmentService(EfGarmentService ef) => new GarmentService
         {
             IdGarmentService = ef.IdGarmentService,
+            GarmentServiceDetails = ef.GarmentServiceDetails,
+            GarmentServiceName = ef.GarmentServiceName,
             AdditionalPrice = ef.AdditionalPrice,
-            ImageUrl = ef.ImageUrl,
+            ImageUrl = ef.ImageUrl ?? new List<string>(),
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdGarment = ef.IdGarment,
-            IdService = ef.IdService,
+            Colors = ef.Colors ?? new List<string>(),
+            Sizes = ef.Sizes ?? new List<string>(),
+            IdService = ef.IdService
         };
 
         private static Custom MapToDomain(EfCustom custom) => new Custom
@@ -72,18 +79,19 @@ namespace Infrastructure.Repositories
             IdCustom = custom.IdCustom,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
-            CreatedAt= custom.CreatedAt ?? DateTime.UtcNow,
+            SelectedColor = custom.SelectedColor,
+            SelectedSize = custom.SelectedSize,
+            CreatedAt = custom.CreatedAt ?? DateTime.UtcNow,
             CustomerDetails = custom.CustomerDetails,
-            UpdatedAt= custom.UpdatedAt ?? DateTime.UtcNow,
+            UpdatedAt = custom.UpdatedAt ?? DateTime.UtcNow,
             IdService = custom.IdService,
-            Service = MapToDomainService(custom.IdServiceNavigation),
+            Service = custom.IdServiceNavigation == null ? null : MapToDomainService(custom.IdServiceNavigation),
             IdUser = custom.IdUser,
             User = MapToDomainUser(custom.IdUserNavigation),
             IdGarment = custom.IdGarment,
-            Garment = MapToDomainGarment(custom.IdGarmentNavigation),
+            Garment = custom.IdGarmentNavigation == null ? null : MapToDomainGarment(custom.IdGarmentNavigation),
             IdGarmentService = custom.IdGarmentService,
-            GarmentService = MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
-
+            GarmentService = custom.IdGarmentServiceNavigation == null ? null : MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
         };
 
         private static EfCustom MapToEf(Custom custom) => new EfCustom
@@ -91,11 +99,16 @@ namespace Infrastructure.Repositories
             IdCustom = custom.IdCustom,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            SelectedColor = custom.SelectedColor,
+            SelectedSize = custom.SelectedSize,
+            CreatedAt = custom.CreatedAt,
+            UpdatedAt = custom.UpdatedAt,
             CustomerDetails = custom.CustomerDetails,
             IdService = custom.IdService,
             IdUser = custom.IdUser,
             IdGarment = custom.IdGarment,
-            IdGarmentService= custom.IdGarmentService,
+            CreationDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            IdGarmentService = custom.IdGarmentService,
         };
 
         private IQueryable<EfCustom> GetQueryableWithIncludes(bool tracking = false)
@@ -134,7 +147,9 @@ namespace Infrastructure.Repositories
             var creatCustom = MapToEf(custom);
             _db.Customs.Add(creatCustom);
             await _db.SaveChangesAsync();
+
             var createdCustom = await GetQueryableWithIncludes().FirstAsync(s => s.IdCustom == creatCustom.IdCustom);
+
             return MapToDomain(createdCustom);
         }
 

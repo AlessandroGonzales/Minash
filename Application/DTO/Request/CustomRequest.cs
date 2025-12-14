@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTO.Request
 {
@@ -11,14 +12,15 @@ namespace Application.DTO.Request
 
         [Required]
         public int Count { get; set; }
-        public string ImageUrl { get; set; } = null!;
+        public string? SelectedColor { get; set; } 
+        public string? SelectedSize { get; set; } 
+        public List<IFormFile> ImageUrl { get; set; } = null!;
 
         [Required]
         public int IdUser { get; set; }
-        [Required]
-        public int IdGarment { get; set; }
-        [Required]
-        public int IdService { get; set; }
+        public int? IdGarment { get; set; }
+        public int? IdService { get; set; }
+
         public int? IdGarmentService { get; set; }
     }
 }

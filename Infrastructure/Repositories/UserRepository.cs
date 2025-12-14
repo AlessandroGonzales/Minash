@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
                 IdCustom = c.IdCustom,
                 CustomerDetails = c.CustomerDetails,
                 Count = c.Count,
-                ImageUrl = c.ImageUrl ?? string.Empty,
+                ImageUrl = c.ImageUrl,
                 CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = c.IdGarment,

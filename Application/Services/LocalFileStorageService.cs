@@ -41,6 +41,25 @@ namespace Application.Services
 
             return simulatedBaseUrl + relativeUrl;
         }
+        public async Task<List<string>> UploadFilesAsync(List<IFormFile> files, string folderName, string webRootPath)
+        {
+            if (files == null || files.Count == 0)
+            {
+                return new List<string>();
+            }
+
+            var urls = new List<string>();
+
+            // Recorrer cada archivo y subirlo individualmente
+            foreach (var file in files)
+            {
+                // Reutilizamos la lógica de subida de archivo único
+                var url = await UploadFileAsync(file, folderName, webRootPath);
+                urls.Add(url);
+            }
+
+            return urls; // Devolvemos la lista de URLs
+        }
     }
 
 }

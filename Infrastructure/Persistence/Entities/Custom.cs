@@ -9,7 +9,7 @@ public partial class Custom
 
     public string CustomerDetails { get; set; } = null!;
 
-    public string ImageUrl { get; set; } = null!;
+    public List<string> ImageUrl { get; set; } = null!;
 
     public int Count { get; set; }
 
@@ -17,9 +17,9 @@ public partial class Custom
 
     public int IdUser { get; set; }
 
-    public int IdService { get; set; }
+    public int? IdService { get; set; }
 
-    public int IdGarment { get; set; }
+    public int? IdGarment { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
@@ -27,11 +27,15 @@ public partial class Custom
 
     public int? IdGarmentService { get; set; }
 
-    public virtual Garment IdGarmentNavigation { get; set; } = null!;
+    public string? SelectedColor { get; set; }
+
+    public string? SelectedSize { get; set; }
+
+    public virtual Garment? IdGarmentNavigation { get; set; }
 
     public virtual GarmentService? IdGarmentServiceNavigation { get; set; }
 
-    public virtual Service IdServiceNavigation { get; set; } = null!;
+    public virtual Service? IdServiceNavigation { get; set; }
 
     public virtual User IdUserNavigation { get; set; } = null!;
 

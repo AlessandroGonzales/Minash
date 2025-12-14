@@ -11,7 +11,12 @@ namespace Presentation.Controllers
     public class CustomController : ControllerBase
     {
         private readonly ICustomAppService _service;
-        public CustomController(ICustomAppService service) { _service = service; }
+        private readonly IWebHostEnvironment _env;
+        public CustomController(ICustomAppService service, IWebHostEnvironment env)
+        {
+            _service = service;
+            _env = env;
+        }
 
         [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet]
@@ -31,7 +36,7 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomByIdAsync([FromRoute] int id)
+        public async Task<IActionResult> GetCustomByIdAsync(int id)
         {
             var custom = await _service.GetCustomByIdAsync(id);
             return Ok(custom);
@@ -39,10 +44,11 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPost]
-        public async Task<IActionResult> AddCustomAsync([FromBody] CustomRequest domain)
+        public async Task<IActionResult> AddCustomAsync([FromForm] CustomRequest domain)
         {
-            var custom = await _service.AddCustomAsync(domain); 
-            return CreatedAtAction(nameof(GetCustomByIdAsync), new { id  = custom.IdCustom }, custom);
+
+            var custom = await _service.AddCustomAsync(domain, _env.WebRootPath);
+            return Ok(custom);
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]

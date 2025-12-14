@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         {
             IdGarmentService = ef.IdGarmentService,
             AdditionalPrice = ef.AdditionalPrice,
-            ImageUrl = ef.ImageUrl ?? string.Empty,
+            ImageUrl = ef.ImageUrl,
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdGarment = ef.IdGarment,

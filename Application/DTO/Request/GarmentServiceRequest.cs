@@ -9,9 +9,11 @@ namespace Application.DTO.Request
         [Required]
         [Range(1, (double)decimal.MaxValue, ErrorMessage = "El rango debe ser mayor a 0")]
         public decimal AdditionalPrice { get; set; }
-        public IFormFile ImageFile { get; set; }= null!;
+        public List<IFormFile> ImageFiles { get; set; } = null!;
         [Required]
         public int IdGarment { get; set; }
+        public List<string> Colors { get; set; } = new List<string>();
+        public List<string> Sizes { get; set; } = new List<string>();
         [Required]
         public int IdService { get; set; }
         public string GarmentServiceName { get; set; } = null!;

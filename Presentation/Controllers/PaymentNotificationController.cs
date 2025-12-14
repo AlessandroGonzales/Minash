@@ -18,7 +18,7 @@ namespace Presentation.Controllers
             IPaymentAppService paymentService,
             ILogger<PaymentNotificationController> logger,
             MercadoPagoClient mpClient
-            )
+        )
         {
             _paymentService = paymentService;
             _logger = logger;
@@ -26,42 +26,81 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("notification")]
-        public async Task<IActionResult> Notification([FromQuery] string? topic, [FromQuery] string? id)
+        public async Task<IActionResult> Notification(
+            [FromQuery] string? topic,
+            [FromQuery] string? id)
         {
             try
             {
-                _logger.LogInformation("Webhook notification received: {topic}, {id}", topic, id);
+                _logger.LogInformation("🔔 Webhook received. Topic: {Topic}, ID: {Id}", topic, id);
 
-
-                if (string.IsNullOrEmpty(id) || topic != "payment")
+                if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(id))
                 {
-                    _logger.LogWarning("Invalid notification received. Topic: {Topic}, ID: {Id}", topic, id);
+                    _logger.LogWarning("Invalid notification.");
                     return Ok();
                 }
 
-                var paymentId = id;
-                _logger.LogInformation("Processing payment ID: {PaymentId}", paymentId);
+                string? paymentId = null;
 
-                var paymentDetails = await _mpClient.GetPaymentByIdAsync(paymentId!);
+                // 🔹 1) TOPIC = PAYMENT → El id ya es el payment_id
+                if (topic == "payment")
+                {
+                    paymentId = id;
+                }
+
+                // 🔹 2) TOPIC = MERCHANT_ORDER → Debo obtener el payment desde la orden
+                else if (topic == "merchant_order")
+                {
+                    _logger.LogInformation("Fetching merchant order {Id}", id);
+
+                    var merchantOrder = await _mpClient.GetPaymentByIdAsync(id);
+
+                    if (merchantOrder == null)
+                    {
+                        _logger.LogWarning("Merchant order not found: {Id}", id);
+                        return Ok();
+                    }
+
+                    // Tomamos el primer pago válido de la orden
+                    if (merchantOrder.Value.TryGetProperty("payments", out var paymentsArray)
+                        && paymentsArray.GetArrayLength() > 0)
+                    {
+                        paymentId = paymentsArray[0].GetProperty("id").GetInt32().ToString();
+                        _logger.LogInformation("Extracted real payment_id: {PaymentId}", paymentId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Merchant order has no payments.");
+                        return Ok();
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Unknown topic: {Topic}", topic);
+                    return Ok();
+                }
+
+                if (paymentId == null)
+                {
+                    _logger.LogWarning("Could not determine payment ID.");
+                    return Ok();
+                }
+
+                // 🔹 Consulto el pago real
+                var paymentDetails = await _mpClient.GetPaymentByIdAsync(paymentId);
 
                 if (paymentDetails == null)
                 {
                     _logger.LogWarning("Payment details not found for ID: {PaymentId}", paymentId);
-                    return NotFound("Payment not found.");
+                    return Ok();
                 }
 
                 var status = paymentDetails.Value.GetProperty("status").GetString();
                 var transactionAmount = paymentDetails.Value.GetProperty("transaction_amount").GetDecimal();
-                var payerEmail = paymentDetails.Value.GetProperty("payer").GetProperty("email").GetString();
                 var paymentMethod = paymentDetails.Value.GetProperty("payment_method_id").GetString();
                 var externalReference = paymentDetails.Value.GetProperty("external_reference").GetString();
-                int idOrder = int.Parse(externalReference!);
 
-                if (idOrder == 0)
-                {
-                    _logger.LogWarning("Invalid order ID extracted from payment details: {ExternalReference}", externalReference);
-                    return Ok();
-                }
+                int idOrder = int.Parse(externalReference!);
 
                 var paymentRequest = new PaymentRequest
                 {
@@ -69,25 +108,29 @@ namespace Presentation.Controllers
                     Total = transactionAmount,
                     Currency = "ARS",
                     Provider = "MercadoPago",
-                    ProviderResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(paymentDetails.ToString()) ?? new(),
+                    ProviderResponse =
+                        JsonSerializer.Deserialize<Dictionary<string, object>>(paymentDetails.ToString()) ?? new(),
                     PaymentMethod = paymentMethod,
                     Verified = status == "approved",
                     ReceiptImageUrl = "",
-                    Installments = paymentDetails.Value.TryGetProperty("installments", out var instProp) ? instProp.GetInt32() : 1,
-                    TransactionCode = paymentId!,
+                    Installments = paymentDetails.Value.TryGetProperty("installments", out var instProp)
+                        ? instProp.GetInt32()
+                        : 1,
+                    TransactionCode = paymentId,
                     ExternalPaymentId = paymentId
                 };
 
                 await _paymentService.ConfirmPaymentAsync(paymentRequest);
-                _logger.LogInformation("Payment processed successfully for Order ID: {OrderId}", idOrder);
+
+                _logger.LogInformation("💰 Payment processed OK for Order: {OrderId}", idOrder);
+
                 return Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing payment notification.");
-                return StatusCode(500, "Internal server error.");
+                return Ok(); // siempre devolver 200 a Mercado Pago
             }
         }
-
     }
 }

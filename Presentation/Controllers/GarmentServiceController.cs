@@ -19,7 +19,6 @@ namespace Presentation.Controllers
             _env = env;
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllGarmentServices()
         {

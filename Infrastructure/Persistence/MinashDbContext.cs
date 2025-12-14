@@ -99,8 +99,14 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.ImageUrl)
-                .HasMaxLength(200)
+                .HasColumnType("character varying(200)[]")
                 .HasColumnName("image_url");
+            entity.Property(e => e.SelectedColor)
+                .HasMaxLength(50)
+                .HasColumnName("selected_color");
+            entity.Property(e => e.SelectedSize)
+                .HasMaxLength(10)
+                .HasColumnName("selected_size");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
@@ -206,6 +212,9 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.AdditionalPrice)
                 .HasPrecision(12, 2)
                 .HasColumnName("additional_price");
+            entity.Property(e => e.Colors)
+                .HasColumnType("character varying(50)[]")
+                .HasColumnName("colors");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
@@ -216,8 +225,11 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.ImageUrl)
-                .HasMaxLength(200)
+                .HasColumnType("character varying(200)[]")
                 .HasColumnName("image_url");
+            entity.Property(e => e.Sizes)
+                .HasColumnType("character varying(10)[]")
+                .HasColumnName("sizes");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");

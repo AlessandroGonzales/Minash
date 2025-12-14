@@ -17,11 +17,15 @@ public partial class GarmentService
 
     public DateTime? UpdatedAt { get; set; }
 
-    public string? ImageUrl { get; set; }
+    public List<string>? ImageUrl { get; set; }
 
     public string? GarmentServiceName { get; set; }
 
     public string? GarmentServiceDetails { get; set; }
+
+    public List<string>? Colors { get; set; }
+
+    public List<string>? Sizes { get; set; }
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 
