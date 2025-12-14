@@ -451,3 +451,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/Presentation/obj/Debug/net8.0/Presentation.AssemblyInfoInputs.cache
+/Presentation/obj/Debug/net8.0/Presentation.AssemblyInfo.cs
+/Presentation/obj/Debug/net8.0/Presentation.AssemblyInfo.cs
+/Presentation/obj/Debug/net8.0/Presentation.AssemblyInfoInputs.cache
+/Presentation/obj/Debug/net8.0/rpswa.dswa.cache.json
