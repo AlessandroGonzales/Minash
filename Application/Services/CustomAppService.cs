@@ -32,7 +32,7 @@ namespace Application.Services
             IdUser = custom.IdUser,
             CustomDetails = custom.CustomerDetails,
             Count = custom.Count,
-            ImageUrl = custom.ImageUrl ?? new List<string>(),
+            ImageUrl = custom.ImageUrl,
             IdGarmentService = custom.IdGarmentService
         };
 
@@ -44,7 +44,9 @@ namespace Application.Services
             IdUser = dto.IdUser,
             CustomerDetails = dto.CustomerDetails,
             Count = dto.Count,
-            IdGarmentService = dto.IdGarmentService
+            IdGarmentService = dto.IdGarmentService,
+            CreatedAt= DateTime.UtcNow,
+            UpdatedAt= DateTime.UtcNow,
         };
 
         private static Custom MapToDomain(CustomPartial dto) => new Custom
@@ -74,43 +76,47 @@ namespace Application.Services
         }
         public async Task<CustomResponse> AddCustomAsync(CustomRequest custom, string webRootPath)
         {
+
+            if (!custom.IdGarmentService.HasValue &&
+                (!custom.IdGarment.HasValue || !custom.IdService.HasValue))
+            {
+                throw new ArgumentException(
+                    "Debe enviar IdGarmentService o bien IdGarment e IdService."
+                );
+            }
+
             List<string> imageUrl = new List<string>();
             if(custom.ImageUrl != null && custom.ImageUrl.Count > 0)
-            {
-                imageUrl = await _fileStorage.UploadFilesAsync(custom.ImageUrl,"custom", webRootPath);
+            {   
+                imageUrl = await _fileStorage.UploadFilesAsync(custom.ImageUrl, "custom", webRootPath);
             }
 
-
-            var garment = await _garmentRepo.GetGarmentByIdAsync(custom.IdGarment);
-            if (garment == null)
-                {
-                throw new KeyNotFoundException($"Garment with ID {custom.IdGarment} not found.");
-            }
-
-            var service = await _serviceRepo.GetServiceByIdAsync(custom.IdService);
-            if (service == null)
-            {
-                throw new KeyNotFoundException($"Service with ID {custom.IdService} not found.");
-            }
-
+            Garment? garment = null;
+            Service? service = null;
             GarmentService? garmentService = null;
-
 
             if (custom.IdGarmentService.HasValue)
             {
-                garmentService = await _garmentServiceRepo.GetGarmentServiceByIdAsync(custom.IdGarmentService.Value);
-            }
+                garmentService = await _garmentServiceRepo
+                    .GetGarmentServiceByIdAsync(custom.IdGarmentService.Value);
 
-            decimal total;
-
-            if(garmentService != null)
-            {
-                total = custom.Count * garmentService.AdditionalPrice;
+                if (garmentService == null)
+                    throw new KeyNotFoundException("GarmentService no encontrada.");
             }
             else
             {
-                total = custom.Count * (service.Price + garment.Price);
+                garment = await _garmentRepo.GetGarmentByIdAsync(custom.IdGarment!.Value);
+                service = await _serviceRepo.GetServiceByIdAsync(custom.IdService!.Value);
+
+                if (garment == null || service == null)
+                    throw new KeyNotFoundException("Garment o Service no encontrados.");
             }
+
+
+            decimal total = garmentService != null
+                ? custom.Count * garmentService.AdditionalPrice
+                : custom.Count * (service!.Price + garment!.Price);
+
 
             var creatCustom = MapToDomain(custom);
             creatCustom.ImageUrl = imageUrl;
