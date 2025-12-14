@@ -52,6 +52,7 @@ namespace Infrastructure.Repositories
             IdService = service.IdService,
             ServiceName = service.ServiceName,
             ServiceDetails = service.ServiceDetails,
+            UpdatedAt = service.UpdatedAt ?? DateTime.UtcNow,
             ImageUrl = service.ImageUrl,
             CreatedAt = service.CreatedAt ?? DateTime.UtcNow,
             Price = service.Price,
@@ -102,6 +103,7 @@ namespace Infrastructure.Repositories
             IdService = custom.IdService,
             IdUser = custom.IdUser,
             IdGarment = custom.IdGarment,
+            CreationDate = DateOnly.FromDateTime(DateTime.UtcNow),
             IdGarmentService = custom.IdGarmentService,
         };
 

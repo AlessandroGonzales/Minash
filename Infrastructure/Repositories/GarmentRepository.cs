@@ -19,8 +19,8 @@ namespace Infrastructure.Repositories
             GarmentName = efGarment.GarmentName,
             GarmentDetails = efGarment.GarmentDetails,
             ImageUrl = efGarment.ImageUrl ?? string.Empty,
-            Sizes = efGarment.Sizes,
-            Colors = efGarment.Colors,
+            Sizes = efGarment.Sizes ?? new List<string>(),
+            Colors = efGarment.Colors ?? new List<string>(),
             UpdatedAt = efGarment.UpdatedAt ?? DateTime.UtcNow,
             CreatedAt = efGarment.CreatedAt ?? DateTime.UtcNow,
             Price = efGarment.Price,
@@ -29,6 +29,10 @@ namespace Infrastructure.Repositories
             {
                 IdGarmentService = gs.IdGarmentService,
                 AdditionalPrice = gs.AdditionalPrice,
+                Sizes = gs.Sizes,
+                Colors = gs.Colors,
+                GarmentServiceName = gs.GarmentServiceName,
+                GarmentServiceDetails = gs.GarmentServiceDetails,
                 ImageUrl = gs.ImageUrl,
                 CreatedAt = gs.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = gs.UpdatedAt ?? DateTime.UtcNow,
@@ -41,7 +45,7 @@ namespace Infrastructure.Repositories
                 IdCustom = c.IdCustom,
                 CustomerDetails = c.CustomerDetails,
                 Count = c.Count,
-                ImageUrl = c.ImageUrl,
+                ImageUrl = c.ImageUrl ?? new List<string>(),
                 CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = c.IdGarment,
@@ -59,7 +63,7 @@ namespace Infrastructure.Repositories
             UpdatedAt = d.UpdatedAt,
             CreatedAt = d.CreatedAt,
             Sizes = d.Sizes,
-            Colors = d.Colors
+            Colors = d.Colors,
         };
 
         public async Task<IEnumerable<Garment>> GetAllGarmentsAsync()
@@ -68,7 +72,7 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
-        public async Task<Garment?> GetGarmentByIdAsync(int? id)
+        public async Task<Garment?> GetGarmentByIdAsync(int id)
         {
             var efGarment = await _db.Garments.FindAsync(id);
             return efGarment == null ? null : MapToDomain(efGarment);
