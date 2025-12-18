@@ -25,7 +25,6 @@ namespace Application.Services
             Email = d.Email,
             Address = d.Address,
             PhoneNumber = d.Phone,
-            ImageUrl = d.ImageUrl,
             Province = d.Province,
             City = d.City,
             FullAddress = d.FullAddress,

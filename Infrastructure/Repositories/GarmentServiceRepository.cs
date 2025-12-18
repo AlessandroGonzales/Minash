@@ -110,6 +110,14 @@ namespace Infrastructure.Repositories
             var list = await GetQueryableWithIncludes().ToListAsync();
             return list.Select(MapToDomain);
         }
+        
+        public async Task<IEnumerable<GarmentService>> GetGarmentServiceOneImageAsync(int count)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(gs => gs.ImageUrl.Count == count)
+                .ToListAsync();
+            return list.Select(MapToDomain);
+        }
 
         public async Task<GarmentService?> GetGarmentServiceByIdAsync(int id)
         {

@@ -57,6 +57,10 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateService([FromForm] ServiceRequest serviceDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var createdService = await _service.AddServiceAsync(serviceDto, _env.WebRootPath);
             return CreatedAtAction(nameof(GetServiceById), new { id = createdService.IdService }, createdService);
         }

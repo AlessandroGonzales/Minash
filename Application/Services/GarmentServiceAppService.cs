@@ -53,6 +53,12 @@ namespace Application.Services
             return list.Select(MapToResponse);
         }
 
+        public async Task<IEnumerable<GarmentServiceResponse>> GetGarmentServicesOneImageAsync(int count)
+        {
+            var list = await _repo.GetGarmentServiceOneImageAsync(count);
+            return list.Select(MapToResponse);
+        }
+
         public async Task<GarmentServiceResponse?> GetGarmentServiceByIdAsync(int id)
         {
             var domain = await _repo.GetGarmentServiceByIdAsync(id);
