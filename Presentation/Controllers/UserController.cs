@@ -68,6 +68,29 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetCurrentUserProfile()
+        {
+            // Extraemos el ID del claim "nameidentifier" (estándar en ASP.NET)
+            var userIdClaim = User.FindFirst("http://schemas.xmlsoap.net/ws/2005/05/identity/claims/nameidentifier")
+                              ?? User.FindFirst("nameid")
+                              ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int currentUserId))
+            {
+                return Unauthorized("No se pudo identificar al usuario.");
+            }
+
+            var user = await _userService.GetUserByIdAsync(currentUserId);
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return Ok(user);
+        }
+
         [Authorize(Policy = "AdminPolicy")]
         [HttpGet("by-Role/{roleId}")]
         public async Task<IActionResult> GetUsersByRoleId(int roleId)
@@ -86,7 +109,6 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
-        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromForm] UserRequest userDto)
         {
@@ -102,8 +124,9 @@ namespace Presentation.Controllers
                 return Unauthorized("Credenciales invalidas");
             var rol = await _roleService.GetRoleByIdAsync(user.IdRol);
 
+            var userResponse = await _userService.GetUserByIdAsync(user.IdUser);
             var token = _jwtService.GenerateToken(user, rol);
-            return Ok(new { Token = token });
+            return Ok(new { Token = token, User = userResponse });
         }
 
         [Authorize(Policy = "AdminPolicy")]

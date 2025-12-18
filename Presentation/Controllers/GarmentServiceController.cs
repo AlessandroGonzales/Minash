@@ -26,6 +26,13 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
+        [HttpGet("one-image/{count}")]
+        public async Task<IActionResult> GetGarmentServicesOneImage(int count)
+        {
+            var garmentServices = await _service.GetGarmentServicesOneImageAsync(count);
+            return Ok(garmentServices);
+        }
+
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentServiceById(int id)
