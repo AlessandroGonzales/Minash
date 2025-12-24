@@ -75,7 +75,8 @@ namespace Infrastructure.Repositories
                 CreatedAt = doe.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = doe.UpdatedAt ?? DateTime.UtcNow,
                 IdOrder = doe.IdOrder,
-                IdGarmentService = doe.IdGarmentService
+                IdGarmentService = doe.IdGarmentService,
+                IdService = doe.IdService
             }).ToList() ?? new List<DetailsOrder>()
         };
 

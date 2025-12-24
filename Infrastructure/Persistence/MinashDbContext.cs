@@ -142,8 +142,16 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Details).HasColumnName("details");
             entity.Property(e => e.IdGarmentService).HasColumnName("id_garment_service");
             entity.Property(e => e.IdOrder).HasColumnName("id_order");
+            entity.Property(e => e.IdService).HasColumnName("id_service");
+            entity.Property(e => e.SelectedColor)
+                .HasMaxLength(50)
+                .HasColumnName("selected_color");
+            entity.Property(e => e.SelectedSize)
+                .HasMaxLength(20)
+                .HasColumnName("selected_size");
             entity.Property(e => e.SubTotal)
                 .HasPrecision(12, 2)
                 .HasColumnName("sub_total");
@@ -163,6 +171,11 @@ public partial class MinashDbContext : DbContext
                 .HasForeignKey(d => d.IdOrder)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("details_order_id_order_fkey");
+
+            entity.HasOne(d => d.IdServiceNavigation).WithMany(p => p.DetailsOrders)
+                .HasForeignKey(d => d.IdService)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("details_order_id_service_fkey");
         });
 
         modelBuilder.Entity<Garment>(entity =>
@@ -372,6 +385,9 @@ public partial class MinashDbContext : DbContext
             entity.HasIndex(e => e.ServiceName, "services_service_name_key").IsUnique();
 
             entity.Property(e => e.IdService).HasColumnName("id_service");
+            entity.Property(e => e.Colors)
+                .HasColumnType("character varying(50)[]")
+                .HasColumnName("colors");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
