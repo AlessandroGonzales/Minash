@@ -34,7 +34,8 @@ namespace Application.Authentication
             {
                 new Claim(ClaimTypes.NameIdentifier, user.IdUser.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, role.RoleName)
+                new Claim(ClaimTypes.Role, role.RoleName),
+                new Claim("imageUrl", user.ImageUrl ?? "")
             };
 
             var token = new JwtSecurityToken(

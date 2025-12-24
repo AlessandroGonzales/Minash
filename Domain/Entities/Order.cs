@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using Domain.Enums;
+
+namespace Domain.Entities
 {
     public class Order
     {
@@ -7,6 +9,7 @@
         public decimal Total { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public OrderState state { get; set; }
 
         // Foreign Keys
         public int IdUser { get; set; }

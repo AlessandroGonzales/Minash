@@ -19,7 +19,6 @@ namespace Presentation.Controllers
             _env = env;
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllServices()
         {
@@ -45,7 +44,6 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("filter")]
         public async Task<IActionResult> GetServicesByqualityAsync([FromQuery] string quality)
         {

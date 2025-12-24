@@ -7,5 +7,7 @@
         public string ServiceDetails { get; set; } = null!;
         public decimal ServicePrice { get; set; }
         public string ImageUrl { get; set; } = null!;
+        public List<string> colors { get; set; } = null!;
+
     }
 }

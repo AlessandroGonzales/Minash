@@ -73,7 +73,9 @@ namespace Infrastructure.Repositories
                 CreatedAt = doe.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = doe.UpdatedAt ?? DateTime.UtcNow,
                 IdOrder = doe.IdOrder,
-                IdGarmentService = doe.IdGarmentService
+                IdGarmentService = doe.IdGarmentService,
+                IdService = doe.IdService,
+                
             }).ToList(),
 
             Payments = ef.Payments?.Select(p => new Payment
@@ -99,7 +101,8 @@ namespace Infrastructure.Repositories
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
             IdUser = order.IdUser,
-            IdCustom = order.IdCustom
+            IdCustom = order.IdCustom,
+            
         };
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()

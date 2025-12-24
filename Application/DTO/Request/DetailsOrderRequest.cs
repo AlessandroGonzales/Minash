@@ -17,7 +17,10 @@ namespace Application.DTO.Request
         public decimal UnitPrice { get; set; }
         [Required]
         public int IdOrder { get; set; }
-        [Required]
-        public int IdGarmentService { get; set; }
+        public string? SelectedColor { get; set; }
+        public string? Details { get; set; }
+        public string? SelectedSize { get; set; }
+        public int? IdGarmentService { get; set; }
+        public int? IdService { get; set; }
     }
 }

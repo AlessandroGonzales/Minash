@@ -16,7 +16,7 @@ namespace Application.DTO.Request
         [Required]
         [Range(1, (double)decimal.MaxValue, ErrorMessage = "El rango debe ser mayor a 0")]
         public decimal Price { get; set; }
-
+        public List<string> Color { get; set; } = null!;
         public IFormFile ImageUrl { get; set; } = null!;
     }
 }

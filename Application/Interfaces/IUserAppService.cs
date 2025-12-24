@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task<UserResponse?> GetUserByEmailAsync(string email);
         Task<UserResponse> AddUserAsync(UserRequest userDto, string webRootPath);
         Task UpdateUserAsync(int id, UserRequest userDto);
-        Task PartialUpdateUserAsync(int id, UserPartial userDto);
+        Task PartialUpdateUserAsync(int id, UserPartial userDto, string webRootPath);
         Task DeleteUserAsync(int id);
         Task<UserResponse?> ValidateUserAsync(string email, string password);
     }

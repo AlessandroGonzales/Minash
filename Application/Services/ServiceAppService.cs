@@ -24,6 +24,7 @@ namespace Application.Services
             ServiceDetails = d.ServiceDetails,
             ServicePrice = d.Price,
             ImageUrl = d.ImageUrl,
+            colors = d.Colors,
         };  
 
         private static Service MapToDomain(ServiceRequest dto) => new Service
@@ -32,6 +33,8 @@ namespace Application.Services
             ServiceName = dto.ServiceName,
             ServiceDetails = dto.ServiceDetails,
             Price = dto.Price,
+            Colors = dto.Color,
+
         };
 
         private static Service MapToDomain(ServicePartial dto) => new Service
