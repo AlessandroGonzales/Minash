@@ -21,6 +21,7 @@ namespace Application.DependencyInjection
             services.AddScoped<ICustomAppService, CustomAppService>();
             services.AddScoped<IAccountingRecordAppService, AccountingRecordAppService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
+            services.AddScoped<IVideoAppService, VideoAppService>();
             services.AddSingleton<JwtService>();
             return services;
         }

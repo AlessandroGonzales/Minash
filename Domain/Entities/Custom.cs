@@ -10,6 +10,9 @@
         public DateTime UpdatedAt { get; set; }
         public string? SelectedColor { get; set; }
         public string? SelectedSize { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal CustomTotal{ get; set; }
+        public string CustomName { get; set; }
 
         // Foreign Keys
         public int? IdGarment { get; set; }
@@ -20,6 +23,8 @@
         public Service? Service { get; set; }
         public int? IdGarmentService { get; set; }
         public GarmentService? GarmentService { get; set; }
+        public int IdOrder { get; set; }
+        public Order? Order { get; set; }
 
     }
 }

@@ -33,7 +33,6 @@ namespace Presentation.Controllers
             return Ok(garmentServices);
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGarmentServiceById(int id)
         {
@@ -86,9 +85,9 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PartialUpdateGarmentServcieAsync([FromRoute] int id, [FromBody] GarmentServicePartial garmentServiceDto)
+        public async Task<IActionResult> PartialUpdateGarmentServcieAsync([FromRoute] int id, [FromForm] GarmentServicePartial garmentServiceDto)
         {
-            await _service.PartialUpdateGarmentServiceAsync(id, garmentServiceDto);
+            await _service.PartialUpdateGarmentServiceAsync(id, garmentServiceDto, _env.WebRootPath);
             return NoContent();
         }
 

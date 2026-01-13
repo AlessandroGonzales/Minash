@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Application.DTO.Request
 {
@@ -10,6 +12,8 @@ namespace Application.DTO.Request
         public decimal Total { get; set; }
         [Required]
         public int IdUser { get; set; }
-        public int? IdCustom { get; set; }
-        }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public OrderState State { get; set; }
+    }
 }

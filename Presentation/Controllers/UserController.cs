@@ -68,7 +68,8 @@ namespace Presentation.Controllers
             return Ok(user);
         }
 
-        [Authorize]
+
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("profile")]
         public async Task<IActionResult> GetCurrentUserProfile()
         {
@@ -124,9 +125,8 @@ namespace Presentation.Controllers
                 return Unauthorized("Credenciales invalidas");
             var rol = await _roleService.GetRoleByIdAsync(user.IdRol);
 
-            var userResponse = await _userService.GetUserByIdAsync(user.IdUser);
             var token = _jwtService.GenerateToken(user, rol);
-            return Ok(new { Token = token, User = userResponse });
+            return Ok(new { Token = token });
         }
 
         [Authorize(Policy = "AdminPolicy")]
@@ -139,9 +139,9 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PartialUpdateUserAsync([FromRoute] int id, [FromBody] UserPartial useDto)
+        public async Task<IActionResult> PartialUpdateUserAsync([FromRoute] int id, [FromForm] UserPartial useDto)
         {
-            await _userService.PartialUpdateUserAsync(id, useDto);
+            await _userService.PartialUpdateUserAsync(id, useDto, _env.WebRootPath);
             return NoContent();
         }
 

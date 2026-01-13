@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infrastructure.Persistence.Entities;
+﻿namespace Infrastructure.Persistence.Entities;
 
 public partial class User
 {
@@ -34,6 +31,8 @@ public partial class User
     public string? City { get; set; }
 
     public string? FullAddress { get; set; }
+
+    public virtual ICollection<ClientComment> ClientComments { get; set; } = new List<ClientComment>();
 
     public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 

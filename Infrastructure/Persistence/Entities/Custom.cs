@@ -31,13 +31,21 @@ public partial class Custom
 
     public string? SelectedSize { get; set; }
 
+    public int? IdOrder { get; set; }
+
+    public decimal UnitPrice { get; set; }
+
+    public decimal? CustomTotal { get; set; }
+
+    public string? CustomName { get; set; }
+
     public virtual Garment? IdGarmentNavigation { get; set; }
 
     public virtual GarmentService? IdGarmentServiceNavigation { get; set; }
 
+    public virtual Order? IdOrderNavigation { get; set; }
+
     public virtual Service? IdServiceNavigation { get; set; }
 
     public virtual User IdUserNavigation { get; set; } = null!;
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

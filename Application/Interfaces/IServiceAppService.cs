@@ -12,7 +12,7 @@ namespace Application.Interfaces
         Task<IEnumerable<ServiceResponse>> GetServicesByQualityAsync(string quality);
         Task<ServiceResponse> AddServiceAsync(ServiceRequest serviceDto, string webRootPath);
         Task UpdateServiceAsync(int id, ServiceRequest serviceDto);
-        Task PartialUpdateServiceAsync(int id, ServicePartial serviceDto);
+        Task PartialUpdateServiceAsync(int id, ServicePartial serviceDto, string webRootPath);
         Task DeleteServiceAsync(int id);
     }
 }

@@ -13,13 +13,12 @@ namespace Presentation.Controllers
     {
         private readonly IServiceAppService _service;
         private readonly IWebHostEnvironment _env;
-        public ServiceController(IServiceAppService service, IWebHostEnvironment env    )
+        public ServiceController(IServiceAppService service, IWebHostEnvironment env )
         {
             _service = service;
             _env = env;
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllServices()
         {
@@ -27,7 +26,6 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceById([FromRoute]int id)
         {
@@ -45,7 +43,6 @@ namespace Presentation.Controllers
             return Ok(services);
         }
 
-        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("filter")]
         public async Task<IActionResult> GetServicesByqualityAsync([FromQuery] string quality)
         {
@@ -75,9 +72,9 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateServicePriceAsync([FromRoute] int id, [FromBody] ServicePartial serviceDto)
+        public async Task<IActionResult> PartialUpdateServiceAsync([FromRoute] int id, [FromForm] ServicePartial serviceDto)
         {
-            await _service.PartialUpdateServiceAsync(id, serviceDto);
+            await _service.PartialUpdateServiceAsync(id, serviceDto, _env.WebRootPath);
             return NoContent();
         }
 

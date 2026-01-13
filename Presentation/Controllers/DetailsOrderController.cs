@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -10,7 +11,7 @@ namespace Presentation.Controllers
     public class DetailsOrderController : ControllerBase
     {
         private readonly IDetailsOrderAppService _service;
-        public DetailsOrderController(IDetailsOrderAppService service)
+        public DetailsOrderController(IDetailsOrderAppService service )
         {
             _service = service;
         }
@@ -41,12 +42,31 @@ namespace Presentation.Controllers
             return Ok(detailsOrders);
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpPost]
         public async Task<IActionResult> CreateDetailsOrder([FromBody] DetailsOrderRequest detailsOrderDto)
         {
-            var createdDetailsOrder = await _service.AddDetailsOrderAsync(detailsOrderDto);
-            return CreatedAtAction(nameof(GetDetailsOrderById), new { id = createdDetailsOrder.IdDetailsOrder }, createdDetailsOrder);
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+                var created = await _service.AddDetailsOrderAsync(userId, detailsOrderDto);
+
+                return CreatedAtAction(nameof(GetDetailsOrderById),new { id = created.IdDetailsOrder }, created);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message }); // 409
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message }); // 404
+            }
         }
 
         [Authorize(Policy = "AdminPolicy")]
@@ -57,7 +77,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "ClienteOrAdmin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDetailsOrder(int id)
         {

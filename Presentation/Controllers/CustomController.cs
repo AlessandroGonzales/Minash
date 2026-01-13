@@ -3,6 +3,7 @@ using Application.DTO.Request;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -26,6 +27,14 @@ namespace Presentation.Controllers
             return Ok(list);
         }
 
+        [Authorize(Policy = "ClienteOrAdmin")]
+        [HttpGet("by-order/{id}")]
+        public async Task<IActionResult> GetCustomByOrderIdAsync([FromRoute] int id)
+        {
+            var custom = await _service.GetCustomsByOrderIdAsync(id);
+            return Ok(custom);
+        }
+
         [Authorize(Policy = "CEOOrAdmin")]
         [HttpGet("by-userName")]
         public async Task<IActionResult> GetCustomsByUserNameAsync([FromQuery] string userName)
@@ -36,7 +45,7 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = "ClienteOrAdmin")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomByIdAsync(int id)
+        public async Task<IActionResult> GetCustomByIdAsync([FromRoute] int id)
         {
             var custom = await _service.GetCustomByIdAsync(id);
             return Ok(custom);
@@ -46,8 +55,8 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomAsync([FromForm] CustomRequest domain)
         {
-
-            var custom = await _service.AddCustomAsync(domain, _env.WebRootPath);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var custom = await _service.AddCustomAsync(userId, domain, _env.WebRootPath);
             return Ok(custom);
         }
 

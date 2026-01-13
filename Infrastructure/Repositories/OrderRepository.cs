@@ -3,8 +3,8 @@ using Domain.Repositories;
 using Infrastructure.Persistence;
 using EfUser = Infrastructure.Persistence.Entities.User;
 using EfOrder = Infrastructure.Persistence.Entities.Order;
-using EfCustom = Infrastructure.Persistence.Entities.Custom;
 using Microsoft.EntityFrameworkCore;
+using Domain.Enums;
 namespace Infrastructure.Repositories
 {
     public class OrderRepository : IOrderRepository
@@ -23,10 +23,9 @@ namespace Infrastructure.Repositories
                 IdUser = ef.IdUser,
                 UserName = ef.UserName,
                 LastName = ef.LastName,
-                Email = ef.Email,
-                PasswordHash = ef.PasswordHash,
-                Phone = ef.Phone,
                 Address = ef.Address,
+                Email = ef.Email,
+                Phone = ef.Phone,
                 CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
                 ImageUrl = ef.ImageUrl ?? string.Empty,
@@ -37,20 +36,6 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static Custom MapToDomainCustom(EfCustom ef) => new Custom
-        {
-            IdCustom = ef.IdCustom,
-            Count = ef.Count,
-            IdGarment = ef.IdGarment,
-            IdService = ef.IdService,
-            IdGarmentService = ef.IdGarmentService == null ? null : ef.IdGarmentService,
-            IdUser = ef.IdUser,
-            CustomerDetails = ef.CustomerDetails,
-            ImageUrl = ef.ImageUrl,
-            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
-            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
-        };
-
         private static Order MapToDomain(EfOrder ef) => new Order
         {
             IdOrder = ef.IdOrder,
@@ -59,10 +44,7 @@ namespace Infrastructure.Repositories
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdUser = ef.IdUser,
             User = MapToDomainUser(ef.IdUserNavigation),
-            IdCustom = ef.IdCustom ?? 0,
-            Custom = ef.IdCustomNavigation == null
-                ? null
-                : MapToDomainCustom(ef.IdCustomNavigation),
+            State = ef.State,
 
             DetailsOrders = ef.DetailsOrders.Select(doe => new DetailsOrder
             {
@@ -70,10 +52,17 @@ namespace Infrastructure.Repositories
                 Count = doe.Count,
                 SubTotal = doe.SubTotal,
                 UnitPrice = doe.UnitPrice,
+                SelectedColor = doe.SelectedColor,
+                ServiceName = doe.ServiceName,
+                ImageUrl = doe.ImageUrl,
+                SelectedSize = doe.SelectedSize,
+                Details = doe.Details ?? string.Empty,
                 CreatedAt = doe.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = doe.UpdatedAt ?? DateTime.UtcNow,
                 IdOrder = doe.IdOrder,
-                IdGarmentService = doe.IdGarmentService
+                IdGarmentService = doe.IdGarmentService,
+                IdService = doe.IdService,
+                
             }).ToList(),
 
             Payments = ef.Payments?.Select(p => new Payment
@@ -88,9 +77,32 @@ namespace Infrastructure.Repositories
                 Verified = p.Verified,
                 TransactionCode = p.TransactionCode ?? string.Empty,
                 CreatedAt = p.CreatedAt ?? DateTime.UtcNow,
+                PaymentMethod = p.PaymentMethod ?? string.Empty,
                 UpdatedAt = p.UpdatedAt ?? DateTime.UtcNow,
                 IdOrder = p.IdOrder
-            }).ToList() ?? new List<Payment>()
+            }).ToList() ?? new List<Payment>(),
+            
+            Customs = ef.Customs?.Select(c => new Custom
+            {
+                IdCustom = c.IdCustom,
+                SelectedColor = c.SelectedColor ?? string.Empty,
+                SelectedSize = c.SelectedSize ?? string.Empty,
+                IdGarmentService = c.IdGarmentService,
+                IdService = c.IdService,
+                Count = c.Count,
+                ImageUrl = c.ImageUrl ?? new List<string>(),
+                IdUser = c.IdUser,
+                IdGarment = c.IdGarment,
+                CustomerDetails = c.CustomerDetails,
+                CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
+                IdOrder = c.IdOrder ?? 0,
+                CustomName = c.CustomName ?? string.Empty,
+                CustomTotal = c.CustomTotal ?? 0,
+                UnitPrice = c.UnitPrice,
+            }).ToList() ?? new List<Custom>(),
+
+
         };
 
         private static EfOrder MapToEf(Order order) => new EfOrder
@@ -99,7 +111,8 @@ namespace Infrastructure.Repositories
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
             IdUser = order.IdUser,
-            IdCustom = order.IdCustom
+            State = order.State,
+
         };
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -109,6 +122,35 @@ namespace Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
 
+            return list.Select(MapToDomain);
+        }
+
+        public async Task<Order?> GetDraftOrderByUserIdAsync(int userId)
+        {
+            var ef = await _db.Orders
+            .Where(o => o.IdUser == userId && o.State == OrderState.Draft)
+            .Include(o => o.IdUserNavigation)
+            .Include(o => o.DetailsOrders)
+            .Include(o => o.Customs)
+            .Include(o => o.Payments)
+            .OrderByDescending(o => o.CreatedAt)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+            return ef == null ? null : MapToDomain(ef);
+        }
+
+        public async Task<IEnumerable<Order>> GetPaidOrderByUserIdAsync(int userId)
+        {
+            var list = await _db.Orders
+            .Where(o => o.IdUser == userId && o.State == OrderState.Paid)
+            .Include(o => o.IdUserNavigation)
+            .Include(o => o.DetailsOrders)
+            .Include(o => o.Customs)
+            .Include(o => o.Payments)
+            .OrderByDescending(o => o.CreatedAt)
+            .AsNoTracking()
+            .ToListAsync();
             return list.Select(MapToDomain);
         }
 
@@ -122,6 +164,22 @@ namespace Infrastructure.Repositories
             return list.Select(MapToDomain);
         }
 
+        public async Task<IEnumerable<Order>> GetAllPaidOrdersAsync()
+        {
+            var list = await _db.Orders
+                .Where(o => o.State == OrderState.Paid)
+                .Include(o => o.IdUserNavigation)
+                .Include(o => o.DetailsOrders)
+                .Include(o => o.Customs)
+                .Include(o => o.Payments)
+                .OrderByDescending(o => o.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return list.Select(MapToDomain);
+        }
+
+        
         public async Task<Order?> GetOrderByIdAsync(int id)
         {
             var ef = await _db.Orders
@@ -144,12 +202,13 @@ namespace Infrastructure.Repositories
         public async Task<Order> AddOrderAsync(Order order)
         {
             var efOrder = MapToEf(order);
+            efOrder.CreatedAt = DateTime.UtcNow;
+            efOrder.UpdatedAt = DateTime.UtcNow;
+
             await _db.Orders.AddAsync(efOrder);
             await _db.SaveChangesAsync();
-            order.CreatedAt = DateTime.Now;
-            order.UpdatedAt = DateTime.Now;
-            order.IdOrder = efOrder.IdOrder;
-            return order;
+
+            return MapToDomain(efOrder);
         }
 
         public async Task UpdateOrderAsync(int id, Order order)
@@ -169,7 +228,10 @@ namespace Infrastructure.Repositories
             var efOrder = await _db.Orders.FindAsync(id);
             if (efOrder == null) throw new KeyNotFoundException($"Order with ID {id} not found.");
 
-            efOrder.Total = order.Total;
+            if (order.Total != 0) efOrder.Total = order.Total;
+
+            if (order.State != default) efOrder.State = order.State;
+
             _db.Orders.Update(efOrder);
             await _db.SaveChangesAsync();
 

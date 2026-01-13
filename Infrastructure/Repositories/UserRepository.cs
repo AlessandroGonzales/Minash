@@ -66,7 +66,17 @@ namespace Infrastructure.Repositories
                 CreatedAt = o.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = o.UpdatedAt ?? DateTime.UtcNow,
                 IdUser = o.IdUser
+            }).ToList(),
+
+            ClientComments = ef.ClientComments.Select(cc => new ClientComment
+            {
+                IdComment = cc.IdComment,
+                Feedback = cc.Feedback,
+                CreatedAt = cc.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = cc.UpdatedAt ?? DateTime.UtcNow,
+                IdUser = cc.IdUser
             }).ToList()
+
         };
 
         private static EfUser MapToEf(User user)
@@ -181,7 +191,20 @@ namespace Infrastructure.Repositories
                 existingUser.Phone = user.Phone;
             if (user.UserName is not null)
                 existingUser.UserName = user.UserName;
-           
+            if (user.LastName is not null)
+                existingUser.LastName = user.LastName;
+            if (user.Email is not null)
+                existingUser.Email = user.Email;
+            if (user.Address is not null)
+                existingUser.Address = user.Address;
+            if (user.Province is not null)
+                existingUser.Province = user.Province;
+            if (user.City is not null)
+                existingUser.City = user.City;
+            if (user.FullAddress is not null)
+                existingUser.FullAddress = user.FullAddress;
+
+
             _db.Users.Update(existingUser);
             await _db.SaveChangesAsync();
         }

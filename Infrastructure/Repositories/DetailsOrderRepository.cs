@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using EfGarmentService = Infrastructure.Persistence.Entities.GarmentService;
 using EfOrder = Infrastructure.Persistence.Entities.Order;
 using EfDetailsOrder = Infrastructure.Persistence.Entities.DetailsOrder;
-
+using EfService = Infrastructure.Persistence.Entities.Service;
 namespace Infrastructure.Repositories
 {
     public class DetailsOrderRepository : IDetailsOrderRepository
@@ -24,7 +24,24 @@ namespace Infrastructure.Repositories
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdGarment = ef.IdGarment,
+            GarmentServiceDetails = ef.GarmentServiceDetails,
+            GarmentServiceName = ef.GarmentServiceName,
+            Sizes = ef.Sizes ?? new List<string>(),
+            Colors = ef.Colors ?? new List<string>(),
             IdService = ef.IdService
+        };
+
+        private static Service MapToDomainService(EfService ef) => new Service
+        {
+            IdService = ef.IdService,
+            ServiceDetails = ef.ServiceDetails,
+            ServiceName = ef.ServiceName,
+            Colors = ef.Colors,
+            ImageUrl = ef.ImageUrl,
+            Price = ef.Price,
+            UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
+            CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
+
         };
 
         private static Order MapToDomainOrder(EfOrder ef) => new Order
@@ -42,12 +59,19 @@ namespace Infrastructure.Repositories
             Count = ef.Count,
             SubTotal = ef.SubTotal,
             UnitPrice = ef.UnitPrice,
+            SelectedColor = ef.SelectedColor,
+            SelectedSize = ef.SelectedSize,
+            Details = ef.Details,
+            ServiceName = ef.ServiceName,
+            ImageUrl = ef.ImageUrl,
             CreatedAt = ef.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = ef.UpdatedAt ?? DateTime.UtcNow,
             IdOrder = ef.IdOrder,
             Order = MapToDomainOrder(ef.IdOrderNavigation),
             IdGarmentService = ef.IdGarmentService,
-            GarmentService = MapToDomainGarmentService(ef.IdGarmentServiceNavigation)
+            GarmentService = ef.IdGarmentServiceNavigation == null? null : MapToDomainGarmentService(ef.IdGarmentServiceNavigation),
+            IdService = ef.IdService,
+            Service = ef.IdServiceNavigation == null? null : MapToDomainService(ef.IdServiceNavigation) 
         };
 
         private static EfDetailsOrder MapToEf(DetailsOrder d) => new EfDetailsOrder
@@ -58,17 +82,23 @@ namespace Infrastructure.Repositories
             CreatedAt = d.CreatedAt,
             UpdatedAt = d.UpdatedAt,
             IdOrder = d.IdOrder,
-            IdGarmentService = d.IdGarmentService
+            IdGarmentService = d.IdGarmentService,
+            ServiceName = d.ServiceName,
+            ImageUrl = d.ImageUrl,
+            SelectedSize = d.SelectedSize,
+            SelectedColor = d.SelectedColor,
+            IdService = d.IdService,
+            Details = d.Details,
         };
 
         private IQueryable<EfDetailsOrder> GetQueryableWithIncludes(bool tracking = false)
         {
             var query = _db.DetailsOrders
                 .Include(doe => doe.IdOrderNavigation)
-                .Include(doe => doe.IdGarmentServiceNavigation);
+                .Include(doe => doe.IdGarmentServiceNavigation)
+                .Include(doe => doe.IdServiceNavigation);
             return tracking ? query : query.AsNoTracking();
         }
-
 
         public async Task<IEnumerable<DetailsOrder>> GetAllDetailsOrdersAsync()
         {
@@ -77,8 +107,6 @@ namespace Infrastructure.Repositories
         }
         public async Task<DetailsOrder?> GetDetailsOrderByIdAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("Id must be greater than zero.");
             var efDetailsOrder = await GetQueryableWithIncludes().FirstOrDefaultAsync(doe => doe.IdDetailsOrder == id);
             return efDetailsOrder == null ? null : MapToDomain(efDetailsOrder);
         }

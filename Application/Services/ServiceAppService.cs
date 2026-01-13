@@ -24,6 +24,7 @@ namespace Application.Services
             ServiceDetails = d.ServiceDetails,
             ServicePrice = d.Price,
             ImageUrl = d.ImageUrl,
+            colors = d.Colors,
         };  
 
         private static Service MapToDomain(ServiceRequest dto) => new Service
@@ -32,6 +33,8 @@ namespace Application.Services
             ServiceName = dto.ServiceName,
             ServiceDetails = dto.ServiceDetails,
             Price = dto.Price,
+            Colors = dto.Color,
+
         };
 
         private static Service MapToDomain(ServicePartial dto) => new Service
@@ -94,9 +97,20 @@ namespace Application.Services
             await _repo.UpdateServiceAsync( id, domainService);
         }
 
-        public async Task PartialUpdateServiceAsync(int id, ServicePartial service)
+        public async Task PartialUpdateServiceAsync(int id, ServicePartial service, string webRootPath)
         {
+            string imageUrl = null;
+            if (service.ImageUrl != null)
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(service.ImageUrl, "services", webRootPath);
+            }
+
             var domainService = MapToDomain(service);
+            if (imageUrl != null)
+            {
+                domainService.ImageUrl = imageUrl;
+            }
+
             await _repo.PartialUpdateServiceAsync(id, domainService);
 
         }

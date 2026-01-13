@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Infrastructure.ExternalServices;
-using Microsoft.EntityFrameworkCore;
-using Infrastructure.Persistence;
-using Infrastructure.Repositories;
+﻿using Domain.Enums;
 using Domain.Repositories;
+using Infrastructure.ExternalServices;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Configuration;
+using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -16,13 +19,20 @@ namespace Infrastructure.DependencyInjection
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("minash");
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.MapEnum<OrderState>("public.order_state", new PreserveCasingNameTranslator());
+
+
+            var dataSource = dataSourceBuilder.Build();
 
             services.AddDbContext<MinashDbContext>(options =>
-                options.UseNpgsql(connectionString, npgsqlOptionsAction =>
+
+                options.UseNpgsql(dataSource, npgsqlOptionsAction =>
                 {
-                     npgsqlOptionsAction.EnableRetryOnFailure();
+                    npgsqlOptionsAction.EnableRetryOnFailure();
                 }));
 
+            services.AddSingleton(dataSource);
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IGarmentRepository, GarmentRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
@@ -33,6 +43,8 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ICustomRepository, CustomRepository>();
             services.AddScoped<IAccountingRecordRepository, AccountingRecordRepository>();
+            services.AddScoped<IVideosRepository, VideosRepository>();
+            services.AddScoped<GmailClient>();
 
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -49,6 +61,8 @@ namespace Infrastructure.DependencyInjection
             services.AddHttpClient<MercadoPagoClient>()
                     .AddPolicyHandler(retryPolicy)
                     .AddPolicyHandler(circuitBreakerPolicy);
+
+            
 
             return services;
         }

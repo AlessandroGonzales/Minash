@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace Infrastructure.Persistence.Entities;
@@ -14,14 +15,13 @@ public partial class Order
     public int IdUser { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+    public OrderState State { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
-    public int? IdCustom { get; set; }
+    public virtual ICollection<Custom> Customs { get; set; } = new List<Custom>();
 
     public virtual ICollection<DetailsOrder> DetailsOrders { get; set; } = new List<DetailsOrder>();
-
-    public virtual Custom? IdCustomNavigation { get; set; }
 
     public virtual User IdUserNavigation { get; set; } = null!;
 

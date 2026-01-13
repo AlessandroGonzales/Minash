@@ -24,6 +24,7 @@
         // Navigation Properties
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<Custom> Customs { get; set; } = new List<Custom>();
+        public virtual ICollection<ClientComment> ClientComments { get; set; } = new List<ClientComment>();
 
     }
 }

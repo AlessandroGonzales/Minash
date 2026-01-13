@@ -1,8 +1,10 @@
 ﻿using Application.DTO.Partial;
 using Application.DTO.Request;
 using Application.Interfaces;
+using Infrastructure.ExternalServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -11,10 +13,21 @@ namespace Presentation.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderAppService _service;
-        public OrderController(IOrderAppService service)
+        private readonly GmailClient _gmailClient;
+        public OrderController(IOrderAppService service, GmailClient gmailClient)
         {
             _service = service;
+            _gmailClient = gmailClient;
         }
+
+        [Authorize(Policy = "CEOPolicy")]
+        [HttpGet("paid-orders")]
+        public async Task<IActionResult> GetAllPaidOrders()
+        {
+            var orders = await _service.GetAllPaidOrdersAsync();
+            return Ok(orders);
+        }
+
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpGet]
@@ -48,6 +61,48 @@ namespace Presentation.Controllers
         {
             var orders = await _service.GetOrdersByUserIdAsync(userId);
             return Ok(orders);
+        }
+
+        [Authorize(Policy = "ClienteOrAdmin")]
+        [HttpGet("draft")]
+        public async Task<IActionResult> GetDraftOrderByUserId()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var order = await _service.GetDraftOrderByUserIdAsync(userId);
+            return Ok(order);
+        }
+
+        [Authorize(Policy = "ClienteOrAdmin")]
+        [HttpGet("paid")]
+        public async Task<IActionResult> GetPaidOrderByUserId()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var order = await _service.GetPaidOrderByUserIdAsync(userId);
+            return Ok(order);
+        }
+
+        [Authorize(Policy = "ClienteOrAdmin")]
+        [HttpPost("butget")]
+        public async Task<IActionResult> createbutget([FromBody] BudgetRequestDto budgetRequest)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                await _gmailClient.SendBudgetAlertAsync(
+                    budgetRequest.Name,
+                    budgetRequest.Email,
+                    budgetRequest.Phone,
+                    budgetRequest.Category,
+                    budgetRequest.Description
+                );
+
+                return Ok(new { message = "Solicitud enviada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno al enviar el correo", details = ex.Message });
+            }
         }
 
         [Authorize(Policy = "ClienteOrAdmin")]

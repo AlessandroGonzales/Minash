@@ -10,7 +10,11 @@
         public int? IdService { get; set; }
         public int? IdGarmentService { get; set; }
         public List<string> ImageUrl { get; set; } = null!;
-        public string CustomDetails { get; set; } = null!;
+        public string CustomerDetails { get; set; } = null!;
+        public string CustomerName { get; set; }
         public int Count { get; set; }
+        public int IdOrder { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal? CustomTotal { get; set; }
     }
 }

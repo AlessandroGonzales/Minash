@@ -3,6 +3,7 @@ using Application.DTO.Request;
 using Application.DTO.Response;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Repositories;
 using Infrastructure.ExternalServices;
 using Microsoft.Extensions.Configuration;
@@ -18,13 +19,15 @@ namespace Application.Services
         private readonly IConfiguration _config;
         private readonly IUserRepository _repoUser;
         private readonly IAccountingRecordRepository _repoAccountingRecord;
+        private readonly GmailClient _gmailClient;
         public PaymentAppService(
             IPaymentRepository repoPayment,
             IOrderRepository repoOrder,
             MercadoPagoClient mercadoPagoClient,
             IConfiguration config,
             IUserRepository repoUser,
-            IAccountingRecordRepository repoAccountingRecord
+            IAccountingRecordRepository repoAccountingRecord,
+            GmailClient gmailClient
         )
         {
             _repoPayment = repoPayment;
@@ -33,6 +36,7 @@ namespace Application.Services
             _config = config;
             _repoUser = repoUser;
             _repoAccountingRecord = repoAccountingRecord;
+            _gmailClient = gmailClient;
         }
 
         private static PaymentRequest MapToDto(Payment payment) => new PaymentRequest
@@ -135,7 +139,6 @@ namespace Application.Services
                 OrderId = order.IdOrder,
                 PreferenceId = preferenceResponse.GetValueOrDefault("id")?.ToString(),
                 InitPoint = preferenceResponse.GetValueOrDefault("init_point")?.ToString(),
-                CheckBox = preferenceResponse.GetValueOrDefault("sandbox_init_point")?.ToString(),
             };
         }
         public async Task ConfirmPaymentAsync(PaymentRequest payment)
@@ -143,26 +146,47 @@ namespace Application.Services
             var order = await _repoOrder.GetOrderByIdAsync(payment.IdOrder);
             if (order == null) throw new ArgumentException("Order not found.");
 
+            var user = await _repoUser.GetUserByIdAsync(order.IdUser);
+            if (user == null) throw new ArgumentException("User not found.");
+
+
+            await _repoOrder.PartialUpdateOrderAsync(order.IdOrder, new Order
+            {
+                State = OrderState.Paid
+            });
+
             var domain = MapToDomain(payment);
             domain.Verified = payment.Verified;
             domain.Total = payment.Total;
             domain.Provider = "MercadoPago";
             domain.Currency = "ARS";
 
-           
-
             var createdPayment = await _repoPayment.AddPaymentAsync(domain);
 
+            TimeOnly tiempoActual = TimeOnly.FromDateTime(DateTime.Now);
             var createdaccountingRecord = new AccountingRecord
             {
                 IdAccountingRecord = 0,
-                Total = createdPayment.IdPay,
-                Details = $"Payment received for Order #{order.IdOrder} via {domain.Provider}",
+                Total = createdPayment.Total,
+                Details = $"Pago realizado por {user.UserName} {user.LastName} el día {DateTime.Today:dd/MM/yyyy} a las {tiempoActual.ToString("HH:mm")}",
                 IdPay = createdPayment.IdPay,
             };
 
             await _repoAccountingRecord.AddAccountingRecordAsync(createdaccountingRecord);
 
+            await _gmailClient.SendOrderNotificationAsync(
+            createdPayment.IdOrder.ToString(),
+            createdPayment.Total,
+            user.UserName);
+
+            string clientOrderUrl = $"https://minash-serigrafia.com/mis-pedidos/{createdPayment.IdOrder}";
+            await _gmailClient.SendPaymentConfirmationToCustomerAsync(
+                    user.Email,
+                    user.UserName,
+                    createdPayment.IdOrder.ToString(),
+                    createdPayment.Total,
+                    clientOrderUrl
+            );
         }
 
         public async Task UpdatePaymentAsync(int id, PaymentRequest payment)

@@ -8,12 +8,14 @@
         public string ServiceDetails { get; set; } = null!;
         public decimal Price { get; set; }
         public int State { get; set; }
-        public string ImageUrl { get; set; } = null!;
+        public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set;  }
         public DateTime UpdatedAt { get; set; }
+        public List<string>? Colors { get; set; }
 
         // Navigation Properties
         public ICollection<Custom> Customs { get; set; } = new List<Custom>();
         public ICollection<GarmentService> GarmentServices { get; set; } = new List<GarmentService>();
+        public ICollection<DetailsOrder> DetailsOrders { get; set; } = new List<DetailsOrder>();
     }
 }

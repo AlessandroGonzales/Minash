@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using EfService = Infrastructure.Persistence.Entities.Service;
 
+
 namespace Infrastructure.Repositories
 {
     public class ServiceRepository : IServiceRepository
@@ -23,6 +24,7 @@ namespace Infrastructure.Repositories
             ImageUrl = efService.ImageUrl ?? string.Empty,
             CreatedAt = efService.CreatedAt ?? DateTime.UtcNow,
             UpdatedAt = efService.UpdatedAt ?? DateTime.UtcNow,
+            Colors = efService.Colors ?? new List<string>(),
 
             Customs = efService.Customs.Select(c => new Custom
             {
@@ -34,7 +36,10 @@ namespace Infrastructure.Repositories
                 UpdatedAt = c.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = c.IdGarment,
                 IdUser = c.IdUser,
-                IdService = c.IdService
+                IdService = c.IdService,
+                SelectedColor = c.SelectedColor,
+                SelectedSize = c.SelectedSize,
+                IdGarmentService = c.IdGarmentService,
             }).ToList(),
 
             GarmentServices = efService.GarmentServices.Select(gs => new GarmentService
@@ -45,18 +50,40 @@ namespace Infrastructure.Repositories
                 CreatedAt = gs.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = gs.UpdatedAt ?? DateTime.UtcNow,
                 IdGarment = gs.IdGarment,
-                IdService = gs.IdService
+                IdService = gs.IdService,
+                Sizes = gs.Sizes,
+                Colors = gs.Colors,
+                GarmentServiceDetails = gs.GarmentServiceDetails,
+                GarmentServiceName = gs.GarmentServiceName,
 
-            }).ToList()
+            }).ToList(),
+
+            DetailsOrders = efService.DetailsOrders.Select(gs => new DetailsOrder
+            {
+                IdDetailsOrder = gs.IdDetailsOrder,
+                Count = gs.Count,
+                IdOrder = gs.IdOrder,
+                UnitPrice = gs.UnitPrice,
+                SubTotal = gs.SubTotal,
+                CreatedAt = gs.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = gs.UpdatedAt ?? DateTime.UtcNow,
+                IdGarmentService = gs.IdGarmentService,
+                IdService = gs.IdService
+            }).ToList(),
         };
 
 
         private static EfService MaptoEf(Service d) => new EfService
         {
+            IdService = d.IdService,
             ServiceName = d.ServiceName,
             ServiceDetails = d.ServiceDetails,
             Price = d.Price,
             ImageUrl = d.ImageUrl,
+            Colors = d.Colors,
+            CreatedAt = d.CreatedAt,
+            UpdatedAt = d.UpdatedAt,
+            
         };
 
         public async Task<IEnumerable<Service>> GetAllServicesAsync()
@@ -92,7 +119,9 @@ namespace Infrastructure.Repositories
             var list = await _db.Services
                 .AsNoTracking()
                 .Where(s => s.Price >= price && s.Price <= priceMax)
+                .AsNoTracking()
                 .ToListAsync();
+
             return list.Select(MapToDomain);
 
         }

@@ -5,6 +5,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
 {
@@ -29,6 +30,7 @@ namespace Application.Services
             City = d.City,
             FullAddress = d.FullAddress,
             IdRol = d.IdRole,
+            ImageUrl = d.ImageUrl,
         };
         private static User MapToDomain(UserRequest dto) 
         {
@@ -54,7 +56,13 @@ namespace Application.Services
             return new User
             {
                 UserName = dto.UserName,
-                Phone = dto.Phone,
+                Phone = dto.PhoneNumber,
+                Address = dto.Address,
+                City = dto.City,
+                Email = dto.Email,
+                FullAddress = dto.FullAddress,
+                LastName = dto.LastName,
+                Province = dto.Province,
             };
         }
 
@@ -116,9 +124,16 @@ namespace Application.Services
             await _repo.UpdateUserAsync(id, domain);
         }
 
-        public async Task PartialUpdateUserAsync(int id, UserPartial user)
+        public async Task PartialUpdateUserAsync(int id, UserPartial user, string webRootPath)
         {
+            string imageUrl = null;
+            if (user.ImageUrl != null)
+            {
+                imageUrl = await _fileStorage.UploadFileAsync(user.ImageUrl, "users", webRootPath);
+            }
+
             var domain = MapToDomain(user);
+            domain.ImageUrl = imageUrl;
 
             await _repo.PartialUpdateUserAsync(id, domain);
         }
@@ -138,5 +153,7 @@ namespace Application.Services
 
             return MapToResponse(user);
         }
+
+    
     }
 }

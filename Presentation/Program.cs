@@ -1,9 +1,11 @@
 ﻿using Application.DependencyInjection;
 using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,18 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
     .AddEnvironmentVariables();
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 104857600; 
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB (límite para el cuerpo multipart)
+    options.ValueLengthLimit = int.MaxValue; // Límite para valores individuales (opcional, pero útil)
+    options.MultipartHeadersLengthLimit = int.MaxValue; // Límite para headers (opcional)
+});
 
 var loggerFactory = builder.Services.BuildServiceProvider().GetService<ILoggerFactory>();
 var logger = loggerFactory.CreateLogger("ConfigDebug");
@@ -111,6 +125,8 @@ c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecuritySc
     });
 
 });
+
+
 
 
 var app = builder.Build();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain.Enums;
 using Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ public partial class MinashDbContext : DbContext
     }
 
     public virtual DbSet<AccountingRecord> AccountingRecords { get; set; }
+
+    public virtual DbSet<ClientComment> ClientComments { get; set; }
 
     public virtual DbSet<Custom> Customs { get; set; }
 
@@ -36,16 +39,20 @@ public partial class MinashDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Video> Videos { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=minash;Username=postgres;Password=Jamancapiero85.");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum<OrderState>("public", "order_state");
+
         modelBuilder
             .HasPostgresEnum("custom_state", new[] { "Pendiente", "En proceso", "Terminado" })
             .HasPostgresEnum("garment_state", new[] { "Activo", "Inactivo" })
-            .HasPostgresEnum("order_state", new[] { "Pendiente", "En proceso", "Enviado", "Completado" })
+            .HasPostgresEnum("order_state", new[] { "Draft", "Paid", "Cancelled", "Completed" })
             .HasPostgresEnum("payment_method", new[] { "Efectivo", "Transferencia" })
             .HasPostgresEnum("payment_state", new[] { "Pendiente", "Aceptado", "Rechazado" })
             .HasPostgresEnum("service_state", new[] { "Activo", "Inactivo" })
@@ -79,11 +86,34 @@ public partial class MinashDbContext : DbContext
                 .HasConstraintName("accounting_records_id_pay_fkey");
         });
 
+        modelBuilder.Entity<ClientComment>(entity =>
+        {
+            entity.HasKey(e => e.IdComment).HasName("client_comments_pkey");
+
+            entity.ToTable("client_comments");
+
+            entity.Property(e => e.IdComment).HasColumnName("id_comment");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Feedback).HasColumnName("feedback");
+            entity.Property(e => e.IdUser).HasColumnName("id_user");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.ClientComments)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("fk_user_comment");
+        });
+
         modelBuilder.Entity<Custom>(entity =>
         {
             entity.HasKey(e => e.IdCustom).HasName("custom_pkey");
 
             entity.ToTable("custom");
+
+            entity.HasIndex(e => e.UnitPrice, "idx_custom_unit_price");
 
             entity.Property(e => e.IdCustom).HasColumnName("id_custom");
             entity.Property(e => e.Count).HasColumnName("count");
@@ -93,9 +123,17 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("CURRENT_DATE")
                 .HasColumnName("creation_date");
+            entity.Property(e => e.CustomName)
+                .HasMaxLength(100)
+                .HasColumnName("custom_name");
+            entity.Property(e => e.CustomTotal)
+                .HasPrecision(12, 2)
+                .HasDefaultValueSql("NULL::numeric")
+                .HasColumnName("custom_total");
             entity.Property(e => e.CustomerDetails).HasColumnName("customer_details");
             entity.Property(e => e.IdGarment).HasColumnName("id_garment");
             entity.Property(e => e.IdGarmentService).HasColumnName("id_garment_service");
+            entity.Property(e => e.IdOrder).HasColumnName("id_order");
             entity.Property(e => e.IdService).HasColumnName("id_service");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.ImageUrl)
@@ -107,6 +145,10 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.SelectedSize)
                 .HasMaxLength(10)
                 .HasColumnName("selected_size");
+            entity.Property(e => e.UnitPrice)
+                .HasPrecision(12, 2)
+                .HasDefaultValueSql("0.00")
+                .HasColumnName("unit_price");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
@@ -119,6 +161,11 @@ public partial class MinashDbContext : DbContext
             entity.HasOne(d => d.IdGarmentServiceNavigation).WithMany(p => p.Customs)
                 .HasForeignKey(d => d.IdGarmentService)
                 .HasConstraintName("custom_id_garment_service_fkey");
+
+            entity.HasOne(d => d.IdOrderNavigation).WithMany(p => p.Customs)
+                .HasForeignKey(d => d.IdOrder)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_custom_order");
 
             entity.HasOne(d => d.IdServiceNavigation).WithMany(p => p.Customs)
                 .HasForeignKey(d => d.IdService)
@@ -142,8 +189,22 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Details).HasColumnName("details");
             entity.Property(e => e.IdGarmentService).HasColumnName("id_garment_service");
             entity.Property(e => e.IdOrder).HasColumnName("id_order");
+            entity.Property(e => e.IdService).HasColumnName("id_service");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(200)
+                .HasColumnName("image_url");
+            entity.Property(e => e.SelectedColor)
+                .HasMaxLength(50)
+                .HasColumnName("selected_color");
+            entity.Property(e => e.SelectedSize)
+                .HasMaxLength(20)
+                .HasColumnName("selected_size");
+            entity.Property(e => e.ServiceName)
+                .HasMaxLength(200)
+                .HasColumnName("service_name");
             entity.Property(e => e.SubTotal)
                 .HasPrecision(12, 2)
                 .HasColumnName("sub_total");
@@ -163,6 +224,11 @@ public partial class MinashDbContext : DbContext
                 .HasForeignKey(d => d.IdOrder)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("details_order_id_order_fkey");
+
+            entity.HasOne(d => d.IdServiceNavigation).WithMany(p => p.DetailsOrders)
+                .HasForeignKey(d => d.IdService)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("details_order_id_service_fkey");
         });
 
         modelBuilder.Entity<Garment>(entity =>
@@ -258,7 +324,6 @@ public partial class MinashDbContext : DbContext
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("CURRENT_DATE")
                 .HasColumnName("creation_date");
-            entity.Property(e => e.IdCustom).HasColumnName("id_custom");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
             entity.Property(e => e.Total)
                 .HasPrecision(12, 2)
@@ -267,15 +332,15 @@ public partial class MinashDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
 
-            entity.HasOne(d => d.IdCustomNavigation).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.IdCustom)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("fk_orders_custom");
-
             entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.IdUser)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("orders_id_user_fkey");
+
+            entity.Property(e => e.State)
+                .HasColumnName("state")
+                .HasColumnType("order_state")
+                .IsRequired();
         });
 
         modelBuilder.Entity<Payment>(entity =>
@@ -372,6 +437,9 @@ public partial class MinashDbContext : DbContext
             entity.HasIndex(e => e.ServiceName, "services_service_name_key").IsUnique();
 
             entity.Property(e => e.IdService).HasColumnName("id_service");
+            entity.Property(e => e.Colors)
+                .HasColumnType("character varying(50)[]")
+                .HasColumnName("colors");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
@@ -446,6 +514,23 @@ public partial class MinashDbContext : DbContext
                 .HasForeignKey(d => d.IdRole)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("users_id_role_fkey");
+        });
+
+        modelBuilder.Entity<Video>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("video_pkey");
+
+            entity.ToTable("video");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasColumnName("type");
+            entity.Property(e => e.Url).HasColumnName("url");
         });
 
         OnModelCreatingPartial(modelBuilder);

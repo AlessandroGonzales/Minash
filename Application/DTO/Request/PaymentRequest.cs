@@ -2,9 +2,7 @@
     public class PaymentRequest
     {
         public int IdPay { get; set; }
-
         public string PaymentMethod { get; set; } = null!;
-
         public decimal Total { get; set; }
         public string Provider { get; set; } = null!;
         public string? ExternalPaymentId { get; set; } 

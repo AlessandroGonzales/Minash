@@ -122,12 +122,23 @@ namespace Application.Services
             await _repo.UpdateGarmentServiceAsync(id, domain);
         }
 
-        public async Task PartialUpdateGarmentServiceAsync(int id, GarmentServicePartial dto)
+        public async Task PartialUpdateGarmentServiceAsync(int id, GarmentServicePartial dto, string webRootPath)
         {
-           if(id <= 0)
+
+            List<string> imageUrl = new List<string>();
+
+            if (dto.ImageFile != null)
+            {
+                var uploadedUrls = await _fileStorage.UploadFileAsync(dto.ImageFile, "garmentServices", webRootPath);
+
+                imageUrl.Add(uploadedUrls);
+            }
+
+            if (id <= 0)
                 throw new ArgumentException("ID de GarmentService debe ser mayor a 0.");
 
             var domain = MapToDomain(dto);
+            domain.ImageUrl = imageUrl;
             await _repo.PartialUpdateGarmentServiceAsync(id, domain);
         }
 

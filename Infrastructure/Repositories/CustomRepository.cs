@@ -7,6 +7,7 @@ using EfGarment = Infrastructure.Persistence.Entities.Garment;
 using EfGarmentService = Infrastructure.Persistence.Entities.GarmentService;
 using EfService = Infrastructure.Persistence.Entities.Service;
 using EfUser = Infrastructure.Persistence.Entities.User;
+using EfOrder = Infrastructure.Persistence.Entities.Order;
 
 namespace Infrastructure.Repositories
 {
@@ -31,7 +32,18 @@ namespace Infrastructure.Repositories
             PasswordHash = user.PasswordHash,
             UpdatedAt = user.UpdatedAt ?? DateTime.UtcNow,
             IdRole = user.IdRole,
+            
 
+        };
+
+        private static Order MapToDomainOrder(EfOrder order) => new Order
+        {
+            IdOrder = order.IdOrder,
+            Total = order.Total,
+            CreatedAt = order.CreatedAt ?? DateTime.UtcNow,
+            UpdatedAt = order.UpdatedAt ?? DateTime.UtcNow,
+            IdUser = order.IdUser,
+            State = order.State,
         };
 
         private static Garment MapToDomainGarment(EfGarment garment) => new Garment
@@ -84,12 +96,17 @@ namespace Infrastructure.Repositories
             CreatedAt = custom.CreatedAt ?? DateTime.UtcNow,
             CustomerDetails = custom.CustomerDetails,
             UpdatedAt = custom.UpdatedAt ?? DateTime.UtcNow,
+            CustomTotal = custom.CustomTotal ?? 0,
+            UnitPrice = custom.UnitPrice,
             IdService = custom.IdService,
+            CustomName = custom.CustomName ?? string.Empty,
             Service = custom.IdServiceNavigation == null ? null : MapToDomainService(custom.IdServiceNavigation),
             IdUser = custom.IdUser,
             User = MapToDomainUser(custom.IdUserNavigation),
             IdGarment = custom.IdGarment,
             Garment = custom.IdGarmentNavigation == null ? null : MapToDomainGarment(custom.IdGarmentNavigation),
+            IdOrder = custom.IdOrder ?? 0,
+            Order = custom.IdOrderNavigation == null ? null : MapToDomainOrder(custom.IdOrderNavigation),
             IdGarmentService = custom.IdGarmentService,
             GarmentService = custom.IdGarmentServiceNavigation == null ? null : MapToDomainGarmentService(custom.IdGarmentServiceNavigation),
         };
@@ -99,6 +116,8 @@ namespace Infrastructure.Repositories
             IdCustom = custom.IdCustom,
             Count = custom.Count,
             ImageUrl = custom.ImageUrl,
+            UnitPrice = custom.UnitPrice,
+            CustomTotal = custom.CustomTotal,
             SelectedColor = custom.SelectedColor,
             SelectedSize = custom.SelectedSize,
             CreatedAt = custom.CreatedAt,
@@ -106,9 +125,11 @@ namespace Infrastructure.Repositories
             CustomerDetails = custom.CustomerDetails,
             IdService = custom.IdService,
             IdUser = custom.IdUser,
+            CustomName = custom.CustomName,
             IdGarment = custom.IdGarment,
             CreationDate = DateOnly.FromDateTime(DateTime.UtcNow),
             IdGarmentService = custom.IdGarmentService,
+            IdOrder = custom.IdOrder,
         };
 
         private IQueryable<EfCustom> GetQueryableWithIncludes(bool tracking = false)
@@ -117,7 +138,8 @@ namespace Infrastructure.Repositories
                 .Include(x => x.IdUserNavigation)
                 .Include(x => x.IdServiceNavigation)
                 .Include(x => x.IdGarmentNavigation)
-                .Include(x => x.IdGarmentServiceNavigation);
+                .Include(x => x.IdGarmentServiceNavigation)
+                .Include(x => x.IdOrderNavigation);
 
             return tracking ? list : list.AsNoTracking();
         }
@@ -127,6 +149,15 @@ namespace Infrastructure.Repositories
             var list = await GetQueryableWithIncludes()
                 .Where(o => o.IdUserNavigation.UserName == userName)
                 .ToListAsync();
+            return list.Select(MapToDomain);
+        }
+
+        public async Task<IEnumerable<Custom>> GetCustomsByOrderIdAsync(int orderId)
+        {
+            var list = await GetQueryableWithIncludes()
+                .Where(o => o.IdOrder == orderId)
+                .ToListAsync();
+
             return list.Select(MapToDomain);
         }
 

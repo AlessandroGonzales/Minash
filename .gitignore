@@ -456,3 +456,18 @@ FodyWeavers.xsd
 /Presentation/obj/Debug/net8.0/Presentation.AssemblyInfo.cs
 /Presentation/obj/Debug/net8.0/Presentation.AssemblyInfoInputs.cache
 /Presentation/obj/Debug/net8.0/rpswa.dswa.cache.json
+
+
+Presentation/appsettings.json
+Presentation/appsettings.Development.json
+
+# Archivos grandes (Videos)
+*.mp4
+*.mov
+*.avi
+Presentation/wwwroot/images/Videos/
+
+# Carpetas de compilación de .NET
+bin/
+obj/
+.vs/

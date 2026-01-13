@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task<IEnumerable<GarmentServiceResponse>> GetGarmentServicesByQualityAsync(string quality);
         Task<GarmentServiceResponse> AddGarmentServiceAsync(GarmentServiceRequest garmentServiceDto, string webRootPath);
         Task UpdateGarmentServiceAsync(int id, GarmentServiceRequest garmentServiceDto);
-        Task PartialUpdateGarmentServiceAsync(int id, GarmentServicePartial garmentServiceDto);
+        Task PartialUpdateGarmentServiceAsync(int id, GarmentServicePartial garmentServiceDto, string webRootPath);
         Task DeleteGarmentServiceAsync(int id);
     }
 }
